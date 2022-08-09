@@ -1,6 +1,4 @@
-package neurons
-
-import Layer
+import neurons.Neuron
 
 class Connection constructor(inputLayer: Layer, private var outputNeuron: Neuron) {
     var weights = HashMap<Neuron, Double>()

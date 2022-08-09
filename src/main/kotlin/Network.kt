@@ -1,4 +1,3 @@
-import neurons.Connection
 import neurons.Neuron
 import neurons.SigmoidNeuron
 
@@ -18,10 +17,17 @@ class Network {
         layer2.addNeuron(SigmoidNeuron())
         layers.add(layer2)
 
-        createConnections()
+        val layer3 = Layer()
+        layer3.addNeuron(SigmoidNeuron())
+        layers.add(layer3)
 
+        createConnections()
+    }
+
+    fun train() {
         connections.forEach { it.evaluate() }
 
+        println("pica")
     }
 
     private fun createConnections() {
