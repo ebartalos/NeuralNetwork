@@ -2,22 +2,11 @@ object Main {
     @JvmStatic
     fun main(args: Array<String>) {
         val xor = Network()
-        xor.evaluate()
-        println(xor.output())
-        xor.backpropagation()
-        xor.evaluate()
-//        println(xor.output())
-//
-////        xor.backpropagation(xor.output()[0])
-//        xor.evaluate()
-//        println(xor.output())
-//
-////        xor.backpropagation(xor.output()[0])
-//        xor.evaluate()
-//        println(xor.output())
-//
-////        xor.backpropagation(xor.output()[0])
-//        xor.evaluate()
-//        println(xor.output())
+
+        for (i in 1..300) {
+            xor.evaluate()
+            println(xor.output())
+            xor.backpropagation()
+        }
     }
 }
