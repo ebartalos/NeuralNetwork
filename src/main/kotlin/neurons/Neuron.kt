@@ -1,7 +1,6 @@
 package neurons
 
 open class Neuron {
-
     var value = 1.0
 
     open fun activationMethod(vector: Double): Double {
