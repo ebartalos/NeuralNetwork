@@ -50,45 +50,23 @@ class Network {
         }
     }
 
-    fun backpropagation(output: Double) {
-        fun derivate(value: Double): Double {
+    fun backpropagation() {
+        fun derivative(value: Double): Double {
             return value * (1.0 - value)
         }
 
         val target = 0.0
-        val outputError = derivate(output) * (output - target)
-        val errors = ArrayList<Double>()
-    }
-    // calculate errors
-//        for(weight in connections.last().weights){
-//            println("old weight ${weight.value}")
-//                weight.setValue(abs((deltaOutputSum / weight.value) + weight.value))
-//                println("new weight ${weight.value}")
-//        }
+        val transferDerivative = derivative(output()[0])
+        val outputError = transferDerivative * (output()[0] - target)
 
-//        val oldWeights = ArrayList<Double>()
-//        val hiddenSum = layers[2].sum()
-//
-//        for (connection in connections.subList(3,4)){
-//            for (weight in connection.weights){
-//                println("old weight ${weight.value}")
-//                oldWeights.add(weight.value)
-//                weight.setValue(abs((deltaOutputSum / weight.value) + weight.value))
-//                println("new weight ${weight.value}")
-//            }
-//        }
-//
-//        val deltaHiddenSum = ArrayList<Double>()
-//
-//        for (oldWeight in oldWeights){
-//            deltaHiddenSum.add((deltaOutputSum / oldWeight) * )
-//        }
-//
-//
-//        for (connection in connections.subList(0,3)){
-//            for (weight in connection.weights){
-//                weight.setValue(abs((deltaOutputSum / weight.value * layers.last().neurons[0].value) + weight.value))
-//            }
-//        }
-//    }
+        // output layer
+        layers.last().incomingConnections.forEach {
+            it.error = outputError
+        }
+
+        // hidden layer
+        layers[1].incomingConnections.forEach {
+            it.error = (it.weight * outputError) * derivative(it.outputNeuron.value)
+        }
+    }
 }
