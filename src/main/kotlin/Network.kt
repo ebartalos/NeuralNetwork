@@ -3,10 +3,11 @@ import neurons.Neuron
 import neurons.SigmoidNeuron
 
 class Network {
-    private var layers = ArrayList<Layer>()
+
+    var layers = ArrayList<Layer>()
 
     init {
-        // input layers
+        // input layer
         val layer1 = Layer()
         layer1.addNeuron(Neuron())
         layer1.addNeuron(Neuron())
@@ -38,6 +39,11 @@ class Network {
         return values
     }
 
+    fun setInputs(input1: Double, input2: Double) {
+        layers.first().neurons[0].value = input1
+        layers.first().neurons[1].value = input2
+    }
+
     private fun createConnections() {
         for ((firstLayer, secondLayer) in layers.zipWithNext()) {
             for (outputNeuron in secondLayer.neurons) {
@@ -46,43 +52,6 @@ class Network {
                     firstLayer.outgoingConnections.add(connection)
                     secondLayer.incomingConnections.add(connection)
                 }
-            }
-        }
-    }
-
-    /**
-     * Everything below is backpropagation
-     */
-    fun backpropagation() {
-        determineErrors()
-        updateWeights()
-    }
-
-    private fun determineErrors() {
-        fun derivative(value: Double): Double {
-            return value * (1.0 - value)
-        }
-
-        val target = 0.0
-        val transferDerivative = derivative(output()[0])
-        val outputError = transferDerivative * (output()[0] - target)
-
-        // output layer
-        layers.last().incomingConnections.forEach {
-            it.error = outputError
-        }
-
-        // hidden layer
-        layers[1].incomingConnections.forEach {
-            it.error = (it.weight * outputError) * derivative(it.outputNeuron.value)
-        }
-    }
-
-    private fun updateWeights() {
-        val learningRate = 0.5
-        for (layer in layers.reversed()) {
-            for (connection in layer.incomingConnections) {
-                connection.weight -= learningRate * connection.error!! * connection.inputNeuron.value
             }
         }
     }
