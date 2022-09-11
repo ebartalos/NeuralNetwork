@@ -1,8 +1,9 @@
 import neurons.BiasNeuron
 import neurons.Neuron
 import neurons.SigmoidNeuron
+import kotlin.math.sqrt
 
-class Network {
+class Network(useHeHeuristics: Boolean = true) {
 
     var layers = ArrayList<Layer>()
 
@@ -26,7 +27,11 @@ class Network {
         layer3.addNeuron(SigmoidNeuron())
         layers.add(layer3)
 
-        createConnections()
+        createConnections(useHeHeuristics)
+    }
+
+    private fun heHeuristics(previousLayerNeurons: Double): Pair<Double, Double> {
+        return Pair(-(1.0 / sqrt(previousLayerNeurons)), (1.0 / sqrt(previousLayerNeurons)))
     }
 
     fun evaluate() {
@@ -44,11 +49,15 @@ class Network {
         layers.first().neurons[1].value = input2
     }
 
-    private fun createConnections() {
+    private fun createConnections(useHeHeuristics: Boolean) {
         for ((firstLayer, secondLayer) in layers.zipWithNext()) {
             for (outputNeuron in secondLayer.neurons) {
                 for (inputNeuron in firstLayer.neurons) {
-                    val connection = Connection(inputNeuron, outputNeuron)
+                    val connection = if (useHeHeuristics) {
+                        Connection(inputNeuron, outputNeuron, heHeuristics(firstLayer.neurons.size.toDouble()))
+                    } else {
+                        Connection(inputNeuron, outputNeuron)
+                    }
                     firstLayer.outgoingConnections.add(connection)
                     secondLayer.incomingConnections.add(connection)
                 }
