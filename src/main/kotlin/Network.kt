@@ -6,6 +6,7 @@ import kotlin.math.sqrt
 class Network(useHeHeuristics: Boolean = true) {
 
     var layers = ArrayList<Layer>()
+    var neurons = ArrayList<Neuron>()
 
     init {
         // input layer
@@ -28,6 +29,13 @@ class Network(useHeHeuristics: Boolean = true) {
         layers.add(layer3)
 
         createConnections(useHeHeuristics)
+        setNeurons()
+    }
+
+    private fun setNeurons() {
+        for (layer in layers) {
+            neurons.addAll(layer.neurons)
+        }
     }
 
     private fun heHeuristics(previousLayerNeurons: Double): Pair<Double, Double> {

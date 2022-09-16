@@ -24,7 +24,7 @@ class Backpropagation(private val network: Network, private val target: Double, 
 
         // hidden layer
         network.layers[1].incomingConnections.forEach {
-            it.error = (it.weight * outputError) * derivative(it.outputNeuron.value)
+            it.error = (it.weight * outputError) * it.outputNeuron.derivative()
         }
     }
 
