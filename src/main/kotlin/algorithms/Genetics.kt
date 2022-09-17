@@ -4,19 +4,17 @@ import Network
 
 class Genetics(private val networks: List<Network>) {
 
+    /**
+     * Takes two best networks, breeds them and fills rest of the lists with kids.
+     * @param mutate determines if kids should be mutated
+     */
     fun breed(mutate: Boolean) {
         // let's assume network is ordered by fitness with best brains in low indexes
-        val network1Connections = networks[0].weights()
-        val network2Connections = networks[1].weights()
+        val network1Weights = networks[0].weights()
+        val network2Weights = networks[1].weights()
 
-        val network1Iterator = network1Connections.listIterator()
-        val network2Iterator = network2Connections.listIterator()
-
-        println("N1")
-        network1Connections.forEach { println("$it ") }
-        println("N2")
-        network2Connections.forEach { println("$it ") }
-
+        val network1Iterator = network1Weights.listIterator()
+        val network2Iterator = network2Weights.listIterator()
 
         while (network1Iterator.hasNext()) {
             network1Iterator.next()
@@ -27,18 +25,18 @@ class Genetics(private val networks: List<Network>) {
             }
         }
 
-        println("N1")
-        network1Connections.forEach { println("$it ") }
-
-        // todo mutation part
-        println("N3 before update")
-        networks[2].weights().forEach { println("$it ") }
-
         for (network in networks.subList(2, networks.size)) {
-            network.updateWeights(network1Connections)
+            network.updateWeights(network1Weights)
         }
 
-        println("N3 after update")
-        networks[2].weights().forEach { println("$it ") }
+//        println("N3 after mutation")
+//        networks[2].weights().forEach { println("$it ") }
+
+        if (mutate) {
+            for (network in networks.subList(2, networks.size)) {
+                val mutation = Mutation(network)
+                mutation.mutate(0.9, 1.1)
+            }
+        }
     }
 }
