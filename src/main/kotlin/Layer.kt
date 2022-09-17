@@ -1,6 +1,7 @@
 import neurons.Neuron
 
 class Layer {
+
     var neurons: ArrayList<Neuron> = ArrayList()
     var outgoingConnections = ArrayList<Connection>()
     var incomingConnections = ArrayList<Connection>()
@@ -21,5 +22,20 @@ class Layer {
                 neuron.calculate(sum)
             }
         }
+    }
+
+    fun updateWeights(weights: MutableList<Double>, isOutgoing: Boolean) {
+        val weightsIterator = weights.listIterator()
+        val connections = if (isOutgoing) outgoingConnections else incomingConnections
+
+        connections.onEach { it.weight = weightsIterator.next() }
+    }
+
+    fun weights(): ArrayList<Double> {
+        val weights = ArrayList<Double>()
+        for (connection in outgoingConnections) {
+            weights.add(connection.weight)
+        }
+        return weights
     }
 }

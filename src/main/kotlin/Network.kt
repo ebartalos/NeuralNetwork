@@ -6,7 +6,6 @@ import kotlin.math.sqrt
 class Network(useHeHeuristics: Boolean = true) {
 
     var layers = ArrayList<Layer>()
-    var neurons = ArrayList<Neuron>()
 
     init {
         // input layer
@@ -29,17 +28,6 @@ class Network(useHeHeuristics: Boolean = true) {
         layers.add(layer3)
 
         createConnections(useHeHeuristics)
-        setNeurons()
-    }
-
-    private fun setNeurons() {
-        for (layer in layers) {
-            neurons.addAll(layer.neurons)
-        }
-    }
-
-    private fun heHeuristics(previousLayerNeurons: Double): Pair<Double, Double> {
-        return Pair(-(1.0 / sqrt(previousLayerNeurons)), (1.0 / sqrt(previousLayerNeurons)))
     }
 
     fun evaluate() {
@@ -50,6 +38,25 @@ class Network(useHeHeuristics: Boolean = true) {
         val values = ArrayList<Double>()
         layers.last().neurons.forEach { values.add(it.value) }
         return values
+    }
+
+    fun updateWeights(weights: ArrayList<Double>) {
+        var weightsIndex = 0
+        for ((firstLayer, secondLayer) in layers.zipWithNext()) {
+            val currentWeights = weights.subList(weightsIndex, weightsIndex + firstLayer.outgoingConnections.size)
+            firstLayer.updateWeights(currentWeights, true)
+            secondLayer.updateWeights(currentWeights, false)
+
+            weightsIndex += firstLayer.outgoingConnections.size
+        }
+    }
+
+    fun weights(): ArrayList<Double> {
+        val weights = ArrayList<Double>()
+        for (layer in layers) {
+            weights.addAll(layer.weights())
+        }
+        return weights
     }
 
     fun setInputs(input1: Double, input2: Double) {
@@ -72,4 +79,9 @@ class Network(useHeHeuristics: Boolean = true) {
             }
         }
     }
+
+    private fun heHeuristics(previousLayerNeurons: Double): Pair<Double, Double> {
+        return Pair(-(1.0 / sqrt(previousLayerNeurons)), (1.0 / sqrt(previousLayerNeurons)))
+    }
+
 }
