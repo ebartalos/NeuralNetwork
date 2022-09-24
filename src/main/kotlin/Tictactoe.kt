@@ -1,3 +1,5 @@
+import kotlin.math.abs
+
 class Tictactoe {
     private var board: HashMap<Int, Int> = HashMap()
 
@@ -7,24 +9,40 @@ class Tictactoe {
         }
     }
 
-    fun getBoard(): MutableCollection<Int> {
+    fun boardState(): MutableCollection<Int> {
         return board.values
     }
 
-    fun prettyPrint() {
+    fun play() {
+        val players = arrayListOf(1, 2)
+        var playerIndex = 0
+        while (determineWinner() == 0) {
+            prettyPrint()
+            while (fill(readLine()!!.toInt(), players[playerIndex]).not()) {
+            }
+            playerIndex = abs(playerIndex - 1)
+        }
+    }
+
+    private fun prettyPrint() {
         for ((index, value) in board.values.withIndex()) {
             print("$value ")
             if ((index + 1) % 3 == 0) print("\n")
         }
     }
 
-    fun fill(index: Int, value: Int) {
-        if (board[index] == 0) board[index] = value
-        else println("$index is already filled")
+    private fun fill(index: Int, value: Int): Boolean {
+        return if (board[index] == 0) {
+            board[index] = value
+            true
+        } else {
+            println("$index is already filled")
+            false
+        }
     }
 
-    fun determineWinner(): Int {
-        val winningCombos = arrayListOf<ArrayList<Int>>(
+    private fun determineWinner(): Int {
+        val winningCombos = arrayListOf(
             arrayListOf(1, 2, 3),
             arrayListOf(4, 5, 6),
             arrayListOf(7, 8, 9),

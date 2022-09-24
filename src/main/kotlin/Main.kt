@@ -1,21 +1,18 @@
+import ai.Network
+
 object Main {
     @JvmStatic
     fun main(args: Array<String>) {
 
         val tictactoe = Tictactoe()
-        tictactoe.fill(1,1)
-        tictactoe.fill(2,2)
-        tictactoe.fill(3,1)
-        tictactoe.fill(4,2)
-        tictactoe.fill(6,2)
-        tictactoe.fill(9,1)
 
-        tictactoe.fill(5,1)
+        val network = Network(inputNeurons = 9, outputNeurons = 9)
+        network.evaluate()
 
-        tictactoe.determineWinner()
-//        tictactoe.fill(1,2)
-       tictactoe.prettyPrint()
+        val result = network.output()
+        println(result)
 
+        tictactoe.play()
 
 //        val xor = Network(useHeHeuristics = true)
 //        val xor2 = Network(useHeHeuristics = true)
