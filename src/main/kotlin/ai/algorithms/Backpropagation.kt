@@ -1,6 +1,6 @@
-package algorithms
+package ai.algorithms
 
-import Network
+import ai.Network
 
 class Backpropagation(private val network: Network, private val target: Double, private val learningRate: Double) {
 

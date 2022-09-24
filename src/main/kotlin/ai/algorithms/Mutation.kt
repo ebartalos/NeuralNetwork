@@ -1,6 +1,6 @@
-package algorithms
+package ai.algorithms
 
-import Network
+import ai.Network
 import kotlin.random.Random
 
 class Mutation(private val network: Network) {

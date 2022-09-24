@@ -1,4 +1,6 @@
-import neurons.Neuron
+package ai
+
+import ai.neurons.Neuron
 import java.util.*
 
 

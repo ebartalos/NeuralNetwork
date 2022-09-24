@@ -1,4 +1,4 @@
-package neurons
+package ai.neurons
 
 
 class BiasNeuron : Neuron() {

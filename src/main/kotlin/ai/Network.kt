@@ -1,6 +1,8 @@
-import neurons.BiasNeuron
-import neurons.Neuron
-import neurons.SigmoidNeuron
+package ai
+
+import ai.neurons.BiasNeuron
+import ai.neurons.Neuron
+import ai.neurons.SigmoidNeuron
 import kotlin.math.sqrt
 
 class Network(useHeHeuristics: Boolean = true) {

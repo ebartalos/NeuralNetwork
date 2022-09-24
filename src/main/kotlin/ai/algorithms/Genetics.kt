@@ -1,6 +1,6 @@
-package algorithms
+package ai.algorithms
 
-import Network
+import ai.Network
 
 class Genetics(private val networks: List<Network>) {
 

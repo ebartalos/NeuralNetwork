@@ -1,4 +1,4 @@
-package neurons
+package ai.neurons
 
 import kotlin.math.exp
 

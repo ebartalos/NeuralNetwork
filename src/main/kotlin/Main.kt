@@ -1,5 +1,6 @@
-import algorithms.Backpropagation
-import algorithms.Genetics
+import ai.Network
+import ai.algorithms.Backpropagation
+import ai.algorithms.Genetics
 
 object Main {
     @JvmStatic
