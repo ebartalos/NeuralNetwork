@@ -5,13 +5,7 @@ class Tictactoe {
     private var board: HashMap<Int, Int> = HashMap()
 
     init {
-        for (index in 1..9) {
-            board[index] = 0
-        }
-    }
-
-    private fun boardState(): ArrayList<Int> {
-        return ArrayList(board.values)
+        resetBoard()
     }
 
     fun play(network: Network) {
@@ -50,7 +44,10 @@ class Tictactoe {
     fun playAI(network1: Network, network2: Network): Int {
         val players = arrayListOf(1, 2)
         var playerIndex = 0
-        var isGameEnded = 0
+        var isGameEnded: Int
+
+        resetBoard()
+
         do {
             prettyPrint()
             val network = if (playerIndex == 0) network1 else network2
@@ -78,6 +75,16 @@ class Tictactoe {
             isGameEnded = determineWinner()
         } while (isGameEnded == 3)
         return isGameEnded
+    }
+
+    private fun boardState(): ArrayList<Int> {
+        return ArrayList(board.values)
+    }
+
+    private fun resetBoard() {
+        for (index in 1..9) {
+            board[index] = 0
+        }
     }
 
     private fun prettyPrint() {

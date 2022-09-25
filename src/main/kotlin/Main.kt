@@ -5,11 +5,36 @@ object Main {
     fun main(args: Array<String>) {
 
         val tictactoe = Tictactoe()
+        val networks = arrayListOf<Network>()
+        val fitness = hashMapOf<Network, Int>()
+        val naturalNumbers = generateSequence(1) { it + 1 }
+        val naturalNumbersIterator = naturalNumbers.iterator()
 
-        val network = Network(inputNeurons = 9, outputNeurons = 9)
-        val network2 = Network(inputNeurons = 9, outputNeurons = 9)
+        for (i in 0..9) {
+            val network = Network(inputNeurons = 9, outputNeurons = 9, id = naturalNumbersIterator.next())
+            networks.add(network)
+            fitness[network] = 0
+        }
 
-        tictactoe.playAI(network, network2)
+        // amount of testing runs
+        for (i in 0..9) {
+            for (network1 in networks) {
+                for (network2 in networks) {
+                    if (network1 == network2) continue
+
+                    val result = tictactoe.playAI(network1, network2)
+                    if (result == 1) {
+                        fitness[network1] = fitness[network1]!! + 1
+                        fitness[network2] = fitness[network2]!! - 1
+                    } else if (result == 2) {
+                        fitness[network1] = fitness[network1]!! - 1
+                        fitness[network2] = fitness[network2]!! + 1
+                    }
+                }
+            }
+        }
+
+        fitness.values.forEach { println(it) }
 
 //        tictactoe.play(network)
 

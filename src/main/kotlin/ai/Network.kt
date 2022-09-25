@@ -5,7 +5,7 @@ import ai.neurons.Neuron
 import ai.neurons.SigmoidNeuron
 import kotlin.math.sqrt
 
-class Network(inputNeurons: Int, outputNeurons: Int, useHeHeuristics: Boolean = true) {
+class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int, useHeHeuristics: Boolean = true) {
 
     var layers = ArrayList<Layer>()
 
