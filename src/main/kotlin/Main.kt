@@ -7,11 +7,11 @@ object Main {
         val tictactoe = Tictactoe()
 
         val network = Network(inputNeurons = 9, outputNeurons = 9)
-        network.evaluate()
+        val network2 = Network(inputNeurons = 9, outputNeurons = 9)
 
-        println(network.output())
+        tictactoe.playAI(network, network2)
 
-        tictactoe.play(network)
+//        tictactoe.play(network)
 
 //        val xor = Network(useHeHeuristics = true)
 //        val xor2 = Network(useHeHeuristics = true)
