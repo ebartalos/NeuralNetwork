@@ -1,3 +1,4 @@
+import ai.Network
 import kotlin.math.abs
 
 class Tictactoe {
@@ -9,17 +10,40 @@ class Tictactoe {
         }
     }
 
-    fun boardState(): ArrayList<Int> {
+    private fun boardState(): ArrayList<Int> {
         return ArrayList(board.values)
     }
 
-    fun play() {
+    fun play(network: Network) {
         val players = arrayListOf(1, 2)
         var playerIndex = 0
         while (determineWinner() == 0) {
-            prettyPrint()
-            while (fill(readLine()!!.toInt(), players[playerIndex]).not()) {
+            if (playerIndex == 0) {
+                prettyPrint()
+                while (fill(readLine()!!.toInt(), players[playerIndex]).not()) {
+                }
+            } else {
+                network.setInputs(boardState())
+                network.evaluate()
+
+                val result = hashMapOf<Double, Int>()
+                var it = 1
+                for (output in network.output()) {
+                    result[output] = it
+                    it += 1
+                }
+                val sortedResult = result.toSortedMap(compareByDescending { it })
+
+                for (index in sortedResult.values) {
+                    if (fill(index, 2).not()) {
+                        continue
+                    }
+                    else {
+                        break
+                    }
+                }
             }
+
             playerIndex = abs(playerIndex - 1)
         }
     }
@@ -61,9 +85,11 @@ class Tictactoe {
             }
 
             if (combinationSum == 3) {
+                prettyPrint()
                 println("Player 1 won")
                 return 1
             } else if (combinationSum == 6) {
+                prettyPrint()
                 println("Player 2 won")
                 return 2
             }

@@ -11,12 +11,7 @@ object Main {
 
         println(network.output())
 
-        network.setInputs(tictactoe.boardState())
-        network.evaluate()
-        println(network.output())
-
-
-        tictactoe.play()
+        tictactoe.play(network)
 
 //        val xor = Network(useHeHeuristics = true)
 //        val xor2 = Network(useHeHeuristics = true)

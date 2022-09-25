@@ -15,6 +15,7 @@ class Network(inputNeurons: Int = 2, outputNeurons: Int = 1, useHeHeuristics: Bo
         for (index in 1..inputNeurons) {
             layer1.addNeuron(Neuron())
         }
+        layer1.addNeuron(BiasNeuron())
         layers.add(layer1)
 
         // hidden layer
@@ -68,7 +69,9 @@ class Network(inputNeurons: Int = 2, outputNeurons: Int = 1, useHeHeuristics: Bo
         val inputsIterator = inputs.listIterator()
 
         for (neuron in layers.first().neurons) {
-            neuron.value = inputsIterator.next().toDouble()
+            if (inputsIterator.hasNext()) {
+                neuron.value = inputsIterator.next().toDouble()
+            }
         }
     }
 
