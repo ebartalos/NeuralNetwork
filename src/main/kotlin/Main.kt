@@ -9,8 +9,12 @@ object Main {
         val network = Network(inputNeurons = 9, outputNeurons = 9)
         network.evaluate()
 
-        val result = network.output()
-        println(result)
+        println(network.output())
+
+        network.setInputs(tictactoe.boardState())
+        network.evaluate()
+        println(network.output())
+
 
         tictactoe.play()
 
@@ -23,9 +27,6 @@ object Main {
 //
 //
 //        val backpropagation = Backpropagation(xor, 0.0, 0.7)
-
-//        val mutation = Mutation(xor)
-//        mutation.mutate()
 
 //        for (i in 1..30) {
 //            xor.evaluate()

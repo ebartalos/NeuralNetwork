@@ -9,8 +9,8 @@ class Tictactoe {
         }
     }
 
-    fun boardState(): MutableCollection<Int> {
-        return board.values
+    fun boardState(): ArrayList<Int> {
+        return ArrayList(board.values)
     }
 
     fun play() {
