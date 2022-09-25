@@ -17,7 +17,7 @@ object Main {
                 inputNeurons = 9,
                 outputNeurons = 9,
                 id = naturalNumbersIterator.next(),
-                useHeHeuristics = false
+                useHeHeuristics = true
             )
             networks.add(network)
             fitness[network] = 0
@@ -34,10 +34,10 @@ object Main {
                         val result = tictactoe.playAI(network1, network2)
                         if (result == 1) {
                             fitness[network1] = fitness[network1]!! + 1
-                            fitness[network2] = fitness[network2]!! - 1
+//                            fitness[network2] = fitness[network2]!! - 1
                         } else if (result == 2) {
                             fitness[network1] = fitness[network1]!! - 1
-                            fitness[network2] = fitness[network2]!! + 1
+//                            fitness[network2] = fitness[network2]!! + 1
                         }
                     }
                 }
@@ -51,7 +51,9 @@ object Main {
         }
 
         // Play with winner
-        tictactoe.play(sortedFitness!!.keys.last())
+        for (i in 0..8) {
+            tictactoe.play(sortedFitness!!.keys.last(), isPlayerSecond = true)
+        }
 
 //        val xor = Network(useHeHeuristics = true)
 //        val xor2 = Network(useHeHeuristics = true)

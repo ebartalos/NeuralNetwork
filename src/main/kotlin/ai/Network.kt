@@ -2,6 +2,7 @@ package ai
 
 import ai.neurons.BiasNeuron
 import ai.neurons.Neuron
+import ai.neurons.ReLuNeuron
 import ai.neurons.SigmoidNeuron
 import kotlin.math.sqrt
 
@@ -21,10 +22,18 @@ class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int, useHeH
         // hidden layer
         val layer2 = Layer()
         for (index in 1..(inputNeurons + outputNeurons) * 2 / 3) {
-            layer2.addNeuron(SigmoidNeuron())
+            layer2.addNeuron(ReLuNeuron())
         }
         layer2.addNeuron(BiasNeuron())
         layers.add(layer2)
+
+//        // hidden layer 2.5
+//        val layer25 = Layer()
+//        for (index in 1..35) {
+//            layer25.addNeuron(ReLuNeuron())
+//        }
+//        layer25.addNeuron(BiasNeuron())
+//        layers.add(layer25)
 
         // output layer
         val layer3 = Layer()

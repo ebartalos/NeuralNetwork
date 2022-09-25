@@ -8,9 +8,11 @@ class Tictactoe {
         resetBoard()
     }
 
-    fun play(network: Network) {
+    fun play(network: Network, isPlayerSecond: Boolean = true) {
         val players = arrayListOf(1, 2)
         var playerIndex = 0
+
+        if (isPlayerSecond) playerIndex = 1
 
         resetBoard()
 
@@ -31,6 +33,7 @@ class Tictactoe {
                     it += 1
                 }
                 val sortedResult = result.toSortedMap(compareByDescending { it })
+                println(sortedResult)
 
                 for (index in sortedResult.values) {
                     if (fill(index, 2).not()) {
@@ -55,7 +58,16 @@ class Tictactoe {
         do {
             val network = if (playerIndex == 0) network1 else network2
 
-            network.setInputs(boardState())
+            val adjustedBoardState = ArrayList<Int>()
+            for (element in boardState()){
+                if (element == 2) {
+                    adjustedBoardState.add(-1)
+                } else {
+                    adjustedBoardState.add(element)
+                }
+            }
+
+            network.setInputs(adjustedBoardState)
             network.evaluate()
 
             val result = hashMapOf<Double, Int>()
