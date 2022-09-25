@@ -36,7 +36,13 @@ object Main {
 
         fitness.values.forEach { println(it) }
 
-//        tictactoe.play(network)
+        val sortedFitness = fitness.toList()
+            .sortedBy { (key, value) -> value }
+            .toMap()
+
+
+        // Play with winner
+        tictactoe.play(sortedFitness.keys.last())
 
 //        val xor = Network(useHeHeuristics = true)
 //        val xor2 = Network(useHeHeuristics = true)

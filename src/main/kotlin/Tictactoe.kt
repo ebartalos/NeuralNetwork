@@ -11,9 +11,13 @@ class Tictactoe {
     fun play(network: Network) {
         val players = arrayListOf(1, 2)
         var playerIndex = 0
+
+        resetBoard()
+
         while (determineWinner() == 3) {
             if (playerIndex == 0) {
                 prettyPrint()
+                println("Enter your choice")
                 while (fill(readLine()!!.toInt(), players[playerIndex]).not()) {
                 }
             } else {
