@@ -135,11 +135,13 @@ class Tictactoe {
                 prettyPrint()
                 println("Player 2 won")
                 return 2
-            } else if (board.values.contains(0).not()) {
-                prettyPrint()
-                println("Draw")
-                return 0
             }
+        }
+
+        if (board.values.contains(0).not()) {
+            prettyPrint()
+            println("Draw")
+            return 0
         }
         return 3
     }
