@@ -1,4 +1,5 @@
 import ai.Network
+import ai.algorithms.Genetics
 
 object Main {
     @JvmStatic
@@ -9,40 +10,48 @@ object Main {
         val fitness = hashMapOf<Network, Int>()
         val naturalNumbers = generateSequence(1) { it + 1 }
         val naturalNumbersIterator = naturalNumbers.iterator()
+        var sortedFitness: Map<Network, Int>? = null
 
         for (i in 0..9) {
-            val network = Network(inputNeurons = 9, outputNeurons = 9, id = naturalNumbersIterator.next())
+            val network = Network(
+                inputNeurons = 9,
+                outputNeurons = 9,
+                id = naturalNumbersIterator.next(),
+                useHeHeuristics = false
+            )
             networks.add(network)
             fitness[network] = 0
         }
 
-        // amount of testing runs
-        for (i in 0..9) {
-            for (network1 in networks) {
-                for (network2 in networks) {
-                    if (network1 == network2) continue
+        for (generation in 0..100) {
+            println("Generation $generation")
+            // amount of testing runs
+            for (i in 0..100) {
+                for (network1 in networks) {
+                    for (network2 in networks) {
+                        if (network1 == network2) continue
 
-                    val result = tictactoe.playAI(network1, network2)
-                    if (result == 1) {
-                        fitness[network1] = fitness[network1]!! + 1
-                        fitness[network2] = fitness[network2]!! - 1
-                    } else if (result == 2) {
-                        fitness[network1] = fitness[network1]!! - 1
-                        fitness[network2] = fitness[network2]!! + 1
+                        val result = tictactoe.playAI(network1, network2)
+                        if (result == 1) {
+                            fitness[network1] = fitness[network1]!! + 1
+                            fitness[network2] = fitness[network2]!! - 1
+                        } else if (result == 2) {
+                            fitness[network1] = fitness[network1]!! - 1
+                            fitness[network2] = fitness[network2]!! + 1
+                        }
                     }
                 }
             }
+            sortedFitness = fitness.toList()
+                .sortedBy { (key, value) -> value }
+                .toMap()
+
+            val genetics = Genetics(sortedFitness.keys.reversed())
+            genetics.breed(mutate = true)
         }
 
-        fitness.values.forEach { println(it) }
-
-        val sortedFitness = fitness.toList()
-            .sortedBy { (key, value) -> value }
-            .toMap()
-
-
         // Play with winner
-        tictactoe.play(sortedFitness.keys.last())
+        tictactoe.play(sortedFitness!!.keys.last())
 
 //        val xor = Network(useHeHeuristics = true)
 //        val xor2 = Network(useHeHeuristics = true)

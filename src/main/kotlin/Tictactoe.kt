@@ -53,7 +53,6 @@ class Tictactoe {
         resetBoard()
 
         do {
-            prettyPrint()
             val network = if (playerIndex == 0) network1 else network2
 
             network.setInputs(boardState())
@@ -76,7 +75,7 @@ class Tictactoe {
             }
 
             playerIndex = abs(playerIndex - 1)
-            isGameEnded = determineWinner()
+            isGameEnded = determineWinner(false)
         } while (isGameEnded == 3)
         return isGameEnded
     }
@@ -103,12 +102,11 @@ class Tictactoe {
             board[index] = value
             true
         } else {
-            println("$index is already filled")
             false
         }
     }
 
-    private fun determineWinner(): Int {
+    private fun determineWinner(printMessages: Boolean = true): Int {
         val winningCombos = arrayListOf(
             arrayListOf(1, 2, 3),
             arrayListOf(4, 5, 6),
@@ -128,19 +126,25 @@ class Tictactoe {
             }
 
             if (combinationSum == 3) {
-                prettyPrint()
-                println("Player 1 won")
+                if (printMessages) {
+                    prettyPrint()
+                    println("Player 1 won")
+                }
                 return 1
             } else if (combinationSum == 6) {
-                prettyPrint()
-                println("Player 2 won")
+                if (printMessages) {
+                    prettyPrint()
+                    println("Player 2 won")
+                }
                 return 2
             }
         }
 
         if (board.values.contains(0).not()) {
-            prettyPrint()
-            println("Draw")
+            if (printMessages) {
+                prettyPrint()
+                println("Draw")
+            }
             return 0
         }
         return 3
