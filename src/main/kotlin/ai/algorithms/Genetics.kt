@@ -5,7 +5,7 @@ import ai.Network
 class Genetics(private val networks: List<Network>) {
 
     /**
-     * Takes two best networks, breeds them and fills rest of the lists with kids.
+     * Takes two best networks, breeds them and fills rest of the lists with children.
      * @param mutate determines if kids should be mutated
      */
     fun breed(mutate: Boolean) {
@@ -29,13 +29,10 @@ class Genetics(private val networks: List<Network>) {
             network.updateWeights(network1Weights)
         }
 
-//        println("N3 after mutation")
-//        networks[2].weights().forEach { println("$it ") }
-
         if (mutate) {
             for (network in networks.subList(2, networks.size)) {
                 val mutation = Mutation(network)
-                mutation.mutate(0.9, 1.1)
+                mutation.mutate(0.9, 1.1, 10)
             }
         }
     }

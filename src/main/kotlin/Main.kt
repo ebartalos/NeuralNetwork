@@ -27,7 +27,7 @@ object Main {
         }
 
         generationLoop@ for (generation in 0..10000) {
-            if (generation % 1000 == 0) println("Generation $generation")
+            if (generation % 100 == 0) println("Generation $generation")
             // amount of testing runs
             for (network1 in networks) {
                 for (network2 in networks) {
@@ -36,20 +36,20 @@ object Main {
                     val result = tictactoe.playAI(network1, network2)
                     if (result == 1 || result == 0) {
                         fitness[network1] = fitness[network1]!! + 1
-//                            fitness[network2] = fitness[network2]!! - 1
                     } else if (result == 2) {
                         fitness[network1] = fitness[network1]!! - 1
-//                            fitness[network2] = fitness[network2]!! + 1
                     }
                 }
             }
 
             sortedFitness = fitness.toList()
-                .sortedBy { (key, value) -> value }
+                .sortedBy { (_, value) -> value }
                 .toMap()
 
             val genetics = Genetics(sortedFitness.keys.reversed())
             genetics.breed(mutate = true)
+
+            fitness.replaceAll { _, _ -> 0 }
         }
 
         // Play with winner
