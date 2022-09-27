@@ -3,7 +3,7 @@ package ai
 import ai.neurons.BiasNeuron
 import ai.neurons.Neuron
 import ai.neurons.ReLuNeuron
-import ai.neurons.SigmoidNeuron
+import ai.neurons.TanhNeuron
 import kotlin.math.sqrt
 
 class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int, useHeHeuristics: Boolean = true) {
@@ -21,7 +21,7 @@ class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int, useHeH
 
         // hidden layer
         val layer2 = Layer()
-        for (index in 1..(inputNeurons + outputNeurons) * 2 / 3) {
+        for (index in 1..36) {
             layer2.addNeuron(ReLuNeuron())
         }
         layer2.addNeuron(BiasNeuron())
@@ -29,7 +29,7 @@ class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int, useHeH
 
 //        // hidden layer 2.5
 //        val layer25 = Layer()
-//        for (index in 1..35) {
+//        for (index in 1..36) {
 //            layer25.addNeuron(ReLuNeuron())
 //        }
 //        layer25.addNeuron(BiasNeuron())
@@ -38,7 +38,7 @@ class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int, useHeH
         // output layer
         val layer3 = Layer()
         for (index in 1..outputNeurons) {
-            layer3.addNeuron(SigmoidNeuron())
+            layer3.addNeuron(TanhNeuron())
         }
         layers.add(layer3)
 

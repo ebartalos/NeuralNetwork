@@ -59,7 +59,7 @@ class Tictactoe {
             val network = if (playerIndex == 0) network1 else network2
 
             val adjustedBoardState = ArrayList<Int>()
-            for (element in boardState()){
+            for (element in boardState()) {
                 if (element == 2) {
                     adjustedBoardState.add(-1)
                 } else {
