@@ -1,5 +1,6 @@
 import ai.Network
 import kotlin.math.abs
+import kotlin.random.Random
 
 class Tictactoe {
     private var board: HashMap<Int, Int> = HashMap()
@@ -8,7 +9,13 @@ class Tictactoe {
         resetBoard()
     }
 
-    fun play(network: Network, isPlayerSecond: Boolean = true) {
+    /**
+     * @param network neural network
+     * @param isPlayerSecond if true, player (human or random) moves second after AI
+     * @param isInputRandom if true, inputs are entered randomly
+     *                      if false, human controls inputs
+     */
+    fun play(network: Network, isPlayerSecond: Boolean = true, isInputRandom: Boolean = false): Int {
         val players = arrayListOf(1, 2)
         var playerIndex = 0
 
@@ -20,7 +27,12 @@ class Tictactoe {
             if (playerIndex == 0) {
                 prettyPrint()
                 println("Enter your choice")
-                while (fill(readLine()!!.toInt(), players[playerIndex]).not()) {
+                if (isInputRandom) {
+                    while (fill((Random.nextInt() % 9) + 1, players[playerIndex]).not()) {
+                    }
+                } else {
+                    while (fill(readLine()!!.toInt(), players[playerIndex]).not()) {
+                    }
                 }
             } else {
                 network.setInputs(boardState())
@@ -46,6 +58,7 @@ class Tictactoe {
 
             playerIndex = abs(playerIndex - 1)
         }
+        return determineWinner()
     }
 
     fun playAI(network1: Network, network2: Network): Int {

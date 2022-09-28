@@ -22,7 +22,10 @@ object Main {
                 outputNeurons = 9,
                 id = naturalNumbersIterator.next()
             )
-            network.addHiddenLayer(ReLuNeuron::class, 25, true)
+            network.addHiddenLayer(ReLuNeuron::class, 30, true)
+            network.addHiddenLayer(ReLuNeuron::class, 40, true)
+            network.addHiddenLayer(ReLuNeuron::class, 40, true)
+
             network.createConnections(true)
 
             networks.add(network)
@@ -30,7 +33,9 @@ object Main {
         }
 
         generationLoop@ for (generation in 0..1000) {
-            if (generation % 100 == 0) println("Generation $generation")
+            if (generation % 100 == 0) {
+                println("Generation $generation")
+            }
 
             for (network1 in networks) {
                 for (network2 in networks) {
@@ -50,16 +55,27 @@ object Main {
                 .toMap()
 
             val genetics = Genetics(sortedFitness.keys.reversed())
-            genetics.breed(mutate = true)
+            genetics.breed(mutate = true, mutationChance = 10)
 
             // reset fitness
             fitness.replaceAll { _, _ -> 0 }
         }
 
         // Play with winner
-        for (i in 0..8) {
-            tictactoe.play(sortedFitness!!.keys.last(), isPlayerSecond = true)
+        val match = arrayOf(0, 0, 0)
+        for (i in 0..50) {
+            val result = tictactoe.play(sortedFitness!!.keys.last(), isPlayerSecond = true, isInputRandom = true)
+            if (result == 2) {
+                match[0] += 1
+            } else if (result == 0) {
+                match[1] += 1
+            } else {
+                match[2] += 1
+            }
         }
+        println("AI won: ${match[0]}")
+        println("Draw: ${match[0]}")
+        println("Random won: ${match[0]}")
     }
 
 //        val xor = Network(useHeHeuristics = true)
