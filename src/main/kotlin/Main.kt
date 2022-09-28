@@ -1,5 +1,6 @@
 import ai.Network
 import ai.algorithms.Genetics
+import ai.neurons.ReLuNeuron
 
 object Main {
     @JvmStatic
@@ -19,16 +20,18 @@ object Main {
             val network = Network(
                 inputNeurons = 9,
                 outputNeurons = 9,
-                id = naturalNumbersIterator.next(),
-                useHeHeuristics = true
+                id = naturalNumbersIterator.next()
             )
+            network.addHiddenLayer(ReLuNeuron::class, 25, true)
+            network.createConnections(true)
+
             networks.add(network)
             fitness[network] = 0
         }
 
-        generationLoop@ for (generation in 0..10000) {
+        generationLoop@ for (generation in 0..1000) {
             if (generation % 100 == 0) println("Generation $generation")
-            // amount of testing runs
+
             for (network1 in networks) {
                 for (network2 in networks) {
                     if (network1 == network2) continue
@@ -49,6 +52,7 @@ object Main {
             val genetics = Genetics(sortedFitness.keys.reversed())
             genetics.breed(mutate = true)
 
+            // reset fitness
             fitness.replaceAll { _, _ -> 0 }
         }
 

@@ -2,47 +2,39 @@ package ai
 
 import ai.neurons.BiasNeuron
 import ai.neurons.Neuron
-import ai.neurons.ReLuNeuron
 import ai.neurons.TanhNeuron
 import kotlin.math.sqrt
+import kotlin.reflect.KClass
+import kotlin.reflect.full.createInstance
 
-class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int, useHeHeuristics: Boolean = true) {
+class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int) {
 
     var layers = ArrayList<Layer>()
 
     init {
-        // input layer
-        val layer1 = Layer()
+        val inputLayer = Layer()
         for (index in 1..inputNeurons) {
-            layer1.addNeuron(Neuron())
+            inputLayer.addNeuron(Neuron())
         }
-        layer1.addNeuron(BiasNeuron())
-        layers.add(layer1)
+        inputLayer.addNeuron(BiasNeuron())
+        layers.add(inputLayer)
 
-        // hidden layer
-        val layer2 = Layer()
-        for (index in 1..36) {
-            layer2.addNeuron(ReLuNeuron())
-        }
-        layer2.addNeuron(BiasNeuron())
-        layers.add(layer2)
-
-//        // hidden layer 2.5
-//        val layer25 = Layer()
-//        for (index in 1..36) {
-//            layer25.addNeuron(ReLuNeuron())
-//        }
-//        layer25.addNeuron(BiasNeuron())
-//        layers.add(layer25)
-
-        // output layer
-        val layer3 = Layer()
+        val outputLayer = Layer()
         for (index in 1..outputNeurons) {
-            layer3.addNeuron(TanhNeuron())
+            outputLayer.addNeuron(TanhNeuron())
         }
-        layers.add(layer3)
+        layers.add(outputLayer)
 
-        createConnections(useHeHeuristics)
+    }
+
+    fun <T : Any> addHiddenLayer(neuronType: KClass<T>, amountOfNeurons: Int, biasNeuron: Boolean = true) {
+        val layer = Layer()
+        for (index in 1..amountOfNeurons) {
+            layer.addNeuron(neuronType.createInstance() as Neuron)
+        }
+        if (biasNeuron) layer.addNeuron(BiasNeuron())
+
+        layers.add(layers.size - 1, layer)
     }
 
     fun evaluate() {
@@ -84,7 +76,7 @@ class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int, useHeH
         }
     }
 
-    private fun createConnections(useHeHeuristics: Boolean) {
+    fun createConnections(useHeHeuristics: Boolean) {
         for ((firstLayer, secondLayer) in layers.zipWithNext()) {
             for (outputNeuron in secondLayer.neurons) {
                 for (inputNeuron in firstLayer.neurons) {
