@@ -3,7 +3,6 @@ package ai
 import ai.neurons.Neuron
 import java.util.*
 
-
 class Connection(
     var inputNeuron: Neuron,
     var outputNeuron: Neuron,

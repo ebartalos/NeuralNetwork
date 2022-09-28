@@ -7,5 +7,4 @@ class TanhNeuron : Neuron() {
     override fun activationMethod(vector: Double): Double {
         return tanh(vector)
     }
-
 }

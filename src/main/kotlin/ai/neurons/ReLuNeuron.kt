@@ -1,9 +1,10 @@
 package ai.neurons
 
+import kotlin.math.max
+
 class ReLuNeuron : Neuron() {
 
     override fun activationMethod(vector: Double): Double {
-        return if (vector > 0) vector
-        else 0.0
+        return max(0.0, vector)
     }
 }

@@ -61,6 +61,9 @@ class Tictactoe {
         return determineWinner()
     }
 
+    /**
+     * Used to train networks between themselves
+     */
     fun playAI(network1: Network, network2: Network): Int {
         val players = arrayListOf(1, 2)
         var playerIndex = 0
@@ -122,6 +125,10 @@ class Tictactoe {
         }
     }
 
+    /**
+     * @return true if value was successfully entered
+     *         false if not
+     */
     private fun fill(index: Int, value: Int): Boolean {
         return if (board[index] == 0) {
             board[index] = value

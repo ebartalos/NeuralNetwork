@@ -32,7 +32,7 @@ object Main {
             fitness[network] = 0
         }
 
-        generationLoop@ for (generation in 0..1000) {
+        generationLoop@ for (generation in 0..2000) {
             if (generation % 100 == 0) {
                 println("Generation $generation")
             }
@@ -74,32 +74,7 @@ object Main {
             }
         }
         println("AI won: ${match[0]}")
-        println("Draw: ${match[0]}")
-        println("Random won: ${match[0]}")
+        println("Draw: ${match[1]}")
+        println("Random won: ${match[2]}")
     }
-
-//        val xor = Network(useHeHeuristics = true)
-//        val xor2 = Network(useHeHeuristics = true)
-//        val xor3 = Network(useHeHeuristics = true)
-//
-//        xor.evaluate()
-//        xor2.evaluate()
-//
-//
-//        val backpropagation = Backpropagation(xor, 0.0, 0.7)
-
-//        for (i in 1..30) {
-//            xor.evaluate()
-//            println(xor.output())
-//            backpropagation.backpropagate()
-//        }
-
-//        val gen = Genetics(mutableListOf(xor, xor2, xor3))
-//        gen.breed(true)
-
-//        println("Training completed")
-//
-//        xor.setInputs(0.0, 0.0)
-//        xor.evaluate()
-//        println(xor.output())
 }
