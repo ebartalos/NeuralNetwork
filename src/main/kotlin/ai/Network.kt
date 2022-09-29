@@ -3,6 +3,7 @@ package ai
 import ai.neurons.BiasNeuron
 import ai.neurons.Neuron
 import ai.neurons.TanhNeuron
+import java.util.*
 import kotlin.math.sqrt
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
@@ -96,7 +97,8 @@ class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int) {
         }
     }
 
-    private fun heHeuristics(previousLayerNeurons: Double): Pair<Double, Double> {
-        return Pair(-(1.0 / sqrt(previousLayerNeurons)), (1.0 / sqrt(previousLayerNeurons)))
+    private fun heHeuristics(previousLayerNeurons: Double): Double {
+        val random = Random()
+        return random.nextGaussian(0.0, sqrt(2.0 / previousLayerNeurons))
     }
 }

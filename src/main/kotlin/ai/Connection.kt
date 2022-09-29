@@ -1,17 +1,16 @@
 package ai
 
 import ai.neurons.Neuron
-import java.util.*
 
+/**
+ * @param weightHeuristic if true, set weight by passed heuristic, if false, set weight randomly
+ */
 class Connection(
     var inputNeuron: Neuron,
     var outputNeuron: Neuron,
-    weightsRange: Pair<Double, Double>? = null
+    weightHeuristic: Double? = null
 ) {
-    private val random = Random()
-
-    var weight: Double =
-        if (weightsRange != null) random.nextGaussian(weightsRange.first, weightsRange.second) else Math.random()
+    var weight: Double = weightHeuristic ?: Math.random()
 
     // backpropagation part
     var error: Double? = null
