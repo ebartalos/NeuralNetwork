@@ -76,6 +76,10 @@ class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int) {
         }
     }
 
+    /**
+     * Creates connections between layers.
+     * Has to be called after ALL layers are added.
+     */
     fun createConnections(useHeHeuristics: Boolean) {
         for ((firstLayer, secondLayer) in layers.zipWithNext()) {
             for (outputNeuron in secondLayer.neurons) {

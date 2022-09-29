@@ -1,6 +1,5 @@
 import ai.Network
 import kotlin.math.abs
-import kotlin.random.Random
 
 class Tictactoe {
     private var board: HashMap<Int, Int> = HashMap()
@@ -28,14 +27,14 @@ class Tictactoe {
                 prettyPrint()
                 println("Enter your choice")
                 if (isInputRandom) {
-                    while (fill((Random.nextInt() % 9) + 1, players[playerIndex]).not()) {
+                    while (fill((1..9).random(), players[playerIndex]).not()) {
                     }
                 } else {
                     while (fill(readLine()!!.toInt(), players[playerIndex]).not()) {
                     }
                 }
             } else {
-                network.setInputs(boardState())
+                network.setInputs(adjustedBoardState())
                 network.evaluate()
 
                 val result = hashMapOf<Double, Int>()
@@ -74,16 +73,7 @@ class Tictactoe {
         do {
             val network = if (playerIndex == 0) network1 else network2
 
-            val adjustedBoardState = ArrayList<Int>()
-            for (element in boardState()) {
-                if (element == 2) {
-                    adjustedBoardState.add(-1)
-                } else {
-                    adjustedBoardState.add(element)
-                }
-            }
-
-            network.setInputs(adjustedBoardState)
+            network.setInputs(adjustedBoardState())
             network.evaluate()
 
             val result = hashMapOf<Double, Int>()
@@ -108,8 +98,26 @@ class Tictactoe {
         return isGameEnded
     }
 
+    /**
+     * Board state with 0, 1, 2 (easier to read in console)
+     */
     private fun boardState(): ArrayList<Int> {
         return ArrayList(board.values)
+    }
+
+    /**
+     * Board state with 0, 1, -1 (for NN learning)
+     */
+    private fun adjustedBoardState(): ArrayList<Int>{
+        val adjustedBoardState = ArrayList<Int>()
+        for (element in boardState()) {
+            if (element == 2) {
+                adjustedBoardState.add(-1)
+            } else {
+                adjustedBoardState.add(element)
+            }
+        }
+        return adjustedBoardState
     }
 
     private fun resetBoard() {
