@@ -9,9 +9,6 @@ object Main {
     @JvmStatic
     fun main(args: Array<String>) {
         ga()
-        successMap.toSortedMap().forEach { (generation, score) ->
-            println("$generation - $score")
-        }
     }
 
     private fun ga() {
@@ -21,14 +18,9 @@ object Main {
         val fitness = hashMapOf<Network, Int>()
         var sortedFitness: Map<Network, Int>
 
-        val naturalNumbers = generateSequence(1) { it + 1 }
-        val naturalNumbersIterator = naturalNumbers.iterator()
-
         for (i in 1..Constants.MAX_NEURAL_NETWORKS) {
             val network = Network(
-                inputNeurons = 9,
-                outputNeurons = 9,
-                id = naturalNumbersIterator.next()
+                inputNeurons = 9, outputNeurons = 9, id = i
             )
             network.addHiddenLayer(ReLuNeuron::class, 20, true)
             network.addHiddenLayer(ReLuNeuron::class, 25, true)
@@ -40,25 +32,25 @@ object Main {
             fitness[network] = 0
         }
 
+        val directory = File("${Constants.LOG_DIRECTORY}")
+        emptyLogsDirectory(directory)
+
         generationLoop@ for (generation in 0..Constants.MAX_GENERATIONS) {
             // reset fitness
             fitness.replaceAll { _, _ -> 0 }
 
             for (network in networks) {
                 for (game in 1..50) {
-                    val result =
-                        tictactoe.play(network, isPlayerSecond = true, isInputRandom = true, printMessages = false)
-                    if (result == 1 || result == 0) {
+                    val result = tictactoe.play(network, isPlayerSecond = true, isInputRandom = true)
+                    if (result == 1) { // win
+                        fitness[network] = fitness[network]!! + 2
+                    } else if (result == 0) { // draw
                         fitness[network] = fitness[network]!! + 1
-                    } else if (result == 2) {
-                        fitness[network] = fitness[network]!! - 1
                     }
                 }
             }
 
-            sortedFitness = fitness.toList()
-                .sortedBy { (_, value) -> value }
-                .toMap()
+            sortedFitness = fitness.toList().sortedBy { (_, value) -> value }.toMap()
 
             val genetics = Genetics(sortedFitness.keys.reversed())
             genetics.breed(mutate = true, mutationChance = Constants.MUTATION_CHANCE)
@@ -68,19 +60,19 @@ object Main {
                 println("Generation $generation \n")
             }
         }
+
+        successMap.toSortedMap().forEach { (generation, score) ->
+            println("$generation - $score")
+        }
     }
 
     private fun playWithWinner(tictactoe: Tictactoe, sortedFitness: Map<Network, Int>, generation: Int) {
         val match = arrayOf(0, 0, 0)
-        val generationLogFile = File("src/logs/$generation")
+        val generationLogFile = File("${Constants.LOG_DIRECTORY}/${generation}.txt")
         generationLogFile.writeText("") // delete content of file if exists
         for (i in 1..50) {
             val result = tictactoe.play(
-                sortedFitness.keys.last(),
-                isPlayerSecond = true,
-                isInputRandom = true,
-                printMessages = false,
-                file = generationLogFile
+                sortedFitness.keys.last(), isPlayerSecond = true, isInputRandom = true, file = generationLogFile
             )
             if (result == 1) { // ai won
                 match[0] += 1
@@ -95,5 +87,14 @@ object Main {
         println("Random won: ${match[2]}")
 
         successMap[generation] = "${match[0]}, ${match[1]}, ${match[2]}"
+        generationLogFile.renameTo(File("${Constants.LOG_DIRECTORY}/$generation-${match[0]}-${match[1]}-${match[2]}"))
+    }
+
+    private fun emptyLogsDirectory(directory: File) {
+        for (file in directory.listFiles()) {
+            if (!file.isDirectory) {
+                file.delete()
+            }
+        }
     }
 }

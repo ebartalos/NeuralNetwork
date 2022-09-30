@@ -6,4 +6,6 @@ object Constants {
     const val MUTATION_CHANCE = 5
     const val MUTATION_RANGE_FROM = 0.95
     const val MUTATION_RANGE_TO = 1.05
+
+    const val LOG_DIRECTORY = "src/logs"
 }

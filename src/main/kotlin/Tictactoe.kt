@@ -12,15 +12,15 @@ class Tictactoe {
 
     /**
      * @param network neural network
-     * @param isPlayerSecond if true, player (human or random) moves second after AI
+     * @param isPlayerSecond if true, player (human or random) moves after AI (AI starts the game)
      * @param isInputRandom if true, inputs are entered randomly
      *                      if false, human controls inputs
+     * @param file file to print logs into
      */
     fun play(
         network: Network,
         isPlayerSecond: Boolean = true,
         isInputRandom: Boolean = false,
-        printMessages: Boolean = false,
         file: File? = null
     ): Int {
         var playerIndex = if (isPlayerSecond) 1 else 0
@@ -29,13 +29,9 @@ class Tictactoe {
         resetBoard()
 
         do {
-            prettyPrint(toConsole = false, file)
+            printBoardStateToFile(file)
 
             if (playerIndex == 0) {
-                if (printMessages) {
-                    prettyPrint()
-                    println("Enter your choice")
-                }
                 if (isInputRandom) {
                     while (fill(availableBoardSquares().random(), 2).not()) {
                     }
@@ -56,7 +52,6 @@ class Tictactoe {
                 }
                 val sortedResult = result.toSortedMap(compareByDescending { it })
 
-                if (printMessages) println(sortedResult)
                 sortedResult.forEach { file?.appendText("$it \n") }
 
                 for (index in sortedResult.values) {
@@ -69,9 +64,9 @@ class Tictactoe {
             }
 
             playerIndex = abs(playerIndex - 1)
-            isGameEnded = determineWinner(false, file)
+            isGameEnded = determineWinner(file)
         } while (isGameEnded == 3)
-        prettyPrint(toConsole = false, file)
+        printBoardStateToFile(file)
 
         return isGameEnded
     }
@@ -109,7 +104,7 @@ class Tictactoe {
             }
 
             playerIndex = abs(playerIndex - 1)
-            isGameEnded = determineWinner(false)
+            isGameEnded = determineWinner()
         } while (isGameEnded == 3)
         return isGameEnded
     }
@@ -155,12 +150,10 @@ class Tictactoe {
         }
     }
 
-    private fun prettyPrint(toConsole: Boolean = true, toFile: File? = null) {
+    private fun printBoardStateToFile(toFile: File? = null) {
         for ((index, value) in board.values.withIndex()) {
-            if (toConsole) print("$value ")
             toFile?.appendText("$value ")
             if ((index + 1) % 3 == 0) {
-                if (toConsole) print("\n")
                 toFile?.appendText("\n")
             }
         }
@@ -180,7 +173,7 @@ class Tictactoe {
         }
     }
 
-    private fun determineWinner(printMessages: Boolean = true, file: File? = null): Int {
+    private fun determineWinner(file: File? = null): Int {
         val winningCombos = arrayListOf(
             arrayListOf(1, 2, 3),
             arrayListOf(4, 5, 6),
@@ -200,27 +193,15 @@ class Tictactoe {
             }
 
             if (combinationSum == 3) {
-                if (printMessages) {
-                    prettyPrint()
-                    println("Player 1 won")
-                }
                 file?.appendText("Player 1 won \n")
                 return 1
             } else if (combinationSum == 6) {
-                if (printMessages) {
-                    prettyPrint()
-                    println("Player 2 won")
-                }
                 file?.appendText("Player 2 won \n")
                 return 2
             }
         }
 
         if (board.values.contains(0).not()) {
-            if (printMessages) {
-                prettyPrint()
-                println("Draw")
-            }
             file?.appendText("Draw \n")
             return 0
         }
