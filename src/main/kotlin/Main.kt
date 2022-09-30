@@ -1,6 +1,7 @@
 import ai.Network
 import ai.algorithms.Genetics
 import ai.neurons.ReLuNeuron
+import java.io.File
 
 object Main {
     private val successMap = hashMapOf<Int, String>()
@@ -62,21 +63,24 @@ object Main {
             val genetics = Genetics(sortedFitness.keys.reversed())
             genetics.breed(mutate = true, mutationChance = Constants.MUTATION_CHANCE)
 
-            if (generation % 1000 == 0) {
+            if (generation % Constants.TEST_EACH_X_GENERATION == 0) {
                 playWithWinner(tictactoe, sortedFitness, generation)
-                println("Generation $generation")
+                println("Generation $generation \n")
             }
         }
     }
 
     private fun playWithWinner(tictactoe: Tictactoe, sortedFitness: Map<Network, Int>, generation: Int) {
         val match = arrayOf(0, 0, 0)
+        val generationLogFile = File("src/logs/$generation")
+        generationLogFile.writeText("") // delete content of file if exists
         for (i in 1..50) {
             val result = tictactoe.play(
                 sortedFitness.keys.last(),
                 isPlayerSecond = true,
                 isInputRandom = true,
-                printMessages = true
+                printMessages = false,
+                file = generationLogFile
             )
             if (result == 1) { // ai won
                 match[0] += 1

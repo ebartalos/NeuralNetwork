@@ -1,7 +1,9 @@
 import ai.Network
+import java.io.File
 import kotlin.math.abs
 
 class Tictactoe {
+    // index, value
     private var board: HashMap<Int, Int> = HashMap()
 
     init {
@@ -18,7 +20,8 @@ class Tictactoe {
         network: Network,
         isPlayerSecond: Boolean = true,
         isInputRandom: Boolean = false,
-        printMessages: Boolean = false
+        printMessages: Boolean = false,
+        file: File? = null
     ): Int {
         var playerIndex = if (isPlayerSecond) 1 else 0
         var isGameEnded: Int
@@ -26,13 +29,15 @@ class Tictactoe {
         resetBoard()
 
         do {
+            prettyPrint(toConsole = false, file)
+
             if (playerIndex == 0) {
                 if (printMessages) {
                     prettyPrint()
                     println("Enter your choice")
                 }
                 if (isInputRandom) {
-                    while (fill((1..9).random(), 2).not()) {
+                    while (fill(availableBoardSquares().random(), 2).not()) {
                     }
                 } else {
                     while (fill(readLine()!!.toInt(), 2).not()) {
@@ -50,7 +55,9 @@ class Tictactoe {
                     it += 1
                 }
                 val sortedResult = result.toSortedMap(compareByDescending { it })
+
                 if (printMessages) println(sortedResult)
+                sortedResult.forEach { file?.appendText("$it \n") }
 
                 for (index in sortedResult.values) {
                     if (fill(index, 1).not()) {
@@ -62,8 +69,10 @@ class Tictactoe {
             }
 
             playerIndex = abs(playerIndex - 1)
-            isGameEnded = determineWinner(false)
+            isGameEnded = determineWinner(false, file)
         } while (isGameEnded == 3)
+        prettyPrint(toConsole = false, file)
+
         return isGameEnded
     }
 
@@ -113,6 +122,19 @@ class Tictactoe {
     }
 
     /**
+     * Array with indexes of empty board spaces (used for random)
+     */
+    private fun availableBoardSquares(): ArrayList<Int> {
+        val emptySpots = ArrayList<Int>()
+        for ((index, value) in board) {
+            if (value == 0) {
+                emptySpots.add(index)
+            }
+        }
+        return emptySpots
+    }
+
+    /**
      * Board state with 0, 1, -1 (for NN learning)
      */
     private fun adjustedBoardState(): ArrayList<Int> {
@@ -133,11 +155,16 @@ class Tictactoe {
         }
     }
 
-    private fun prettyPrint() {
+    private fun prettyPrint(toConsole: Boolean = true, toFile: File? = null) {
         for ((index, value) in board.values.withIndex()) {
-            print("$value ")
-            if ((index + 1) % 3 == 0) print("\n")
+            if (toConsole) print("$value ")
+            toFile?.appendText("$value ")
+            if ((index + 1) % 3 == 0) {
+                if (toConsole) print("\n")
+                toFile?.appendText("\n")
+            }
         }
+        toFile?.appendText("\n")
     }
 
     /**
@@ -153,7 +180,7 @@ class Tictactoe {
         }
     }
 
-    private fun determineWinner(printMessages: Boolean = true): Int {
+    private fun determineWinner(printMessages: Boolean = true, file: File? = null): Int {
         val winningCombos = arrayListOf(
             arrayListOf(1, 2, 3),
             arrayListOf(4, 5, 6),
@@ -177,12 +204,14 @@ class Tictactoe {
                     prettyPrint()
                     println("Player 1 won")
                 }
+                file?.appendText("Player 1 won \n")
                 return 1
             } else if (combinationSum == 6) {
                 if (printMessages) {
                     prettyPrint()
                     println("Player 2 won")
                 }
+                file?.appendText("Player 2 won \n")
                 return 2
             }
         }
@@ -192,6 +221,7 @@ class Tictactoe {
                 prettyPrint()
                 println("Draw")
             }
+            file?.appendText("Draw \n")
             return 0
         }
         return 3
