@@ -97,6 +97,7 @@ class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int) {
         }
     }
 
+    // TODO this for ReLu only
     private fun heHeuristics(previousLayerNeurons: Double): Double {
         val random = Random()
         return random.nextGaussian(0.0, sqrt(2.0 / previousLayerNeurons))

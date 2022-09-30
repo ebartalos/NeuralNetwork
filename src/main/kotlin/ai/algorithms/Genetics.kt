@@ -1,5 +1,6 @@
 package ai.algorithms
 
+import Constants
 import ai.Network
 
 class Genetics(private val networks: List<Network>) {
@@ -32,7 +33,7 @@ class Genetics(private val networks: List<Network>) {
         if (mutate) {
             for (network in networks.subList(2, networks.size)) {
                 val mutation = Mutation(network)
-                mutation.mutate(0.9, 1.1, mutationChance)
+                mutation.mutate(Constants.MUTATION_RANGE_FROM, Constants.MUTATION_RANGE_TO, mutationChance)
             }
         }
     }

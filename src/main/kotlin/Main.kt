@@ -16,12 +16,14 @@ object Main {
     private fun ga() {
         val tictactoe = Tictactoe()
         val networks = arrayListOf<Network>()
+
         val fitness = hashMapOf<Network, Int>()
-        val naturalNumbers = generateSequence(1) { it + 1 }
-        val naturalNumbersIterator = naturalNumbers.iterator()
         var sortedFitness: Map<Network, Int>
 
-        for (i in 0..9) {
+        val naturalNumbers = generateSequence(1) { it + 1 }
+        val naturalNumbersIterator = naturalNumbers.iterator()
+
+        for (i in 1..Constants.MAX_NEURAL_NETWORKS) {
             val network = Network(
                 inputNeurons = 9,
                 outputNeurons = 9,
@@ -29,7 +31,7 @@ object Main {
             )
             network.addHiddenLayer(ReLuNeuron::class, 20, true)
             network.addHiddenLayer(ReLuNeuron::class, 25, true)
-            network.addHiddenLayer(ReLuNeuron::class, 25, true)
+            network.addHiddenLayer(ReLuNeuron::class, 30, true)
 
             network.createConnections(true)
 
@@ -37,19 +39,18 @@ object Main {
             fitness[network] = 0
         }
 
-        generationLoop@ for (generation in 0..20000) {
+        generationLoop@ for (generation in 0..Constants.MAX_GENERATIONS) {
             // reset fitness
             fitness.replaceAll { _, _ -> 0 }
 
-            for (network1 in networks) {
-                for (network2 in networks) {
-                    if (network1 == network2) continue
-
-                    val result = tictactoe.playAI(network1, network2)
+            for (network in networks) {
+                for (game in 1..50) {
+                    val result =
+                        tictactoe.play(network, isPlayerSecond = true, isInputRandom = true, printMessages = false)
                     if (result == 1 || result == 0) {
-                        fitness[network1] = fitness[network1]!! + 1
+                        fitness[network] = fitness[network]!! + 1
                     } else if (result == 2) {
-                        fitness[network1] = fitness[network1]!! - 1
+                        fitness[network] = fitness[network]!! - 1
                     }
                 }
             }
@@ -59,7 +60,7 @@ object Main {
                 .toMap()
 
             val genetics = Genetics(sortedFitness.keys.reversed())
-            genetics.breed(mutate = true, mutationChance = 10)
+            genetics.breed(mutate = true, mutationChance = Constants.MUTATION_CHANCE)
 
             if (generation % 1000 == 0) {
                 playWithWinner(tictactoe, sortedFitness, generation)
@@ -70,13 +71,18 @@ object Main {
 
     private fun playWithWinner(tictactoe: Tictactoe, sortedFitness: Map<Network, Int>, generation: Int) {
         val match = arrayOf(0, 0, 0)
-        for (i in 0..50) {
-            val result = tictactoe.play(sortedFitness.keys.last(), isPlayerSecond = true, isInputRandom = true)
-            if (result == 2) {
+        for (i in 1..50) {
+            val result = tictactoe.play(
+                sortedFitness.keys.last(),
+                isPlayerSecond = true,
+                isInputRandom = true,
+                printMessages = true
+            )
+            if (result == 1) { // ai won
                 match[0] += 1
-            } else if (result == 0) {
+            } else if (result == 0) { // draw
                 match[1] += 1
-            } else {
+            } else { // random won
                 match[2] += 1
             }
         }

@@ -14,29 +14,35 @@ class Tictactoe {
      * @param isInputRandom if true, inputs are entered randomly
      *                      if false, human controls inputs
      */
-    fun play(network: Network, isPlayerSecond: Boolean = true, isInputRandom: Boolean = false): Int {
-        val players = arrayListOf(1, 2)
-        var playerIndex = 0
-
-        if (isPlayerSecond) playerIndex = 1
+    fun play(
+        network: Network,
+        isPlayerSecond: Boolean = true,
+        isInputRandom: Boolean = false,
+        printMessages: Boolean = false
+    ): Int {
+        var playerIndex = if (isPlayerSecond) 1 else 0
+        var isGameEnded: Int
 
         resetBoard()
 
-        while (determineWinner() == 3) {
+        do {
             if (playerIndex == 0) {
-                prettyPrint()
-                println("Enter your choice")
+                if (printMessages) {
+                    prettyPrint()
+                    println("Enter your choice")
+                }
                 if (isInputRandom) {
-                    while (fill((1..9).random(), players[playerIndex]).not()) {
+                    while (fill((1..9).random(), 2).not()) {
                     }
                 } else {
-                    while (fill(readLine()!!.toInt(), players[playerIndex]).not()) {
+                    while (fill(readLine()!!.toInt(), 2).not()) {
                     }
                 }
             } else {
                 network.setInputs(adjustedBoardState())
                 network.evaluate()
 
+                // map output neurons to tic-tac-toe fields
                 val result = hashMapOf<Double, Int>()
                 var it = 1
                 for (output in network.output()) {
@@ -44,10 +50,10 @@ class Tictactoe {
                     it += 1
                 }
                 val sortedResult = result.toSortedMap(compareByDescending { it })
-                println(sortedResult)
+                if (printMessages) println(sortedResult)
 
                 for (index in sortedResult.values) {
-                    if (fill(index, 2).not()) {
+                    if (fill(index, 1).not()) {
                         continue
                     } else {
                         break
@@ -56,8 +62,9 @@ class Tictactoe {
             }
 
             playerIndex = abs(playerIndex - 1)
-        }
-        return determineWinner()
+            isGameEnded = determineWinner(false)
+        } while (isGameEnded == 3)
+        return isGameEnded
     }
 
     /**
@@ -108,7 +115,7 @@ class Tictactoe {
     /**
      * Board state with 0, 1, -1 (for NN learning)
      */
-    private fun adjustedBoardState(): ArrayList<Int>{
+    private fun adjustedBoardState(): ArrayList<Int> {
         val adjustedBoardState = ArrayList<Int>()
         for (element in boardState()) {
             if (element == 2) {
