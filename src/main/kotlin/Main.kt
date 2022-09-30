@@ -4,7 +4,6 @@ import ai.neurons.ReLuNeuron
 import java.io.File
 
 object Main {
-    private val successMap = hashMapOf<Int, String>()
 
     @JvmStatic
     fun main(args: Array<String>) {
@@ -17,6 +16,7 @@ object Main {
 
         val fitness = hashMapOf<Network, Int>()
         var sortedFitness: Map<Network, Int>
+        val successMap = hashMapOf<Int, String>()
 
         for (i in 1..Constants.MAX_NEURAL_NETWORKS) {
             val network = Network(
@@ -32,7 +32,7 @@ object Main {
             fitness[network] = 0
         }
 
-        val directory = File("${Constants.LOG_DIRECTORY}")
+        val directory = File(Constants.LOG_DIRECTORY)
         emptyLogsDirectory(directory)
 
         generationLoop@ for (generation in 0..Constants.MAX_GENERATIONS) {
@@ -56,7 +56,7 @@ object Main {
             genetics.breed(mutate = true, mutationChance = Constants.MUTATION_CHANCE)
 
             if (generation % Constants.TEST_EACH_X_GENERATION == 0) {
-                playWithWinner(tictactoe, sortedFitness, generation)
+                playWithWinner(tictactoe, sortedFitness, generation, successMap)
                 println("Generation $generation \n")
             }
         }
@@ -66,7 +66,12 @@ object Main {
         }
     }
 
-    private fun playWithWinner(tictactoe: Tictactoe, sortedFitness: Map<Network, Int>, generation: Int) {
+    private fun playWithWinner(
+        tictactoe: Tictactoe,
+        sortedFitness: Map<Network, Int>,
+        generation: Int,
+        successMap: HashMap<Int, String>
+    ) {
         val match = arrayOf(0, 0, 0)
         val generationLogFile = File("${Constants.LOG_DIRECTORY}/${generation}.txt")
         generationLogFile.writeText("") // delete content of file if exists
