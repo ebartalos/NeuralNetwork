@@ -12,18 +12,12 @@ class Tictactoe {
 
     /**
      * @param network neural network
-     * @param isPlayerSecond if true, player (human or random) moves after AI (AI starts the game)
      * @param isInputRandom if true, inputs are entered randomly
      *                      if false, human controls inputs
      * @param file file to print logs into
      */
-    fun play(
-        network: Network,
-        isPlayerSecond: Boolean = true,
-        isInputRandom: Boolean = false,
-        file: File? = null
-    ): Int {
-        var playerIndex = if (isPlayerSecond) 1 else 0
+    fun play(network: Network, isInputRandom: Boolean = false, file: File? = null): Int {
+        var iterativePlayerIndex = if (Constants.AI_PLAYER_INDEX == 1) 1 else 0
         var isGameEnded: Int
 
         resetBoard()
@@ -31,12 +25,12 @@ class Tictactoe {
         do {
             printBoardStateToFile(file)
 
-            if (playerIndex == 0) {
+            if (iterativePlayerIndex == 0) {
                 if (isInputRandom) {
-                    while (fill(availableBoardSquares().random(), 2).not()) {
+                    while (fill(availableBoardSquares().random(), Constants.OPPONENT_PLAYER_INDEX).not()) {
                     }
                 } else {
-                    while (fill(readLine()!!.toInt(), 2).not()) {
+                    while (fill(readLine()!!.toInt(), Constants.OPPONENT_PLAYER_INDEX).not()) {
                     }
                 }
             } else {
@@ -55,7 +49,7 @@ class Tictactoe {
                 sortedResult.forEach { file?.appendText("$it \n") }
 
                 for (index in sortedResult.values) {
-                    if (fill(index, 1).not()) {
+                    if (fill(index, Constants.AI_PLAYER_INDEX).not()) {
                         continue
                     } else {
                         break
@@ -63,7 +57,7 @@ class Tictactoe {
                 }
             }
 
-            playerIndex = abs(playerIndex - 1)
+            iterativePlayerIndex = abs(iterativePlayerIndex - 1)
             isGameEnded = determineWinner(file)
         } while (isGameEnded == 3)
         printBoardStateToFile(file)

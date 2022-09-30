@@ -40,9 +40,9 @@ object Main {
             fitness.replaceAll { _, _ -> 0 }
 
             for (network in networks) {
-                for (game in 1..50) {
-                    val result = tictactoe.play(network, isPlayerSecond = true, isInputRandom = true)
-                    if (result == 1) { // win
+                for (game in 1..100) {
+                    val result = tictactoe.play(network, isInputRandom = true)
+                    if (result == Constants.AI_PLAYER_INDEX) { // win
                         fitness[network] = fitness[network]!! + 2
                     } else if (result == 0) { // draw
                         fitness[network] = fitness[network]!! + 1
@@ -73,13 +73,13 @@ object Main {
         successMap: HashMap<Int, String>
     ) {
         val match = arrayOf(0, 0, 0)
-        val generationLogFile = File("${Constants.LOG_DIRECTORY}/${generation}.txt")
+        val generationLogFile = File("${Constants.LOG_DIRECTORY}/${generation}")
         generationLogFile.writeText("") // delete content of file if exists
         for (i in 1..50) {
             val result = tictactoe.play(
-                sortedFitness.keys.last(), isPlayerSecond = true, isInputRandom = true, file = generationLogFile
+                sortedFitness.keys.last(), isInputRandom = true, file = generationLogFile
             )
-            if (result == 1) { // ai won
+            if (result == Constants.AI_PLAYER_INDEX) { // ai won
                 match[0] += 1
             } else if (result == 0) { // draw
                 match[1] += 1
@@ -92,7 +92,7 @@ object Main {
         println("Random won: ${match[2]}")
 
         successMap[generation] = "${match[0]}, ${match[1]}, ${match[2]}"
-        generationLogFile.renameTo(File("${Constants.LOG_DIRECTORY}/$generation-${match[0]}-${match[1]}-${match[2]}"))
+        generationLogFile.renameTo(File("${Constants.LOG_DIRECTORY}/${Constants.AI_PLAYER_INDEX}-$generation-${match[0]}-${match[1]}-${match[2]}.txt"))
     }
 
     private fun emptyLogsDirectory(directory: File) {
