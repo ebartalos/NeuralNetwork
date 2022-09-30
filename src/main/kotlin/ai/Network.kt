@@ -1,8 +1,10 @@
 package ai
 
+import Constants
 import ai.neurons.BiasNeuron
 import ai.neurons.Neuron
 import ai.neurons.TanhNeuron
+import java.io.File
 import java.util.*
 import kotlin.math.sqrt
 import kotlin.reflect.KClass
@@ -101,5 +103,23 @@ class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int) {
     private fun heHeuristics(previousLayerNeurons: Double): Double {
         val random = Random()
         return random.nextGaussian(0.0, sqrt(2.0 / previousLayerNeurons))
+    }
+
+    // TODO add network identifiers to header
+    fun saveWeightsToFile() {
+        val weightsFile = File(Constants.WEIGHTS_FILE)
+        weightsFile.writeText("")
+        weights().forEach {
+            weightsFile.appendText("$it\n")
+        }
+    }
+
+    fun loadWeightsFromFile() {
+        val weightsFile = File(Constants.WEIGHTS_FILE)
+        val weights = ArrayList<Double>()
+        weightsFile.readLines().forEach {
+            weights.add(it.toDouble())
+        }
+        updateWeights(weights)
     }
 }
