@@ -1,9 +1,7 @@
 package ai
 
 import Constants
-import ai.neurons.BiasNeuron
-import ai.neurons.Neuron
-import ai.neurons.TanhNeuron
+import ai.neurons.*
 import java.io.File
 import java.util.*
 import kotlin.math.sqrt
@@ -19,7 +17,6 @@ class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int) {
         for (index in 1..inputNeurons) {
             inputLayer.addNeuron(Neuron())
         }
-        inputLayer.addNeuron(BiasNeuron())
         layers.add(inputLayer)
 
         val outputLayer = Layer()
@@ -27,7 +24,6 @@ class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int) {
             outputLayer.addNeuron(TanhNeuron())
         }
         layers.add(outputLayer)
-
     }
 
     fun <T : Any> addHiddenLayer(neuronType: KClass<T>, amountOfNeurons: Int, biasNeuron: Boolean = true) {
@@ -83,15 +79,23 @@ class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int) {
      * Creates connections between layers.
      * Has to be called after ALL layers are added.
      */
-    fun createConnections(useHeHeuristics: Boolean) {
+    fun createConnections() {
         for ((firstLayer, secondLayer) in layers.zipWithNext()) {
             for (outputNeuron in secondLayer.neurons) {
+                if (outputNeuron is BiasNeuron) continue
+
                 for (inputNeuron in firstLayer.neurons) {
-                    val connection = if (useHeHeuristics) {
-                        Connection(inputNeuron, outputNeuron, heHeuristics(firstLayer.neurons.size.toDouble()))
-                    } else {
-                        Connection(inputNeuron, outputNeuron)
-                    }
+                    val connection =
+                        if (inputNeuron is BiasNeuron) {
+                            Connection(inputNeuron, outputNeuron, 0.0)
+                        } else if (outputNeuron is ReLuNeuron) {
+                            Connection(inputNeuron, outputNeuron, heHeuristics(firstLayer.neurons.size))
+                        } else if ((outputNeuron is TanhNeuron) || (outputNeuron is SigmoidNeuron)) {
+                            Connection(inputNeuron, outputNeuron, xavierHeuristics(firstLayer.neurons.size))
+                        } else {
+                            Connection(inputNeuron, outputNeuron)
+                        }
+
                     firstLayer.outgoingConnections.add(connection)
                     secondLayer.incomingConnections.add(connection)
                 }
@@ -99,10 +103,23 @@ class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int) {
         }
     }
 
-    // TODO this for ReLu only
-    private fun heHeuristics(previousLayerNeurons: Double): Double {
+    /**
+     * Default for ReLu neurons.
+     */
+    private fun heHeuristics(previousLayerNeurons: Int): Double {
         val random = Random()
-        return random.nextGaussian(0.0, sqrt(2.0 / previousLayerNeurons))
+        return random.nextGaussian(0.0, sqrt(2.0 / previousLayerNeurons.toDouble()))
+    }
+
+    /**
+     * Default for Tanh and Sigmoid neurons.
+     */
+    private fun xavierHeuristics(previousLayerNeurons: Int): Double {
+        val random = Random()
+        return random.nextDouble(
+            -(1 / sqrt(previousLayerNeurons.toDouble())),
+            1 / sqrt(previousLayerNeurons.toDouble())
+        )
     }
 
     // TODO add network identifiers to header

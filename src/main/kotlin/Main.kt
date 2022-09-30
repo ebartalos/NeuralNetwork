@@ -26,7 +26,7 @@ object Main {
             network.addHiddenLayer(ReLuNeuron::class, 25, true)
             network.addHiddenLayer(ReLuNeuron::class, 30, true)
 
-            network.createConnections(true)
+            network.createConnections()
 
             networks.add(network)
             fitness[network] = 0
