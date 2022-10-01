@@ -17,14 +17,15 @@ object Main {
         val fitness = hashMapOf<Network, Int>()
         var sortedFitness: Map<Network, Int>
         val successMap = hashMapOf<Int, String>()
+        var previousBestFitness = Constants.MAX_ITERATIONS_IN_GENERATION
 
         for (i in 1..Constants.MAX_NEURAL_NETWORKS) {
             val network = Network(
                 inputNeurons = 9, outputNeurons = 9, id = i
             )
+            network.addHiddenLayer(ReLuNeuron::class, 15, true)
             network.addHiddenLayer(ReLuNeuron::class, 20, true)
-            network.addHiddenLayer(ReLuNeuron::class, 25, true)
-            network.addHiddenLayer(ReLuNeuron::class, 30, true)
+            network.addHiddenLayer(ReLuNeuron::class, 20, true)
 
             network.createConnections()
 
@@ -39,8 +40,10 @@ object Main {
             // reset fitness
             fitness.replaceAll { _, _ -> 0 }
 
+            if (generation % 500 == 0) println("Generation $generation\n")
+
             for (network in networks) {
-                for (game in 1..100) {
+                for (game in 1..Constants.MAX_ITERATIONS_IN_GENERATION) {
                     val result = tictactoe.play(network, isInputRandom = true)
                     if (result == Constants.AI_PLAYER_INDEX) { // win
                         fitness[network] = fitness[network]!! + 2
@@ -51,13 +54,16 @@ object Main {
             }
 
             sortedFitness = fitness.toList().sortedBy { (_, value) -> value }.toMap()
+            val bestNetwork = sortedFitness.keys.last()
 
             val genetics = Genetics(sortedFitness.keys.reversed())
             genetics.breed(mutate = true, mutationChance = Constants.MUTATION_CHANCE)
 
-            if (generation % Constants.TEST_EACH_X_GENERATION == 0) {
-                playWithWinner(tictactoe, sortedFitness, generation, successMap)
-                println("Generation $generation \n")
+            if (fitness[bestNetwork]!! > previousBestFitness) {
+                playWithWinner(tictactoe, bestNetwork, generation, successMap)
+                println("Generation $generation")
+                println("Best network fitness ${fitness[bestNetwork]!!}\n")
+                previousBestFitness = fitness[bestNetwork]!!
             }
         }
 
@@ -68,16 +74,16 @@ object Main {
 
     private fun playWithWinner(
         tictactoe: Tictactoe,
-        sortedFitness: Map<Network, Int>,
+        network: Network,
         generation: Int,
         successMap: HashMap<Int, String>
     ) {
         val match = arrayOf(0, 0, 0)
         val generationLogFile = File("${Constants.LOG_DIRECTORY}/${generation}")
         generationLogFile.writeText("") // delete content of file if exists
-        for (i in 1..50) {
+        for (i in 1..100) {
             val result = tictactoe.play(
-                sortedFitness.keys.last(), isInputRandom = true, file = generationLogFile
+                network, isInputRandom = true, file = generationLogFile
             )
             if (result == Constants.AI_PLAYER_INDEX) { // ai won
                 match[0] += 1

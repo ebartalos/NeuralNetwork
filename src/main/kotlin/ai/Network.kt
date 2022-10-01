@@ -17,6 +17,7 @@ class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int) {
         for (index in 1..inputNeurons) {
             inputLayer.addNeuron(Neuron())
         }
+        inputLayer.addNeuron(BiasNeuron())
         layers.add(inputLayer)
 
         val outputLayer = Layer()
@@ -87,7 +88,7 @@ class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int) {
                 for (inputNeuron in firstLayer.neurons) {
                     val connection =
                         if (inputNeuron is BiasNeuron) {
-                            Connection(inputNeuron, outputNeuron, 0.0)
+                            Connection(inputNeuron, outputNeuron, 1.0)
                         } else if (outputNeuron is ReLuNeuron) {
                             Connection(inputNeuron, outputNeuron, heHeuristics(firstLayer.neurons.size))
                         } else if ((outputNeuron is TanhNeuron) || (outputNeuron is SigmoidNeuron)) {

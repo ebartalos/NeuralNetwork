@@ -12,7 +12,11 @@ class Mutation(private val network: Network) {
         for (layer in network.layers) {
             for (connection in layer.outgoingConnections) {
                 if (Random.nextInt() % 100 < chance) {
-                    connection.weight = connection.weight * Random.nextDouble(from, to)
+                    if (connection.weight == 0.0) {
+                        connection.weight = Random.nextDouble(-0.01, 0.01)
+                    } else {
+                        connection.weight = connection.weight * Random.nextDouble(from, to)
+                    }
                 }
             }
         }

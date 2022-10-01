@@ -26,6 +26,7 @@ class Genetics(private val networks: List<Network>) {
             }
         }
 
+        // TODO some last networks weights should be updated randomly -> new population
         for (network in networks.subList(2, networks.size)) {
             network.updateWeights(network1Weights)
         }
