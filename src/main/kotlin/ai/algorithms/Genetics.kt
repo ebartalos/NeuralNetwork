@@ -2,6 +2,7 @@ package ai.algorithms
 
 import Constants
 import ai.Network
+import kotlin.random.Random
 
 class Genetics(private val networks: List<Network>) {
 
@@ -32,9 +33,16 @@ class Genetics(private val networks: List<Network>) {
         }
 
         if (mutate) {
-            for (network in networks.subList(2, networks.size)) {
+            for (network in networks.subList(2, networks.size - 2)) {
                 val mutation = Mutation(network)
                 mutation.mutate(Constants.MUTATION_RANGE_FROM, Constants.MUTATION_RANGE_TO, mutationChance)
+            }
+            for (network in networks.subList(networks.size - 2, networks.size)) {
+                val randomWeights = ArrayList<Double>()
+                for (i in 1..networks[0].weights().size) {
+                    randomWeights.add(Random.nextDouble(-2.0, 2.0))
+                }
+                network.updateWeights(randomWeights)
             }
         }
     }
