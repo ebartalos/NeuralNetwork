@@ -1,6 +1,6 @@
 object Constants {
-    const val AI_PLAYER_INDEX = 2
-    const val OPPONENT_PLAYER_INDEX = 1
+    const val AI_PLAYER_INDEX = 1
+    const val OPPONENT_PLAYER_INDEX = 2
 
     const val MAX_NEURAL_NETWORKS = 10
     const val MAX_GENERATIONS = 500000

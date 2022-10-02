@@ -123,12 +123,19 @@ class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int) {
         )
     }
 
-    // TODO add network identifiers to header
-    fun saveWeightsToFile() {
-        val weightsFile = File(Constants.WEIGHTS_FILE)
-        weightsFile.writeText("")
+    fun saveWeightsToFile(file: File = File(Constants.WEIGHTS_FILE), overwrite: Boolean = false) {
+        if (overwrite) file.writeText("")
+
+        // add network information - type of neurons and count
+        for (layer in layers) {
+            file.appendText("--Layer--\n")
+            val neuronCount = layer.neurons.groupingBy { it.javaClass }.eachCount()
+            neuronCount.forEach { (k, v) -> file.appendText("${k}:${v}\n") }
+        }
+
+        file.appendText("Weights:\n")
         weights().forEach {
-            weightsFile.appendText("$it\n")
+            file.appendText("$it\n")
         }
     }
 

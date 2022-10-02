@@ -79,8 +79,10 @@ object Main {
         successMap: HashMap<Int, String>
     ) {
         val match = arrayOf(0, 0, 0)
+
         val generationLogFile = File("${Constants.LOG_DIRECTORY}/${generation}")
         generationLogFile.writeText("") // delete content of file if exists
+
         for (i in 1..100) {
             val result = tictactoe.play(
                 network, isInputRandom = true, file = generationLogFile
@@ -98,6 +100,8 @@ object Main {
         println("Random won: ${match[2]}")
 
         successMap[generation] = "${match[0]}, ${match[1]}, ${match[2]}"
+
+        network.saveWeightsToFile(generationLogFile)
         generationLogFile.renameTo(File("${Constants.LOG_DIRECTORY}/${Constants.AI_PLAYER_INDEX}-$generation-${match[0]}-${match[1]}-${match[2]}.txt"))
     }
 
