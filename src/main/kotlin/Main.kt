@@ -7,7 +7,9 @@ object Main {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        ga()
+        val t = Tree()
+        t.createRoot()
+//        ga()
     }
 
     private fun ga() {
