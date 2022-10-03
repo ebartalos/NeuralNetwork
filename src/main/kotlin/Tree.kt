@@ -10,15 +10,19 @@ class Tree {
 
     private fun fillTreeWithAllValues(node: TreeNode, possibleChildren: MutableList<Int>, value: Int) {
         if (possibleChildren.isEmpty()) return
-        for (i in possibleChildren) {
 
-            val position = possibleChildren[0]
-            val child = TreeNode(position, value)
+        for (possibleChild in possibleChildren) {
+
+            val child = TreeNode(possibleChild, value)
             node.children?.add(child)
 
             val anotherPlayer = if (value == 1) 2 else 1
 
-            fillTreeWithAllValues(child, possibleChildren.drop(1).toMutableList(), anotherPlayer)
+            fillTreeWithAllValues(
+                child,
+                possibleChildren.toMutableList().also { it.remove(possibleChild) },
+                anotherPlayer
+            )
         }
     }
 
