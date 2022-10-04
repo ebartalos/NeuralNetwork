@@ -6,17 +6,25 @@ class Tictactoe {
     // index, value
     private var board: HashMap<Int, Int> = HashMap()
 
+    // intelligent random
+    private val allPossibleOptionsTree = Tree()
+
     init {
         resetBoard()
     }
 
+    enum class PlayerInputs {
+        HUMAN,
+        RANDOM,
+        INTELLIGENT_RANDOM
+    }
+
     /**
      * @param network neural network
-     * @param isInputRandom if true, inputs are entered randomly
-     *                      if false, human controls inputs
+     * @param playerInput TODO
      * @param file file to print logs into
      */
-    fun play(network: Network, isInputRandom: Boolean = false, file: File? = null): Int {
+    fun play(network: Network, playerInput: PlayerInputs, file: File? = null): Int {
         var iterativePlayerIndex = if (Constants.AI_PLAYER_INDEX == 1) 1 else 0
         var isGameEnded: Int
 
@@ -26,12 +34,17 @@ class Tictactoe {
             printBoardStateToFile(file)
 
             if (iterativePlayerIndex == 0) {
-                if (isInputRandom) {
-                    while (fill(availableBoardSquares().random(), Constants.OPPONENT_PLAYER_INDEX).not()) {
-                    }
-                } else {
-                    while (fill(readLine()!!.toInt(), Constants.OPPONENT_PLAYER_INDEX).not()) {
-                    }
+                when (playerInput) {
+                    PlayerInputs.RANDOM ->
+                        while (fill(availableBoardSquares().random(), Constants.OPPONENT_PLAYER_INDEX).not()) {
+                        }
+
+                    PlayerInputs.HUMAN ->
+                        while (fill(readLine()!!.toInt(), Constants.OPPONENT_PLAYER_INDEX).not()) {
+                        }
+
+                    PlayerInputs.INTELLIGENT_RANDOM ->
+                        println("todo")
                 }
             } else {
                 network.setInputs(adjustedBoardState())
@@ -52,6 +65,9 @@ class Tictactoe {
                     if (fill(index, Constants.AI_PLAYER_INDEX).not()) {
                         continue
                     } else {
+                        if (playerInput == PlayerInputs.INTELLIGENT_RANDOM && !allPossibleOptionsTree.isRootInitialized()) {
+                            allPossibleOptionsTree.createRoot(index, Constants.AI_PLAYER_INDEX)
+                        }
                         break
                     }
                 }

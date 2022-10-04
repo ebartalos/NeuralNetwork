@@ -7,9 +7,9 @@ object Main {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val t = Tree()
-        t.createRoot()
-//        ga()
+//        val t = Tree()
+//        t.createRoot()
+        ga()
     }
 
     private fun ga() {
@@ -18,7 +18,7 @@ object Main {
 
         val fitness = hashMapOf<Network, Int>()
         var sortedFitness: Map<Network, Int>
-        var bestFitness = 100
+        var bestFitness = Constants.MAX_ITERATIONS_IN_GENERATION / 2
 
         for (i in 1..Constants.MAX_NEURAL_NETWORKS) {
             val network = Network(
@@ -44,7 +44,7 @@ object Main {
 
             for (network in networks) {
                 for (game in 1..Constants.MAX_ITERATIONS_IN_GENERATION) {
-                    val result = tictactoe.play(network, isInputRandom = true)
+                    val result = tictactoe.play(network, playerInput = Tictactoe.PlayerInputs.INTELLIGENT_RANDOM)
                     if (result == Constants.AI_PLAYER_INDEX) { // win
                         fitness[network] = fitness[network]!! + 1
                     } else if (result == 0) { // draw
@@ -68,7 +68,10 @@ object Main {
 
             if (generation % 500 == 0) println("Generation $generation, fitness: ${fitness[bestNetwork]!!}\n")
 
-            if (bestFitness >= Constants.MAX_ITERATIONS_IN_GENERATION) return
+            if (bestFitness >= Constants.MAX_ITERATIONS_IN_GENERATION) {
+                bestNetwork.saveWeightsToFile()
+                return
+            }
         }
     }
 
@@ -84,7 +87,7 @@ object Main {
 
         for (i in 1..100) {
             val result = tictactoe.play(
-                network, isInputRandom = true, file = generationLogFile
+                network, playerInput = Tictactoe.PlayerInputs.RANDOM, file = generationLogFile
             )
             if (result == Constants.AI_PLAYER_INDEX) { // ai won
                 match[0] += 1
