@@ -7,7 +7,7 @@ class Tictactoe {
     private var board: HashMap<Int, Int> = HashMap()
 
     // intelligent random
-    private val allPossibleOptionsTree = Tree()
+    val optionsTree = Tree()
 
     init {
         resetBoard()
@@ -44,7 +44,10 @@ class Tictactoe {
                         }
 
                     PlayerInputs.INTELLIGENT_RANDOM ->
-                        println("todo")
+                        fill(
+                            optionsTree.nextRandomPosition(availableBoardSquares()),
+                            Constants.OPPONENT_PLAYER_INDEX
+                        ).not()
                 }
             } else {
                 network.setInputs(adjustedBoardState())
@@ -65,8 +68,12 @@ class Tictactoe {
                     if (fill(index, Constants.AI_PLAYER_INDEX).not()) {
                         continue
                     } else {
-                        if (playerInput == PlayerInputs.INTELLIGENT_RANDOM && !allPossibleOptionsTree.isRootInitialized()) {
-                            allPossibleOptionsTree.createRoot(index, Constants.AI_PLAYER_INDEX)
+                        if (playerInput == PlayerInputs.INTELLIGENT_RANDOM) {
+                            if (!optionsTree.isRootInitialized()) {
+                                optionsTree.createRoot(index, Constants.AI_PLAYER_INDEX)
+                            } else {
+                                optionsTree.movePointer(index)
+                            }
                         }
                         break
                     }

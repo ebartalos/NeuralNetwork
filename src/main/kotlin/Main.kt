@@ -2,23 +2,22 @@ import ai.Network
 import ai.algorithms.Genetics
 import ai.neurons.ReLuNeuron
 import java.io.File
+import java.lang.Integer.min
 
 object Main {
 
     @JvmStatic
     fun main(args: Array<String>) {
-//        val t = Tree()
-//        t.createRoot()
         ga()
     }
 
     private fun ga() {
-        val tictactoe = Tictactoe()
         val networks = arrayListOf<Network>()
 
         val fitness = hashMapOf<Network, Int>()
         var sortedFitness: Map<Network, Int>
-        var bestFitness = Constants.MAX_ITERATIONS_IN_GENERATION / 2
+        var bestFitness = 0
+        var bestPossibleFitness: Int = Constants.MAX_ITERATIONS_IN_GENERATION
 
         for (i in 1..Constants.MAX_NEURAL_NETWORKS) {
             val network = Network(
@@ -41,15 +40,27 @@ object Main {
             // reset fitness
             fitness.replaceAll { _, _ -> 0 }
 
-
             for (network in networks) {
-                for (game in 1..Constants.MAX_ITERATIONS_IN_GENERATION) {
-                    val result = tictactoe.play(network, playerInput = Tictactoe.PlayerInputs.INTELLIGENT_RANDOM)
+                val tictactoe = Tictactoe()
+                iterationLoop@ for (game in 1..min(bestPossibleFitness, Constants.MAX_ITERATIONS_IN_GENERATION)) {
+                    val playerInput = Tictactoe.PlayerInputs.INTELLIGENT_RANDOM
+                    val result = tictactoe.play(network, playerInput)
+
                     if (result == Constants.AI_PLAYER_INDEX) { // win
                         fitness[network] = fitness[network]!! + 1
                     } else if (result == 0) { // draw
                         fitness[network] = fitness[network]!! + 1
                     }
+
+                    // reset node
+                    if (playerInput == Tictactoe.PlayerInputs.INTELLIGENT_RANDOM && !tictactoe.optionsTree.removeCurrentNode()) {
+                        if (bestPossibleFitness == Constants.MAX_ITERATIONS_IN_GENERATION) {
+                            bestPossibleFitness = game
+                            println("Best possible fitness: $bestPossibleFitness")
+                        }
+                        break@iterationLoop
+                    }
+                    tictactoe.optionsTree.resetCurrentNode()
                 }
             }
 
@@ -60,15 +71,16 @@ object Main {
             genetics.breed(mutate = true, mutationChance = Constants.MUTATION_CHANCE)
 
             if (fitness[bestNetwork]!! > bestFitness) {
+                val tictactoe = Tictactoe()
                 playWithWinner(tictactoe, bestNetwork, generation)
                 println("Generation $generation")
                 println("Best network fitness ${fitness[bestNetwork]!!}\n")
                 bestFitness = fitness[bestNetwork]!!
             }
 
-            if (generation % 500 == 0) println("Generation $generation, fitness: ${fitness[bestNetwork]!!}\n")
+            if (generation % 100 == 0) println("Generation $generation, fitness: ${fitness[bestNetwork]!!}\n")
 
-            if (bestFitness >= Constants.MAX_ITERATIONS_IN_GENERATION) {
+            if (bestFitness >= bestPossibleFitness) {
                 bestNetwork.saveWeightsToFile()
                 return
             }
