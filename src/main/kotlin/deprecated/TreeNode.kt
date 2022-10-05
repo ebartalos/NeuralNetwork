@@ -1,3 +1,6 @@
+package deprecated
+
+@Deprecated("Not feasible")
 class TreeNode(
     var position: Int,
     var value: Int,

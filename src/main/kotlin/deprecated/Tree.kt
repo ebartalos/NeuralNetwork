@@ -1,8 +1,11 @@
+package deprecated
+
+@Deprecated("Not feasible", ReplaceWith("Generator"))
 class Tree {
 
     private lateinit var root: TreeNode
     lateinit var currentNode: TreeNode
-    private var goRandom: Boolean = false
+    var goRandom: Boolean = false
 
     fun isRootInitialized(): Boolean {
         return ::root.isInitialized
@@ -37,35 +40,72 @@ class Tree {
         }
     }
 
+    // enter 1
+    // exit 2
     fun nextRandomPosition(emptySquares: ArrayList<Int>): Int {
+        if (currentNode.value == 2) {
+            return 0
+        }
         if (goRandom) {
             return emptySquares.random()
         }
         if (currentNode.children.isEmpty()) {
-            removeCurrentNode()
             goRandom = true
+            removeParentNode()
             return emptySquares.random()
         }
         currentNode = currentNode.children.random()
-        return currentNode.position
+        if (currentNode.value == 2) return currentNode.position
+        else throw Exception("Fuck you")
     }
 
+    // enter 2
+    // exit 1
     fun movePointer(position: Int) {
-        if (currentNode.children.isEmpty()) return
-        for (child in currentNode.children) {
-            if (child.position == position) currentNode = child
+        if (currentNode.value == 1) {
+            return
         }
+
+        if (goRandom) {
+            return
+        }
+
+        currentNode.children.removeAll { it.position != position }
+        currentNode = currentNode.children[0]
+        return
     }
 
-    fun removeCurrentNode(): Boolean {
-        if (currentNode.parent == null) {
-            // we are at the root
+    fun isTreeDrained(): Boolean {
+        return root.children.isEmpty()
+    }
+
+    fun removeCurrentNode(value: Int): Boolean {
+        if (value == currentNode.value) {
+            val murderedChild = currentNode
+            currentNode = currentNode.parent!!
+            currentNode.children.remove(murderedChild)
+            return true
+        } else {
             return false
         }
-        val murderedChild = currentNode
-        currentNode = currentNode.parent!!
+    }
+
+    fun removeParentNode() {
+        if (isTreeDrained()) {
+            return
+        }
+
+        if (currentNode.parent == null) {
+            return
+        }
+        val murderedChild = currentNode.parent!!
+
+        if (murderedChild.value != 2) {
+            return
+        }
+
+        currentNode = murderedChild.parent!!
         currentNode.children.remove(murderedChild)
-        return true
     }
 
     fun resetCurrentNode() {
