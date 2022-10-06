@@ -27,7 +27,6 @@ class Genetics(private val networks: List<Network>) {
             }
         }
 
-        // TODO some last networks weights should be updated randomly -> new population
         for (network in networks.subList(2, networks.size)) {
             network.updateWeights(network1Weights)
         }
@@ -37,13 +36,14 @@ class Genetics(private val networks: List<Network>) {
                 val mutation = Mutation(network)
                 mutation.mutate(Constants.MUTATION_RANGE_FROM, Constants.MUTATION_RANGE_TO, mutationChance)
             }
-            for (network in networks.subList(networks.size - 2, networks.size)) {
-                val randomWeights = ArrayList<Double>()
-                for (i in 1..networks[0].weights().size) {
-                    randomWeights.add(Random.nextDouble(-2.0, 2.0))
-                }
-                network.updateWeights(randomWeights)
+        }
+
+        for (network in networks.subList(networks.size - 2, networks.size)) {
+            val randomWeights = ArrayList<Double>()
+            for (i in 1..networks[0].weights().size) {
+                randomWeights.add(Random.nextDouble(-2.0, 2.0))
             }
+            network.updateWeights(randomWeights)
         }
     }
 }
