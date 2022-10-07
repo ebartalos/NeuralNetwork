@@ -63,10 +63,10 @@ class Tictactoe {
 
                 // map output neurons to tic-tac-toe fields
                 val result = hashMapOf<Int, Double>()
-                var it = 1
+                var boardIndex = 1
                 for (output in network.output()) {
-                    result[it] = output
-                    it += 1
+                    result[boardIndex] = output
+                    boardIndex += 1
                 }
                 val sortedResult = result.toList().sortedBy { (key, value) -> value }
                     .toMap()
@@ -87,44 +87,6 @@ class Tictactoe {
         } while (isGameEnded == 3)
         printBoardStateToFile(file)
 
-        return isGameEnded
-    }
-
-    /**
-     * Used to train networks between themselves
-     */
-    fun playAI(network1: Network, network2: Network): Int {
-        val players = arrayListOf(1, 2)
-        var playerIndex = 0
-        var isGameEnded: Int
-
-        resetBoard()
-
-        do {
-            val network = if (playerIndex == 0) network1 else network2
-
-            network.setInputs(adjustedBoardState())
-            network.evaluate()
-
-            val result = hashMapOf<Double, Int>()
-            var iterator = 1
-            for (output in network.output()) {
-                result[output] = iterator
-                iterator += 1
-            }
-            val sortedResult = result.toSortedMap(compareByDescending { it })
-
-            for (index in sortedResult.values) {
-                if (fill(index, players[playerIndex]).not()) {
-                    continue
-                } else {
-                    break
-                }
-            }
-
-            playerIndex = abs(playerIndex - 1)
-            isGameEnded = determineWinner()
-        } while (isGameEnded == 3)
         return isGameEnded
     }
 

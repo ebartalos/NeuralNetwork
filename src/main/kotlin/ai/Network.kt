@@ -8,6 +8,9 @@ import kotlin.math.sqrt
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
+/**
+ * TODO
+ */
 class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int) {
 
     var layers = ArrayList<Layer>()

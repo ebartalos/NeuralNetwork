@@ -1,3 +1,6 @@
+/**
+ * Place for compile time constant.
+ */
 object Constants {
     const val AI_PLAYER_INDEX = 1
     const val OPPONENT_PLAYER_INDEX = 2

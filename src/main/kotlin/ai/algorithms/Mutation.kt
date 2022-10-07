@@ -3,6 +3,9 @@ package ai.algorithms
 import ai.Network
 import kotlin.random.Random
 
+/**
+ * Mutation for genetic algorithms
+ */
 class Mutation(private val network: Network) {
 
     /**

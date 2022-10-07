@@ -72,7 +72,7 @@ object Main {
             if (generation % 100 == 0) println("Generation $generation, fitness: ${fitness[bestNetwork]!!}\n")
 
             if (bestFitness >= bestPossibleFitness) {
-                bestNetwork.saveWeightsToFile()
+                bestNetwork.saveWeightsToFile(overwrite = true)
                 return
             }
         }

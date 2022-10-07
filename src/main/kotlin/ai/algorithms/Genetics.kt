@@ -8,6 +8,8 @@ class Genetics(private val networks: List<Network>) {
 
     /**
      * Takes two best networks, breeds them and fills rest of the lists with children.
+     * Two networks with lowest fitness are created randomly to avoid reaching local maximums.
+     *
      * @param mutate determines if kids should be mutated
      */
     fun breed(mutate: Boolean, mutationChance: Int = 0) {

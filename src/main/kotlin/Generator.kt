@@ -1,16 +1,22 @@
 class Generator(from: Int, to: Int) {
-    // pointers to various values in values array
+    // all possible values
     private var values = mutableListOf<String>()
+
+    // current value pointer
     private lateinit var current: String
 
     init {
         for (number in from..to) {
+            // remove 0, because it's not needed for tic-tac-toe
             if (!number.toString().contains("0")) {
                 values.add(number.toString())
             }
         }
     }
 
+    /**
+     * TODO
+     */
     fun yield(level: Int): Int {
         if (level == 0) {
             if (::current.isInitialized) values.remove(current)
@@ -19,6 +25,10 @@ class Generator(from: Int, to: Int) {
         return Integer.parseInt(current[level].toString())
     }
 
+    /**
+     * @return true if all values were yielded and generator is empty.
+     *         false if at least one value is still in generator.
+     */
     fun isDrained(): Boolean {
         return values.size <= 1
     }

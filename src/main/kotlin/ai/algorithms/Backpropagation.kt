@@ -2,7 +2,7 @@ package ai.algorithms
 
 import ai.Network
 
-// TODO  doublecheck again
+// TODO not finished
 class Backpropagation(private val network: Network, private val target: Double, private val learningRate: Double) {
 
     fun backpropagate() {
