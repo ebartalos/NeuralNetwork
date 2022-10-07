@@ -16,7 +16,7 @@ object Main {
         val fitness = hashMapOf<Network, Int>()
         var sortedFitness: Map<Network, Int>
         var bestFitness = 0
-        val bestPossibleFitness: Int = Constants.MAX_ITERATIONS_IN_GENERATION
+        val bestPossibleFitness: Int = 6561 // generator max size
 
         for (i in 1..Constants.MAX_NEURAL_NETWORKS) {
             val network = Network(
@@ -41,12 +41,17 @@ object Main {
 
             for (network in networks) {
                 val tictactoe = Tictactoe()
+                val generator = Generator(from = 1111, to = 9999)
                 iterationLoop@ for (game in 1..Constants.MAX_ITERATIONS_IN_GENERATION) {
-                    val playerInput = Tictactoe.PlayerInputs.RANDOM
-                    val result = tictactoe.play(network, playerInput)
+                    val playerInput = Tictactoe.PlayerInputs.GENERATOR
+                    val result = tictactoe.play(network, playerInput, generator = generator)
 
                     if ((result == Constants.AI_PLAYER_INDEX) || (result == 0)) {
                         fitness[network] = fitness[network]!! + 1
+                    }
+
+                    if (generator.isDrained()) {
+                        break@iterationLoop
                     }
                 }
             }

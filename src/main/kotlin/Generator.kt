@@ -1,55 +1,25 @@
-class Generator(private val values: ArrayList<Int>, amount: Int) {
+class Generator(from: Int, to: Int) {
     // pointers to various values in values array
-    var generators = ArrayList<Int>()
-
-    // pointer to current generator for yielding
-    private var activeGeneratorPointer = 0
-
-    private var start = true
+    private var values = mutableListOf<String>()
+    private lateinit var current: String
 
     init {
-        for (i in 1..amount) {
-            generators.add(0)
-        }
-        resetGenerator()
-    }
-
-    fun yield(): Int {
-        val result = values[generators[activeGeneratorPointer]]
-        if (start) {
-            start = false
-            return result
-        }
-        if (activeGeneratorPointer < generators.size - 1) {
-            activeGeneratorPointer += 1
-        }
-        return result
-    }
-
-    fun increment() {
-        checkDrainedGenerator()
-        while (findCorrectIncrement()) {
-        }
-        generators[activeGeneratorPointer] += 1
-    }
-
-    fun resetGenerator() {
-        activeGeneratorPointer = 0
-    }
-
-    private fun findCorrectIncrement(): Boolean {
-        return if (values[generators[activeGeneratorPointer]] == values.last()) {
-            generators[activeGeneratorPointer] = 0
-            activeGeneratorPointer -= 1
-            true
-        } else {
-            false
+        for (number in from..to) {
+            if (!number.toString().contains("0")) {
+                values.add(number.toString())
+            }
         }
     }
 
-    private fun checkDrainedGenerator() {
-        if (generators.all { it == (values.size - 1) }) {
-            throw Exception("Generator is drained!")
+    fun yield(level: Int): Int {
+        if (level == 0) {
+            if (::current.isInitialized) values.remove(current)
+            current = values.random()
         }
+        return Integer.parseInt(current[level].toString())
+    }
+
+    fun isDrained(): Boolean {
+        return values.size <= 1
     }
 }

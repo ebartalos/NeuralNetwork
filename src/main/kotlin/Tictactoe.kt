@@ -21,9 +21,12 @@ class Tictactoe {
      * @param playerInput TODO
      * @param file file to print logs into
      */
-    fun play(network: Network, playerInput: PlayerInputs, file: File? = null): Int {
+    fun play(network: Network, playerInput: PlayerInputs, file: File? = null, generator: Generator? = null): Int {
         var iterativePlayerIndex = if (Constants.AI_PLAYER_INDEX == 1) 1 else 0
         var isGameEnded: Int
+
+        var generatorLevel = 0
+        var goRandom = false
 
         resetBoard()
 
@@ -39,23 +42,38 @@ class Tictactoe {
                     PlayerInputs.HUMAN ->
                         while (fill(readLine()!!.toInt(), Constants.OPPONENT_PLAYER_INDEX).not()) {
                         }
+
+                    PlayerInputs.GENERATOR -> {
+                        if (goRandom.not() && fill(
+                                generator!!.yield(generatorLevel),
+                                Constants.OPPONENT_PLAYER_INDEX
+                            )
+                        ) {
+                            generatorLevel += 1
+                        } else {
+                            goRandom = true
+                            while (fill(availableBoardSquares().random(), Constants.OPPONENT_PLAYER_INDEX).not()) {
+                            }
+                        }
+                    }
                 }
             } else {
                 network.setInputs(adjustedBoardState())
                 network.evaluate()
 
                 // map output neurons to tic-tac-toe fields
-                val result = hashMapOf<Double, Int>()
+                val result = hashMapOf<Int, Double>()
                 var it = 1
                 for (output in network.output()) {
-                    result[output] = it
+                    result[it] = output
                     it += 1
                 }
-                val sortedResult = result.toSortedMap(compareByDescending { it })
+                val sortedResult = result.toList().sortedBy { (key, value) -> value }
+                    .toMap()
 
                 sortedResult.forEach { file?.appendText("$it \n") }
 
-                for (index in sortedResult.values) {
+                for (index in sortedResult.keys.reversed()) {
                     if (fill(index, Constants.AI_PLAYER_INDEX).not()) {
                         continue
                     } else {
