@@ -9,6 +9,8 @@ import kotlin.random.Random
 class Mutation(private val network: Network) {
 
     /**
+     * @param from lower index of mutation range
+     * @param to higher index of mutation range
      * @param chance percentual chance to mutate
      */
     fun mutate(from: Double, to: Double, chance: Int) {

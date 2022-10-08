@@ -2,6 +2,9 @@ import ai.Network
 import java.io.File
 import kotlin.math.abs
 
+/**
+ * TODO
+ */
 class Tictactoe {
     // index, value
     private var board: HashMap<Int, Int> = HashMap()

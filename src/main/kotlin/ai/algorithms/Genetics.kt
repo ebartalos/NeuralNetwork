@@ -11,6 +11,7 @@ class Genetics(private val networks: List<Network>) {
      * Two networks with lowest fitness are created randomly to avoid reaching local maximums.
      *
      * @param mutate determines if kids should be mutated
+     * @param mutationChance percentual chance to mutation for each weight
      */
     fun breed(mutate: Boolean, mutationChance: Int = 0) {
         // let's assume network is ordered by fitness with best brains in low indexes

@@ -9,7 +9,11 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
 /**
- * TODO
+ * Feed forward neural network.
+ *
+ * @param inputNeurons how many input neurons should network have
+ * @param outputNeurons how many output neurons should network have
+ * @param id of the network - used for debugging purposes
  */
 class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int) {
 
@@ -30,6 +34,9 @@ class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int) {
         layers.add(outputLayer)
     }
 
+    /**
+     * TODO
+     */
     fun <T : Any> addHiddenLayer(neuronType: KClass<T>, amountOfNeurons: Int, biasNeuron: Boolean = true) {
         val layer = Layer()
         for (index in 1..amountOfNeurons) {
@@ -40,6 +47,10 @@ class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int) {
         layers.add(layers.size - 1, layer)
     }
 
+    /**
+     * Evaluate the whole network, e.g. calculate value of each neuron in each layer,
+     * starting from input and forward via hidden to outputs
+     */
     fun evaluate() {
         layers.forEach { it.evaluate() }
     }

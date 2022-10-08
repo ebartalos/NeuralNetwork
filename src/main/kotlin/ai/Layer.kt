@@ -3,7 +3,7 @@ package ai
 import ai.neurons.Neuron
 
 /**
- * TODO
+ * Representation of layer in feed forward neural networks
  */
 class Layer {
 
@@ -21,7 +21,7 @@ class Layer {
     }
 
     /**
-     * TODO
+     * Calculates value of each neuron in the layer.
      */
     fun evaluate() {
         if (incomingConnections.isNotEmpty()) {
