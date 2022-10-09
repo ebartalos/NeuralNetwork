@@ -41,7 +41,8 @@ class Layer {
      * Changes weights' value to specified one.
      *
      * @param weights desired weights' values
-     * @param isOutgoing TODO
+     * @param isOutgoing if true, update outgoing connections
+     *                   if false, update incoming connections
      */
     fun updateWeights(weights: MutableList<Double>, isOutgoing: Boolean) {
         val weightsIterator = weights.listIterator()

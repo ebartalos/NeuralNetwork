@@ -35,7 +35,12 @@ class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int) {
     }
 
     /**
-     * TODO
+     * Adds hidden layer to neural network.
+     *
+     * @param neuronType type of neuron
+     * @param amountOfNeurons how many neurons should be added
+     * @param biasNeuron if true, bias neuron will be added
+     *                   if false, bias neuron will not be added
      */
     fun <T : Any> addHiddenLayer(neuronType: KClass<T>, amountOfNeurons: Int, biasNeuron: Boolean = true) {
         val layer = Layer()
@@ -48,19 +53,27 @@ class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int) {
     }
 
     /**
-     * Evaluate the whole network, e.g. calculate value of each neuron in each layer,
+     * Evaluates the whole network, e.g. calculate value of each neuron in each layer,
      * starting from input and forward via hidden to outputs
      */
     fun evaluate() {
         layers.forEach { it.evaluate() }
     }
 
+    /**
+     * Returns values of output neurons.
+     */
     fun output(): ArrayList<Double> {
         val values = ArrayList<Double>()
         layers.last().neurons.forEach { values.add(it.value) }
         return values
     }
 
+    /**
+     * Updates values of weights.
+     *
+     * @param weights new values
+     */
     fun updateWeights(weights: ArrayList<Double>) {
         var weightsIndex = 0
         for ((firstLayer, secondLayer) in layers.zipWithNext()) {

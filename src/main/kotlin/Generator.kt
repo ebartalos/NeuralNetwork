@@ -1,3 +1,10 @@
+/**
+ * Generate numbers and remove them after one use.
+ * Zero is excluded.
+ *
+ * @param from starting number
+ * @param to ending number
+ */
 class Generator(from: Int, to: Int) {
     // all possible values
     private var values = mutableListOf<String>()
@@ -15,7 +22,7 @@ class Generator(from: Int, to: Int) {
     }
 
     /**
-     * TODO
+     * Yields random number from saved values and removes previous one from the generator
      */
     fun yield(level: Int): Int {
         if (level == 0) {
