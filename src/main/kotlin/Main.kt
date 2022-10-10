@@ -1,13 +1,15 @@
 import ai.Network
 import ai.algorithms.Genetics
 import ai.neurons.ReLuNeuron
+import ai.neurons.TanhNeuron
 import java.io.File
 
 object Main {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        ga()
+//        ga()
+        loadFromFileAndTestWinner()
     }
 
     private fun ga() {
@@ -16,15 +18,16 @@ object Main {
         val fitness = hashMapOf<Network, Int>()
         var sortedFitness: Map<Network, Int>
         var bestFitness = 0
-        val bestPossibleFitness: Int = 6561 // generator max size
+        val bestPossibleFitness = 6561 // generator max size - OPPONENT_PLAYER_INDEX 2
+//        val bestPossibleFitness: Int = 59049 // generator max size - OPPONENT_PLAYER_INDEX 1
 
         for (i in 1..Constants.MAX_NEURAL_NETWORKS) {
-            val network = Network(
-                inputNeurons = 9, outputNeurons = 9, id = i
-            )
-            network.addHiddenLayer(ReLuNeuron::class, 18, true)
-            network.addHiddenLayer(ReLuNeuron::class, 22, true)
-            network.addHiddenLayer(ReLuNeuron::class, 26, true)
+            val network = Network(id = i)
+            network.addInputLayer(9)
+            network.addOutputLayer(TanhNeuron::class, 9)
+            network.addHiddenLayer(ReLuNeuron::class, 16, true)
+            network.addHiddenLayer(ReLuNeuron::class, 20, true)
+            network.addHiddenLayer(ReLuNeuron::class, 24, true)
 
             network.createConnections()
 
@@ -63,7 +66,11 @@ object Main {
             genetics.breed(mutate = true, mutationChance = Constants.MUTATION_CHANCE)
 
             if (fitness[bestNetwork]!! > bestFitness) {
-                playWithWinner(bestNetwork, generation)
+                playWithWinner(
+                    bestNetwork,
+                    generation,
+                    bestFitness
+                )
                 println("Generation $generation")
                 println("Best network fitness ${fitness[bestNetwork]!!}\n")
                 bestFitness = fitness[bestNetwork]!!
@@ -78,9 +85,28 @@ object Main {
         }
     }
 
+    private fun loadFromFileAndTestWinner() {
+        val network = Network(
+            id = 1
+        )
+        network.addInputLayer(9)
+        network.addOutputLayer(TanhNeuron::class, 9)
+        network.addHiddenLayer(ReLuNeuron::class, 16, true)
+        network.addHiddenLayer(ReLuNeuron::class, 20, true)
+        network.addHiddenLayer(ReLuNeuron::class, 24, true)
+        network.createConnections()
+        network.loadWeightsFromFile()
+
+        for (i in 0..20) {
+            val tictactoe = Tictactoe()
+            tictactoe.play(network, playerInput = Tictactoe.PlayerInputs.HUMAN)
+        }
+    }
+
     private fun playWithWinner(
         network: Network,
-        generation: Int
+        generation: Int,
+        fitness: Int
     ) {
         val match = arrayOf(0, 0, 0)
         val tictactoe = Tictactoe()
@@ -105,7 +131,7 @@ object Main {
         println("Random won: ${match[2]}")
 
         network.saveWeightsToFile(generationLogFile)
-        generationLogFile.renameTo(File("${Constants.LOG_DIRECTORY}/${Constants.AI_PLAYER_INDEX}-$generation-${match[0]}-${match[1]}-${match[2]}.txt"))
+        generationLogFile.renameTo(File("${Constants.LOG_DIRECTORY}/${Constants.AI_PLAYER_INDEX}-$generation-${match[0]}-${match[1]}-${match[2]}--${fitness}%.txt"))
     }
 
     private fun emptyLogsDirectory(directory: File) {

@@ -42,9 +42,11 @@ class Tictactoe {
                         while (fill(availableBoardSquares().random(), Constants.OPPONENT_PLAYER_INDEX).not()) {
                         }
 
-                    PlayerInputs.HUMAN ->
+                    PlayerInputs.HUMAN -> {
+                        printBoardToConsole()
                         while (fill(readLine()!!.toInt(), Constants.OPPONENT_PLAYER_INDEX).not()) {
                         }
+                    }
 
                     PlayerInputs.GENERATOR -> {
                         if (goRandom.not() && fill(
@@ -142,6 +144,16 @@ class Tictactoe {
             }
         }
         toFile?.appendText("\n")
+    }
+
+    private fun printBoardToConsole() {
+        for ((index, value) in board.values.withIndex()) {
+            print("$value ")
+            if ((index + 1) % 3 == 0) {
+                print("\n")
+            }
+        }
+        println("\n")
     }
 
     /**

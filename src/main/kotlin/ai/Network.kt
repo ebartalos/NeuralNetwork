@@ -11,25 +11,38 @@ import kotlin.reflect.full.createInstance
 /**
  * Feed forward neural network.
  *
- * @param inputNeurons how many input neurons should network have
- * @param outputNeurons how many output neurons should network have
  * @param id of the network - used for debugging purposes
  */
-class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int) {
+class Network(private val id: Int) {
 
     var layers = ArrayList<Layer>()
 
-    init {
+    /**
+     * Adds input layer to neural network.
+     *
+     * @param amountOfNeurons how many neurons should be added
+     * @param biasNeuron if true, bias neuron will be added
+     *                   if false, bias neuron will not be added
+     */
+    fun addInputLayer(amountOfNeurons: Int, biasNeuron: Boolean = true) {
         val inputLayer = Layer()
-        for (index in 1..inputNeurons) {
+        for (index in 1..amountOfNeurons) {
             inputLayer.addNeuron(Neuron())
         }
-        inputLayer.addNeuron(BiasNeuron())
+        if (biasNeuron) inputLayer.addNeuron(BiasNeuron())
         layers.add(inputLayer)
+    }
 
+    /**
+     * Adds output layer to neural network.
+     *
+     * @param neuronType type of neuron
+     * @param amountOfNeurons how many neurons should be added
+     */
+    fun <T : Any> addOutputLayer(neuronType: KClass<T>, amountOfNeurons: Int) {
         val outputLayer = Layer()
-        for (index in 1..outputNeurons) {
-            outputLayer.addNeuron(TanhNeuron())
+        for (index in 1..amountOfNeurons) {
+            outputLayer.addNeuron(neuronType.createInstance() as Neuron)
         }
         layers.add(outputLayer)
     }
@@ -115,7 +128,7 @@ class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int) {
                 for (inputNeuron in firstLayer.neurons) {
                     val connection =
                         if (inputNeuron is BiasNeuron) {
-                            Connection(inputNeuron, outputNeuron, listOf(1.0, -1.0).random())
+                            Connection(inputNeuron, outputNeuron, listOf(0.2, -0.2).random())
                         } else if (outputNeuron is ReLuNeuron) {
                             Connection(inputNeuron, outputNeuron, heHeuristics(firstLayer.neurons.size))
                         } else if ((outputNeuron is TanhNeuron) || (outputNeuron is SigmoidNeuron)) {
@@ -170,7 +183,9 @@ class Network(inputNeurons: Int, outputNeurons: Int, private val id: Int) {
         val weightsFile = File(Constants.WEIGHTS_FILE)
         val weights = ArrayList<Double>()
         weightsFile.readLines().forEach {
-            weights.add(it.toDouble())
+            if (!(it.contains("class") || it.contains("Layer") or it.contains("eights"))) {
+                weights.add(it.toDouble())
+            }
         }
         updateWeights(weights)
     }
