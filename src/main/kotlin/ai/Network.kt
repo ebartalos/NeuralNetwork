@@ -62,7 +62,7 @@ class Network(private val id: Int) {
         }
         if (biasNeuron) layer.addNeuron(BiasNeuron())
 
-        layers.add(layers.size - 1, layer)
+        layers.add(layer)
     }
 
     /**
@@ -163,7 +163,7 @@ class Network(private val id: Int) {
         )
     }
 
-    fun saveWeightsToFile(file: File = File(Constants.WEIGHTS_FILE), overwrite: Boolean = false) {
+    fun saveWeightsToFile(file: File = File(Constants.BEST_NETWORK_FILE), overwrite: Boolean = false) {
         if (overwrite) file.writeText("")
 
         // add network information - type of neurons and count
@@ -179,11 +179,47 @@ class Network(private val id: Int) {
         }
     }
 
-    fun loadWeightsFromFile() {
-        val weightsFile = File(Constants.WEIGHTS_FILE)
+    fun loadTrainedNetworkFromFile() {
+        val bestNetworkFile = File(Constants.BEST_NETWORK_FILE)
         val weights = ArrayList<Double>()
-        weightsFile.readLines().forEach {
-            if (!(it.contains("class") || it.contains("Layer") or it.contains("eights"))) {
+        val networkStructure = mutableListOf<String>()
+
+        for (line in bestNetworkFile.readLines()) {
+            if (line.contains("Weights")) {
+                break
+            } else if (line.contains("Layer").not()) {
+                networkStructure.add(line)
+            }
+        }
+
+        val neuronClasses = hashMapOf(
+            "ReLuNeuron" to ReLuNeuron::class,
+            "TanhNeuron" to TanhNeuron::class,
+            "SigmoidNeuron" to SigmoidNeuron::class
+        )
+
+        for (index in 0 until networkStructure.size) {
+            var neuronTypeAndAmount = networkStructure[index].split(":")
+            neuronTypeAndAmount = neuronTypeAndAmount[0].split(" ") + neuronTypeAndAmount[1]
+            val neuronType = neuronTypeAndAmount[1].replace("ai.neurons.", "")
+            val neuronAmount = Integer.parseInt(neuronTypeAndAmount[2])
+
+            if (index == 0) { // input layer
+                val biasNeuron = networkStructure[1].contains("Bias")
+                addInputLayer(neuronAmount, biasNeuron = biasNeuron)
+            } else if (index == networkStructure.size - 1) { // output layer
+                addOutputLayer(neuronClasses[neuronType]!!, neuronAmount)
+            } else if (networkStructure[index].contains("Bias").not()) { // hidden layers
+                val biasNeuron = networkStructure[index + 1].contains("Bias")
+                addHiddenLayer(neuronClasses[neuronType]!!, neuronAmount, biasNeuron = biasNeuron)
+            }
+        }
+
+        createConnections()
+
+        bestNetworkFile.readLines().forEach {
+            // load weights
+            if (!(it.contains("class") || it.contains("Layer") or it.contains("Weights"))) {
                 weights.add(it.toDouble())
             }
         }

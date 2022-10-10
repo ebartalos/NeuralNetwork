@@ -14,5 +14,5 @@ object Constants {
     const val MUTATION_RANGE_TO = 1.05
 
     const val LOG_DIRECTORY = "src/logs"
-    const val WEIGHTS_FILE = "weights.txt"
+    const val BEST_NETWORK_FILE = "best.txt"
 }

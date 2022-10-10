@@ -24,10 +24,10 @@ object Main {
         for (i in 1..Constants.MAX_NEURAL_NETWORKS) {
             val network = Network(id = i)
             network.addInputLayer(9)
-            network.addOutputLayer(TanhNeuron::class, 9)
             network.addHiddenLayer(ReLuNeuron::class, 16, true)
             network.addHiddenLayer(ReLuNeuron::class, 20, true)
             network.addHiddenLayer(ReLuNeuron::class, 24, true)
+            network.addOutputLayer(TanhNeuron::class, 9)
 
             network.createConnections()
 
@@ -89,13 +89,8 @@ object Main {
         val network = Network(
             id = 1
         )
-        network.addInputLayer(9)
-        network.addOutputLayer(TanhNeuron::class, 9)
-        network.addHiddenLayer(ReLuNeuron::class, 16, true)
-        network.addHiddenLayer(ReLuNeuron::class, 20, true)
-        network.addHiddenLayer(ReLuNeuron::class, 24, true)
-        network.createConnections()
-        network.loadWeightsFromFile()
+
+        network.loadTrainedNetworkFromFile()
 
         for (i in 0..20) {
             val tictactoe = Tictactoe()
