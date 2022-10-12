@@ -163,7 +163,7 @@ class Network(private val id: Int) {
         )
     }
 
-    fun saveWeightsToFile(file: File = File(Constants.BEST_NETWORK_FILE), overwrite: Boolean = false) {
+    fun saveTrainedNetworkToFile(file: File = File(Constants.BEST_NETWORK_FILE), overwrite: Boolean = false) {
         if (overwrite) file.writeText("")
 
         // add network information - type of neurons and count

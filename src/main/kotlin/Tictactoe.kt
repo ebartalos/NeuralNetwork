@@ -49,7 +49,7 @@ class Tictactoe {
                     }
 
                     PlayerInputs.GENERATOR -> {
-                        if (goRandom.not() && fill(
+                        if (generatorLevel < 4 && goRandom.not() && fill(
                                 generator!!.yield(generatorLevel),
                                 Constants.OPPONENT_PLAYER_INDEX
                             )
@@ -121,8 +121,10 @@ class Tictactoe {
     private fun adjustedBoardState(): ArrayList<Int> {
         val adjustedBoardState = ArrayList<Int>()
         for (element in boardState()) {
-            if (element == 2) {
+            if (element == Constants.OPPONENT_PLAYER_INDEX) {
                 adjustedBoardState.add(-1)
+            } else if (element == Constants.AI_PLAYER_INDEX) {
+                adjustedBoardState.add(1)
             } else {
                 adjustedBoardState.add(element)
             }

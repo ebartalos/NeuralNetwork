@@ -1,15 +1,15 @@
 import ai.Network
 import ai.algorithms.Genetics
 import ai.neurons.ReLuNeuron
-import ai.neurons.TanhNeuron
+import ai.neurons.SigmoidNeuron
 import java.io.File
 
 object Main {
 
     @JvmStatic
     fun main(args: Array<String>) {
-//        ga()
-        loadFromFileAndTestWinner()
+        ga()
+//        loadFromFileAndTestWinner()
     }
 
     private fun ga() {
@@ -18,18 +18,22 @@ object Main {
         val fitness = hashMapOf<Network, Int>()
         var sortedFitness: Map<Network, Int>
         var bestFitness = 0
-        val bestPossibleFitness = 6561 // generator max size - OPPONENT_PLAYER_INDEX 2
-//        val bestPossibleFitness: Int = 59049 // generator max size - OPPONENT_PLAYER_INDEX 1
+        val bestPossibleFitness = 6561
 
         for (i in 1..Constants.MAX_NEURAL_NETWORKS) {
             val network = Network(id = i)
-            network.addInputLayer(9)
-            network.addHiddenLayer(ReLuNeuron::class, 16, true)
-            network.addHiddenLayer(ReLuNeuron::class, 20, true)
-            network.addHiddenLayer(ReLuNeuron::class, 24, true)
-            network.addOutputLayer(TanhNeuron::class, 9)
 
-            network.createConnections()
+            if (Constants.LOAD_NETWORK_FILE) {
+                network.loadTrainedNetworkFromFile()
+            } else {
+                network.addInputLayer(9)
+                network.addHiddenLayer(ReLuNeuron::class, 16, true)
+                network.addHiddenLayer(ReLuNeuron::class, 20, true)
+                network.addHiddenLayer(ReLuNeuron::class, 24, true)
+                network.addOutputLayer(SigmoidNeuron::class, 9)
+
+                network.createConnections()
+            }
 
             networks.add(network)
             fitness[network] = 0
@@ -66,20 +70,24 @@ object Main {
             genetics.breed(mutate = true, mutationChance = Constants.MUTATION_CHANCE)
 
             if (fitness[bestNetwork]!! > bestFitness) {
+                println("Generation $generation")
+                println("Best network fitness ${fitness[bestNetwork]!!}")
+
+                bestFitness = fitness[bestNetwork]!!
+
                 playWithWinner(
                     bestNetwork,
                     generation,
                     bestFitness
                 )
-                println("Generation $generation")
-                println("Best network fitness ${fitness[bestNetwork]!!}\n")
-                bestFitness = fitness[bestNetwork]!!
             }
 
-            if (generation % 100 == 0) println("Generation $generation, fitness: ${fitness[bestNetwork]!!}\n")
+            if (generation % 50 == 0) {
+                println("\nGeneration $generation, fitness: ${fitness[bestNetwork]!!}\n")
+            }
 
             if (bestFitness >= bestPossibleFitness) {
-                bestNetwork.saveWeightsToFile(overwrite = true)
+                bestNetwork.saveTrainedNetworkToFile(overwrite = true)
                 return
             }
         }
@@ -123,10 +131,12 @@ object Main {
         }
         println("AI won: ${match[0]}")
         println("Draw: ${match[1]}")
-        println("Random won: ${match[2]}")
+        println("Random won: ${match[2]}\n")
 
-        network.saveWeightsToFile(generationLogFile)
-        generationLogFile.renameTo(File("${Constants.LOG_DIRECTORY}/${Constants.AI_PLAYER_INDEX}-$generation-${match[0]}-${match[1]}-${match[2]}--${fitness}%.txt"))
+        network.saveTrainedNetworkToFile(generationLogFile)
+        generationLogFile.renameTo(File("${Constants.LOG_DIRECTORY}/${Constants.AI_PLAYER_INDEX}--$generation--${match[0]}-${match[1]}-${match[2]}--${fitness}.txt"))
+
+        network.saveTrainedNetworkToFile()
     }
 
     private fun emptyLogsDirectory(directory: File) {
