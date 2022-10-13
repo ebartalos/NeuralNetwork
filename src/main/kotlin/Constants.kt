@@ -2,9 +2,6 @@
  * Place for compile time constant.
  */
 object Constants {
-    const val AI_PLAYER_INDEX = 2
-    const val OPPONENT_PLAYER_INDEX = 1
-
     const val MAX_NEURAL_NETWORKS = 10
     const val MAX_GENERATIONS = 500000
     const val MAX_ITERATIONS_IN_GENERATION = 10000000
@@ -16,5 +13,5 @@ object Constants {
     const val LOG_DIRECTORY = "src/logs"
     const val BEST_NETWORK_FILE = "best.txt"
 
-    const val LOAD_NETWORK_FILE = false
+    const val LOAD_NETWORK_FILE_ON_START = false
 }

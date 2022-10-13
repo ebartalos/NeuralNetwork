@@ -24,12 +24,20 @@ class Tictactoe {
      * @param playerInput TODO
      * @param file file to print logs into
      */
-    fun play(network: Network, playerInput: PlayerInputs, file: File? = null, generator: Generator? = null): Int {
-        var iterativePlayerIndex = if (Constants.AI_PLAYER_INDEX == 1) 1 else 0
+    fun play(
+        network: Network,
+        aiPlayerIndex: Int,
+        playerInput: PlayerInputs,
+        file: File? = null,
+        generator: Generator? = null
+    ): Int {
+        var iterativePlayerIndex = if (aiPlayerIndex == 1) 1 else 0
         var isGameEnded: Int
 
         var generatorLevel = 0
         var goRandom = false
+
+        val opponentPlayerIndex = if (aiPlayerIndex == 1) 2 else 1
 
         resetBoard()
 
@@ -39,31 +47,31 @@ class Tictactoe {
             if (iterativePlayerIndex == 0) {
                 when (playerInput) {
                     PlayerInputs.RANDOM ->
-                        while (fill(availableBoardSquares().random(), Constants.OPPONENT_PLAYER_INDEX).not()) {
+                        while (fill(availableBoardSquares().random(), opponentPlayerIndex).not()) {
                         }
 
                     PlayerInputs.HUMAN -> {
                         printBoardToConsole()
-                        while (fill(readLine()!!.toInt(), Constants.OPPONENT_PLAYER_INDEX).not()) {
+                        while (fill(readLine()!!.toInt(), opponentPlayerIndex).not()) {
                         }
                     }
 
                     PlayerInputs.GENERATOR -> {
                         if (generatorLevel < 4 && goRandom.not() && fill(
                                 generator!!.yield(generatorLevel),
-                                Constants.OPPONENT_PLAYER_INDEX
+                                opponentPlayerIndex
                             )
                         ) {
                             generatorLevel += 1
                         } else {
                             goRandom = true
-                            while (fill(availableBoardSquares().random(), Constants.OPPONENT_PLAYER_INDEX).not()) {
+                            while (fill(availableBoardSquares().random(), opponentPlayerIndex).not()) {
                             }
                         }
                     }
                 }
             } else {
-                network.setInputs(adjustedBoardState())
+                network.setInputs(adjustedBoardState(aiPlayerIndex, opponentPlayerIndex))
                 network.evaluate()
 
                 // map output neurons to tic-tac-toe fields
@@ -79,7 +87,7 @@ class Tictactoe {
                 sortedResult.forEach { file?.appendText("$it \n") }
 
                 for (index in sortedResult.keys.reversed()) {
-                    if (fill(index, Constants.AI_PLAYER_INDEX).not()) {
+                    if (fill(index, aiPlayerIndex).not()) {
                         continue
                     } else {
                         break
@@ -118,12 +126,12 @@ class Tictactoe {
     /**
      * Board state with 0, 1, -1 (for NN learning)
      */
-    private fun adjustedBoardState(): ArrayList<Int> {
+    private fun adjustedBoardState(aiPlayerIndex: Int, opponentPlayerIndex: Int): ArrayList<Int> {
         val adjustedBoardState = ArrayList<Int>()
         for (element in boardState()) {
-            if (element == Constants.OPPONENT_PLAYER_INDEX) {
+            if (element == opponentPlayerIndex) {
                 adjustedBoardState.add(-1)
-            } else if (element == Constants.AI_PLAYER_INDEX) {
+            } else if (element == aiPlayerIndex) {
                 adjustedBoardState.add(1)
             } else {
                 adjustedBoardState.add(element)
