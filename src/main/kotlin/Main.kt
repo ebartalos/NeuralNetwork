@@ -9,7 +9,7 @@ object Main {
     @JvmStatic
     fun main(args: Array<String>) {
         ga()
-//        loadFromFileAndTestWinner()
+        loadFromFileAndTestWinner()
     }
 
     private fun ga() {
