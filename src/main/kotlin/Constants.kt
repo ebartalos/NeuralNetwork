@@ -13,5 +13,5 @@ object Constants {
     const val LOG_DIRECTORY = "src/logs"
     const val BEST_NETWORK_FILE = "best.txt"
 
-    const val LOAD_NETWORK_FILE_ON_START = false
+    const val LOAD_NETWORK_FILE_ON_START = true
 }

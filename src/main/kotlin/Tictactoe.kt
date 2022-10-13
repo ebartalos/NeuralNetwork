@@ -3,7 +3,7 @@ import java.io.File
 import kotlin.math.abs
 
 /**
- * TODO
+ * Classic 3x3 tic-tac-toe game.
  */
 class Tictactoe {
     // index, value
@@ -20,9 +20,13 @@ class Tictactoe {
     }
 
     /**
+     * Plays one round of tic-tac-toe.
+     *
      * @param network neural network
-     * @param playerInput TODO
+     * @param aiPlayerIndex is AI first(1) or second(2) player?
+     * @param playerInput who is playing network - Human, Random or Generator
      * @param file file to print logs into
+     * @param generator generator for Generator input
      */
     fun play(
         network: Network,
@@ -140,22 +144,33 @@ class Tictactoe {
         return adjustedBoardState
     }
 
+    /**
+     * Resets board to initial state (all zeroes)
+     */
     private fun resetBoard() {
         for (index in 1..9) {
             board[index] = 0
         }
     }
 
-    private fun printBoardStateToFile(toFile: File? = null) {
+    /**
+     * Saves current board state to the file in human-readable format
+     *
+     * @param file target file
+     */
+    private fun printBoardStateToFile(file: File? = null) {
         for ((index, value) in board.values.withIndex()) {
-            toFile?.appendText("$value ")
+            file?.appendText("$value ")
             if ((index + 1) % 3 == 0) {
-                toFile?.appendText("\n")
+                file?.appendText("\n")
             }
         }
-        toFile?.appendText("\n")
+        file?.appendText("\n")
     }
 
+    /**
+     * Prints current board state to the console in human-readable format
+     */
     private fun printBoardToConsole() {
         for ((index, value) in board.values.withIndex()) {
             print("$value ")
@@ -167,6 +182,8 @@ class Tictactoe {
     }
 
     /**
+     * Fills board index with value
+     *
      * @return true if value was successfully entered
      *         false if not
      */
@@ -179,6 +196,15 @@ class Tictactoe {
         }
     }
 
+    /**
+     * Evaluates current state of the board and determines end of game.
+     *
+     * @param file target file for saving the result
+     * @return 0 if game ended in draw
+     *         1 if player 1 won
+     *         2 if player 2 won
+     *         3 if the game is not determined yet
+     */
     private fun determineWinner(file: File? = null): Int {
         val winningCombos = arrayListOf(
             arrayListOf(1, 2, 3),

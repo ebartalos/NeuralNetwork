@@ -98,6 +98,9 @@ class Network(private val id: Int) {
         }
     }
 
+    /**
+     * Weights' values
+     */
     fun weights(): ArrayList<Double> {
         val weights = ArrayList<Double>()
         for (layer in layers) {
@@ -106,6 +109,11 @@ class Network(private val id: Int) {
         return weights
     }
 
+    /**
+     * Sets inputs for the network.
+     *
+     * @param inputs list of values
+     */
     fun setInputs(inputs: ArrayList<Int>) {
         val inputsIterator = inputs.listIterator()
 
@@ -163,7 +171,15 @@ class Network(private val id: Int) {
         )
     }
 
-    fun saveTrainedNetworkToFile(file: File = File(Constants.BEST_NETWORK_FILE), overwrite: Boolean = false) {
+    /**
+     * Saves network details (layers, number/types of neurons, weights' values) to the file.
+     * Target file will be overwritten.
+     *
+     * @param file target file for saving
+     * @param overwrite true if target file should be overwritten
+     *                  false if not
+     */
+    fun saveTrainedNetworkToFile(file: File = File(Constants.BEST_NETWORK_FILE), overwrite: Boolean) {
         if (overwrite) file.writeText("")
 
         // add network information - type of neurons and count
@@ -179,12 +195,16 @@ class Network(private val id: Int) {
         }
     }
 
-    fun loadTrainedNetworkFromFile() {
-        val bestNetworkFile = File(Constants.BEST_NETWORK_FILE)
+    /**
+     * Loads saved network (from method saveTrainedNetworkToFile) to the network.
+     *
+     * @param file file with saved network
+     */
+    fun loadTrainedNetworkFromFile(file: File = File(Constants.BEST_NETWORK_FILE)) {
         val weights = ArrayList<Double>()
         val networkStructure = mutableListOf<String>()
 
-        for (line in bestNetworkFile.readLines()) {
+        for (line in file.readLines()) {
             if (line.contains("Weights")) {
                 break
             } else if (line.contains("Layer").not()) {
@@ -217,7 +237,7 @@ class Network(private val id: Int) {
 
         createConnections()
 
-        bestNetworkFile.readLines().forEach {
+        file.readLines().forEach {
             // load weights
             if (!(it.contains("class") || it.contains("Layer") or it.contains("Weights"))) {
                 weights.add(it.toDouble())

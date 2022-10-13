@@ -1,7 +1,7 @@
 import ai.Network
 import ai.algorithms.Genetics
 import ai.neurons.ReLuNeuron
-import ai.neurons.SigmoidNeuron
+import ai.neurons.TanhNeuron
 import java.io.File
 
 object Main {
@@ -20,8 +20,6 @@ object Main {
         var bestFitness = 0
         val bestPossibleFitness = 13122 // 6561 * 2
 
-        var aiPlayerIndex: Int
-
         for (i in 1..Constants.MAX_NEURAL_NETWORKS) {
             val network = Network(id = i)
 
@@ -32,7 +30,7 @@ object Main {
                 network.addHiddenLayer(ReLuNeuron::class, 18, true)
                 network.addHiddenLayer(ReLuNeuron::class, 22, true)
                 network.addHiddenLayer(ReLuNeuron::class, 26, true)
-                network.addOutputLayer(SigmoidNeuron::class, 9)
+                network.addOutputLayer(TanhNeuron::class, 9)
 
                 network.createConnections()
             }
@@ -50,37 +48,9 @@ object Main {
 
             for (network in networks) {
                 val tictactoe = Tictactoe()
-                val generator1 = Generator(from = 1111, to = 9999)
-                aiPlayerIndex = 1
-                iterationLoop1@ for (game in 1..Constants.MAX_ITERATIONS_IN_GENERATION) {
-                    val playerInput = Tictactoe.PlayerInputs.GENERATOR
-                    val result = tictactoe.play(network, aiPlayerIndex, playerInput, generator = generator1)
 
-                    if ((result == aiPlayerIndex) || (result == 0)) {
-                        fitness[network] = fitness[network]!! + 1
-                    }
-
-                    if (generator1.isDrained()) {
-                        break@iterationLoop1
-                    }
-                }
-
-
-                val generator2 = Generator(from = 1111, to = 9999)
-                aiPlayerIndex = 2
-
-                iterationLoop2@ for (game in 1..Constants.MAX_ITERATIONS_IN_GENERATION) {
-                    val playerInput = Tictactoe.PlayerInputs.GENERATOR
-                    val result = tictactoe.play(network, aiPlayerIndex, playerInput, generator = generator2)
-
-                    if ((result == aiPlayerIndex) || (result == 0)) {
-                        fitness[network] = fitness[network]!! + 1
-                    }
-
-                    if (generator2.isDrained()) {
-                        break@iterationLoop2
-                    }
-                }
+                iterateGenerator(tictactoe, network, 1, fitness)
+                iterateGenerator(tictactoe, network, 2, fitness)
             }
 
             sortedFitness = fitness.toList().sortedBy { (_, value) -> value }.toMap()
@@ -123,6 +93,27 @@ object Main {
         }
     }
 
+    private fun iterateGenerator(
+        tictactoe: Tictactoe,
+        network: Network,
+        aiPlayerIndex: Int,
+        fitness: HashMap<Network, Int>
+    ) {
+        val generator = Generator(from = 1111, to = 9999)
+        iterationLoop@ for (game in 1..Constants.MAX_ITERATIONS_IN_GENERATION) {
+            val playerInput = Tictactoe.PlayerInputs.GENERATOR
+            val result = tictactoe.play(network, aiPlayerIndex, playerInput, generator = generator)
+
+            if ((result == aiPlayerIndex) || (result == 0)) {
+                fitness[network] = fitness[network]!! + 1
+            }
+
+            if (generator.isDrained()) {
+                break@iterationLoop
+            }
+        }
+    }
+
     private fun playWithWinner(
         network: Network,
         generation: Int,
@@ -154,7 +145,7 @@ object Main {
         println("Draw: ${match[1]}")
         println("Random won: ${match[2]}\n")
 
-        network.saveTrainedNetworkToFile(generationLogFile)
+        network.saveTrainedNetworkToFile(generationLogFile, overwrite = false)
         generationLogFile.renameTo(File("${Constants.LOG_DIRECTORY}/${aiPlayerIndex}--$generation--${match[0]}-${match[1]}-${match[2]}--${fitness}.txt"))
 
         network.saveTrainedNetworkToFile(overwrite = true)
