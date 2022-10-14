@@ -26,10 +26,14 @@ object Main {
             if (Constants.LOAD_NETWORK_FILE_ON_START) {
                 network.loadTrainedNetworkFromFile()
             } else {
+                // each input represents one place on the board
                 network.addInputLayer(9)
                 network.addHiddenLayer(ReLuNeuron::class, 18, true)
                 network.addHiddenLayer(ReLuNeuron::class, 22, true)
                 network.addHiddenLayer(ReLuNeuron::class, 26, true)
+
+                // each output represents Q-value of one place on the board
+                // higher value means the place corresponding to the neuron will be chosen
                 network.addOutputLayer(TanhNeuron::class, 9)
 
                 network.createConnections()
