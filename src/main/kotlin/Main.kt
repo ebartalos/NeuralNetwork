@@ -18,7 +18,9 @@ object Main {
         val fitness = hashMapOf<Network, Int>()
         var sortedFitness: Map<Network, Int>
         var bestFitness = 0
-        val bestPossibleFitness = 13122 // 6561 * 2
+
+        // 6561 * 2 -> sum of two generators from 1111 to 9999 without zeroes
+        val bestPossibleFitness = 13122
 
         for (i in 1..Constants.MAX_NEURAL_NETWORKS) {
             val network = Network(id = i)
@@ -33,7 +35,7 @@ object Main {
                 network.addHiddenLayer(ReLuNeuron::class, 26, true)
 
                 // each output represents Q-value of one place on the board
-                // higher value means the place corresponding to the neuron will be chosen
+                // higher value means the corresponding neuron will be chosen
                 network.addOutputLayer(TanhNeuron::class, 9)
 
                 network.createConnections()
@@ -69,8 +71,8 @@ object Main {
 
                 bestFitness = fitness[bestNetwork]!!
 
-                playWithWinner(bestNetwork, generation, bestFitness, 1)
-                playWithWinner(bestNetwork, generation, bestFitness, 2)
+                playTestingGamesWithRandom(bestNetwork, generation, bestFitness, 1)
+                playTestingGamesWithRandom(bestNetwork, generation, bestFitness, 2)
             }
 
             if (generation % 50 == 0) {
@@ -118,7 +120,7 @@ object Main {
         }
     }
 
-    private fun playWithWinner(
+    private fun playTestingGamesWithRandom(
         network: Network,
         generation: Int,
         fitness: Int,
