@@ -16,7 +16,4 @@ class Connection(
     weightHeuristic: Double? = null
 ) {
     var weight: Double = weightHeuristic ?: Math.random()
-
-    // backpropagation error
-    var error: Double? = null
 }
