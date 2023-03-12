@@ -2,9 +2,11 @@ import ai.Network
 import ai.algorithms.Genetics
 import ai.neurons.ReLuNeuron
 import ai.neurons.TanhNeuron
+import tictactoe.Generator
+import tictactoe.Tictactoe
 import java.io.File
 
-object Main {
+object MainTicTacToe {
 
     @JvmStatic
     fun main(args: Array<String>) {

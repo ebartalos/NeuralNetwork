@@ -1,3 +1,5 @@
+package tictactoe
+
 import ai.Network
 import java.io.File
 import kotlin.math.abs
@@ -24,9 +26,9 @@ class Tictactoe {
      *
      * @param network neural network
      * @param aiPlayerIndex is AI first(1) or second(2) player?
-     * @param playerInput who is playing network - Human, Random or Generator
+     * @param playerInput who is playing network - Human, Random or tictactoe.Generator
      * @param file file to print logs into
-     * @param generator generator for Generator input
+     * @param generator generator for tictactoe.Generator input
      */
     fun play(
         network: Network,

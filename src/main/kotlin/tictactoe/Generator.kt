@@ -1,3 +1,5 @@
+package tictactoe
+
 /**
  * Generate numbers and remove them after one use.
  * Zero is excluded.
