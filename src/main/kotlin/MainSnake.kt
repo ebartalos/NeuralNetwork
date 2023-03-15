@@ -1,3 +1,4 @@
+import snake.Snake
 import java.awt.EventQueue
 
 object MainSnake {

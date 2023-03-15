@@ -23,7 +23,7 @@ class Board : JPanel(), ActionListener {
     private val x = IntArray(allDots)
     private val y = IntArray(allDots)
 
-    private var nOfDots: Int = 0
+    private var numberOfDots: Int = 0
     private var appleX: Int = 0
     private var appleY: Int = 0
 
@@ -49,22 +49,20 @@ class Board : JPanel(), ActionListener {
     }
 
     private fun loadImages() {
+        val dot = ImageIcon("src/main/resources/dot.png")
+        ball = dot.image
 
-        val iid = ImageIcon("src/main/resources/dot.png")
-        ball = iid.image
+        val apple = ImageIcon("src/main/resources/apple.png")
+        this.apple = apple.image
 
-        val iia = ImageIcon("src/main/resources/apple.png")
-        apple = iia.image
-
-        val iih = ImageIcon("src/main/resources/head.png")
-        head = iih.image
+        val head = ImageIcon("src/main/resources/head.png")
+        this.head = head.image
     }
 
     private fun initGame() {
+        numberOfDots = 3
 
-        nOfDots = 3
-
-        for (z in 0 until nOfDots) {
+        for (z in 0 until numberOfDots) {
             x[z] = 50 - z * 10
             y[z] = 50
         }
@@ -75,34 +73,32 @@ class Board : JPanel(), ActionListener {
         timer!!.start()
     }
 
-    public override fun paintComponent(g: Graphics) {
-        super.paintComponent(g)
-        doDrawing(g)
+    public override fun paintComponent(graphics: Graphics) {
+        super.paintComponent(graphics)
+        doDrawing(graphics)
     }
 
-    private fun doDrawing(g: Graphics) {
-
+    private fun doDrawing(graphics: Graphics) {
         if (inGame) {
-            g.drawImage(apple, appleX, appleY, this)
+            graphics.drawImage(apple, appleX, appleY, this)
 
-            for (z in 0 until nOfDots) {
+            for (z in 0 until numberOfDots) {
                 if (z == 0) {
-                    g.drawImage(head, x[z], y[z], this)
+                    graphics.drawImage(head, x[z], y[z], this)
                 } else {
-                    g.drawImage(ball, x[z], y[z], this)
+                    graphics.drawImage(ball, x[z], y[z], this)
                 }
             }
 
             Toolkit.getDefaultToolkit().sync()
 
         } else {
-            gameOver(g)
+            gameOver(graphics)
         }
     }
 
-    private fun gameOver(g: Graphics) {
-
-        val msg = "Game Over"
+    private fun gameOver(graphics: Graphics) {
+        val message = "Game Over"
         val small = Font("Helvetica", Font.BOLD, 14)
         val fontMetrics = getFontMetrics(small)
 
@@ -112,25 +108,23 @@ class Board : JPanel(), ActionListener {
 
         rh[RenderingHints.KEY_RENDERING] = RenderingHints.VALUE_RENDER_QUALITY
 
-        (g as Graphics2D).setRenderingHints(rh)
+        (graphics as Graphics2D).setRenderingHints(rh)
 
-        g.color = Color.white
-        g.font = small
-        g.drawString(msg, (boardWidth - fontMetrics.stringWidth(msg)) / 2,
+        graphics.color = Color.white
+        graphics.font = small
+        graphics.drawString(message, (boardWidth - fontMetrics.stringWidth(message)) / 2,
             boardHeight / 2)
     }
 
     private fun checkApple() {
-
         if (x[0] == appleX && y[0] == appleY) {
-            nOfDots++
+            numberOfDots++
             locateApple()
         }
     }
 
     private fun move() {
-
-        for (z in nOfDots downTo 1) {
+        for (z in numberOfDots downTo 1) {
             x[z] = x[z - 1]
             y[z] = y[z - 1]
         }
@@ -153,8 +147,7 @@ class Board : JPanel(), ActionListener {
     }
 
     private fun checkCollision() {
-
-        for (z in nOfDots downTo 1) {
+        for (z in numberOfDots downTo 1) {
             if (z > 4 && x[0] == x[z] && y[0] == y[z]) {
                 inGame = false
             }
@@ -182,7 +175,6 @@ class Board : JPanel(), ActionListener {
     }
 
     private fun locateApple() {
-
         var r = (Math.random() * randPos).toInt()
         appleX = r * dotSize
 
@@ -191,20 +183,17 @@ class Board : JPanel(), ActionListener {
     }
 
     override fun actionPerformed(e: ActionEvent) {
-
         if (inGame) {
             checkApple()
             checkCollision()
-            move()
+            move() // todo here do some AI input
         }
 
         repaint()
     }
 
     private inner class TAdapter : KeyAdapter() {
-
         override fun keyPressed(e: KeyEvent?) {
-
             val key = e!!.keyCode
 
             if (key == KeyEvent.VK_LEFT && !rightDirection) {

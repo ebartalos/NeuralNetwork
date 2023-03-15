@@ -9,11 +9,9 @@ class Snake : JFrame() {
     }
 
     private fun initUI() {
-
         add(Board())
 
         title = "Snake"
-
         isResizable = false
         pack()
 
