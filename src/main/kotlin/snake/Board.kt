@@ -13,19 +13,19 @@ import javax.swing.Timer
 
 class Board : JPanel(), ActionListener {
 
-    private val boardWidth = 600
+    private val boardWidth = 300
     private val boardHeight = 300
     private val dotSize = 10
     private val allDots = 900
     private val randPos = 29
     private val delay = 140
 
-    private val x = IntArray(allDots)
-    private val y = IntArray(allDots)
+    private val headPositionX = IntArray(allDots) // ai input
+    private val headPositionY = IntArray(allDots) // ai input
 
-    private var numberOfDots: Int = 0
-    private var appleX: Int = 0
-    private var appleY: Int = 0
+    private var snakeBodyLength: Int = 0 // ai input
+    private var applePositionX: Int = 0 // ai inpuy
+    private var applePositionY: Int = 0 // ai input
 
     private var leftDirection = false
     private var rightDirection = true
@@ -60,11 +60,11 @@ class Board : JPanel(), ActionListener {
     }
 
     private fun initGame() {
-        numberOfDots = 3
+        snakeBodyLength = 3
 
-        for (z in 0 until numberOfDots) {
-            x[z] = 50 - z * 10
-            y[z] = 50
+        for (z in 0 until snakeBodyLength) {
+            headPositionX[z] = 50 - z * 10
+            headPositionY[z] = 50
         }
 
         locateApple()
@@ -80,13 +80,13 @@ class Board : JPanel(), ActionListener {
 
     private fun doDrawing(graphics: Graphics) {
         if (inGame) {
-            graphics.drawImage(apple, appleX, appleY, this)
+            graphics.drawImage(apple, applePositionX, applePositionY, this)
 
-            for (z in 0 until numberOfDots) {
+            for (z in 0 until snakeBodyLength) {
                 if (z == 0) {
-                    graphics.drawImage(head, x[z], y[z], this)
+                    graphics.drawImage(head, headPositionX[z], headPositionY[z], this)
                 } else {
-                    graphics.drawImage(ball, x[z], y[z], this)
+                    graphics.drawImage(ball, headPositionX[z], headPositionY[z], this)
                 }
             }
 
@@ -117,55 +117,55 @@ class Board : JPanel(), ActionListener {
     }
 
     private fun checkApple() {
-        if (x[0] == appleX && y[0] == appleY) {
-            numberOfDots++
+        if (headPositionX[0] == applePositionX && headPositionY[0] == applePositionY) {
+            snakeBodyLength++
             locateApple()
         }
     }
 
     private fun move() {
-        for (z in numberOfDots downTo 1) {
-            x[z] = x[z - 1]
-            y[z] = y[z - 1]
+        for (z in snakeBodyLength downTo 1) {
+            headPositionX[z] = headPositionX[z - 1]
+            headPositionY[z] = headPositionY[z - 1]
         }
 
         if (leftDirection) {
-            x[0] -= dotSize
+            headPositionX[0] -= dotSize
         }
 
         if (rightDirection) {
-            x[0] += dotSize
+            headPositionX[0] += dotSize
         }
 
         if (upDirection) {
-            y[0] -= dotSize
+            headPositionY[0] -= dotSize
         }
 
         if (downDirection) {
-            y[0] += dotSize
+            headPositionY[0] += dotSize
         }
     }
 
     private fun checkCollision() {
-        for (z in numberOfDots downTo 1) {
-            if (z > 4 && x[0] == x[z] && y[0] == y[z]) {
+        for (z in snakeBodyLength downTo 1) {
+            if (z > 4 && headPositionX[0] == headPositionX[z] && headPositionY[0] == headPositionY[z]) {
                 inGame = false
             }
         }
 
-        if (y[0] >= boardHeight) {
+        if (headPositionY[0] >= boardHeight) {
             inGame = false
         }
 
-        if (y[0] < 0) {
+        if (headPositionY[0] < 0) {
             inGame = false
         }
 
-        if (x[0] >= boardWidth) {
+        if (headPositionX[0] >= boardWidth) {
             inGame = false
         }
 
-        if (x[0] < 0) {
+        if (headPositionX[0] < 0) {
             inGame = false
         }
 
@@ -176,13 +176,13 @@ class Board : JPanel(), ActionListener {
 
     private fun locateApple() {
         var r = (Math.random() * randPos).toInt()
-        appleX = r * dotSize
+        applePositionX = r * dotSize
 
         r = (Math.random() * randPos).toInt()
-        appleY = r * dotSize
+        applePositionY = r * dotSize
     }
 
-    override fun actionPerformed(e: ActionEvent) {
+    override fun actionPerformed(actionEvent: ActionEvent) {
         if (inGame) {
             checkApple()
             checkCollision()
@@ -193,8 +193,8 @@ class Board : JPanel(), ActionListener {
     }
 
     private inner class TAdapter : KeyAdapter() {
-        override fun keyPressed(e: KeyEvent?) {
-            val key = e!!.keyCode
+        override fun keyPressed(keyEvent: KeyEvent?) {
+            val key = keyEvent!!.keyCode
 
             if (key == KeyEvent.VK_LEFT && !rightDirection) {
                 leftDirection = true
