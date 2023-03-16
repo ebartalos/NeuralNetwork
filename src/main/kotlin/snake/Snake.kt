@@ -39,10 +39,9 @@ class Snake(private val network: Network) : JFrame() {
         evaluationMatrix[Board.Direction.UP] = network.output()[2]
         evaluationMatrix[Board.Direction.DOWN] = network.output()[3]
 
-        val sortedResult = evaluationMatrix.toList().sortedBy { (key, value) -> value }
+        val sortedResult = evaluationMatrix.toList().sortedBy { (_, value) -> value }
             .toMap()
         val result = sortedResult.keys.reversed()[3]
-        println("Going $result")
 
         board.changeDirection(result)
     }

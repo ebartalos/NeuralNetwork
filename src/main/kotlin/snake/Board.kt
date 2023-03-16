@@ -15,7 +15,7 @@ class Board : JPanel(), ActionListener {
     private val dotSize = 10
     private val allDots = 900
     private val randPos = 29
-    private val delay = 100
+    val delay = 10
 
     val allJointsX = IntArray(allDots)
     val allJointsY = IntArray(allDots)
@@ -38,7 +38,6 @@ class Board : JPanel(), ActionListener {
     private var head: Image? = null
 
     init {
-//        addKeyListener(TAdapter())
         background = Color.black
         isFocusable = true
 
@@ -102,8 +101,7 @@ class Board : JPanel(), ActionListener {
         val fontMetrics = getFontMetrics(small)
 
         val rh = RenderingHints(
-            RenderingHints.KEY_ANTIALIASING,
-            RenderingHints.VALUE_ANTIALIAS_ON
+            RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON
         )
 
         rh[RenderingHints.KEY_RENDERING] = RenderingHints.VALUE_RENDER_QUALITY
@@ -113,8 +111,7 @@ class Board : JPanel(), ActionListener {
         graphics.color = Color.white
         graphics.font = small
         graphics.drawString(
-            message, (boardWidth - fontMetrics.stringWidth(message)) / 2,
-            boardHeight / 2
+            message, (boardWidth - fontMetrics.stringWidth(message)) / 2, boardHeight / 2
         )
         isGameOver = true
     }
@@ -196,10 +193,7 @@ class Board : JPanel(), ActionListener {
     }
 
     enum class Direction {
-        LEFT,
-        RIGHT,
-        UP,
-        DOWN
+        LEFT, RIGHT, UP, DOWN
     }
 
     fun changeDirection(direction: Direction) {
