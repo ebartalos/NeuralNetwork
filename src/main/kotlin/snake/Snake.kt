@@ -3,8 +3,8 @@ package snake
 import ai.Network
 import javax.swing.JFrame
 
-class Snake(val network: Network) : JFrame() {
-    private lateinit var board: Board
+class Snake(private val network: Network) : JFrame() {
+    lateinit var board: Board
 
     init {
         initUI()
@@ -23,11 +23,27 @@ class Snake(val network: Network) : JFrame() {
     }
 
     fun changeDirection() {
-//        val inputs = arrayListOf<Int>(
-//            board.headPositionX,
-//            board
-//        )
-//        network.setInputs()
-//        val p = 4
+        val inputs = arrayListOf(
+            board.allJointsX[0],
+            board.allJointsY[0],
+            board.applePositionX,
+            board.applePositionY,
+            board.snakeBodyLength
+        )
+        network.setInputs(inputs)
+        network.evaluate()
+
+        val evaluationMatrix = mutableMapOf<Board.Direction, Double>()
+        evaluationMatrix[Board.Direction.LEFT] = network.output()[0]
+        evaluationMatrix[Board.Direction.RIGHT] = network.output()[1]
+        evaluationMatrix[Board.Direction.UP] = network.output()[2]
+        evaluationMatrix[Board.Direction.DOWN] = network.output()[3]
+
+        val sortedResult = evaluationMatrix.toList().sortedBy { (key, value) -> value }
+            .toMap()
+        val result = sortedResult.keys.reversed()[3]
+        println("Going $result")
+
+        board.changeDirection(result)
     }
 }

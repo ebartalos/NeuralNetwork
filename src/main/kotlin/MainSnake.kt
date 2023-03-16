@@ -18,12 +18,13 @@ object MainSnake {
     }
 
     private fun startGame(network: Network) {
-//        EventQueue.invokeLater {
-            val snake = Snake(network)
-            snake.isVisible = true
+        val snake = Snake(network)
+        snake.isVisible = true
 
-        snake.changeDirection()
+        while (snake.board.isGameOver.not()) {
+            snake.changeDirection()
+            Thread.sleep(100)
+        }
 
-//        }
     }
 }

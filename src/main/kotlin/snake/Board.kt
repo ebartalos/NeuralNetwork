@@ -17,8 +17,8 @@ class Board : JPanel(), ActionListener {
     private val randPos = 29
     private val delay = 100
 
-    val headPositionX = IntArray(allDots) // ai input
-    val headPositionY = IntArray(allDots) // ai input
+    val allJointsX = IntArray(allDots)
+    val allJointsY = IntArray(allDots)
 
     var snakeBodyLength: Int = 0 // ai input
     var applePositionX: Int = 0 // ai inpuy
@@ -29,6 +29,8 @@ class Board : JPanel(), ActionListener {
     private var upDirection = false
     private var downDirection = false
     private var inGame = true
+
+    var isGameOver = false
 
     private var timer: Timer? = null
     private var ball: Image? = null
@@ -60,8 +62,8 @@ class Board : JPanel(), ActionListener {
         snakeBodyLength = 3
 
         for (z in 0 until snakeBodyLength) {
-            headPositionX[z] = 50 - z * 10
-            headPositionY[z] = 50
+            allJointsX[z] = 50 - z * 10
+            allJointsY[z] = 50
         }
 
         locateApple()
@@ -81,9 +83,9 @@ class Board : JPanel(), ActionListener {
 
             for (z in 0 until snakeBodyLength) {
                 if (z == 0) {
-                    graphics.drawImage(head, headPositionX[z], headPositionY[z], this)
+                    graphics.drawImage(head, allJointsX[z], allJointsY[z], this)
                 } else {
-                    graphics.drawImage(ball, headPositionX[z], headPositionY[z], this)
+                    graphics.drawImage(ball, allJointsX[z], allJointsY[z], this)
                 }
             }
 
@@ -114,10 +116,11 @@ class Board : JPanel(), ActionListener {
             message, (boardWidth - fontMetrics.stringWidth(message)) / 2,
             boardHeight / 2
         )
+        isGameOver = true
     }
 
-    private fun checkApple() {
-        if (headPositionX[0] == applePositionX && headPositionY[0] == applePositionY) {
+    private fun checkAppleCollision() {
+        if (allJointsX[0] == applePositionX && allJointsY[0] == applePositionY) {
             snakeBodyLength++
             locateApple()
         }
@@ -125,47 +128,47 @@ class Board : JPanel(), ActionListener {
 
     private fun move() {
         for (z in snakeBodyLength downTo 1) {
-            headPositionX[z] = headPositionX[z - 1]
-            headPositionY[z] = headPositionY[z - 1]
+            allJointsX[z] = allJointsX[z - 1]
+            allJointsY[z] = allJointsY[z - 1]
         }
 
         if (leftDirection) {
-            headPositionX[0] -= dotSize
+            allJointsX[0] -= dotSize
         }
 
         if (rightDirection) {
-            headPositionX[0] += dotSize
+            allJointsX[0] += dotSize
         }
 
         if (upDirection) {
-            headPositionY[0] -= dotSize
+            allJointsY[0] -= dotSize
         }
 
         if (downDirection) {
-            headPositionY[0] += dotSize
+            allJointsY[0] += dotSize
         }
     }
 
     private fun checkCollision() {
         for (z in snakeBodyLength downTo 1) {
-            if (z > 4 && headPositionX[0] == headPositionX[z] && headPositionY[0] == headPositionY[z]) {
+            if (z > 4 && allJointsX[0] == allJointsX[z] && allJointsY[0] == allJointsY[z]) {
                 inGame = false
             }
         }
 
-        if (headPositionY[0] >= boardHeight) {
+        if (allJointsY[0] >= boardHeight) {
             inGame = false
         }
 
-        if (headPositionY[0] < 0) {
+        if (allJointsY[0] < 0) {
             inGame = false
         }
 
-        if (headPositionX[0] >= boardWidth) {
+        if (allJointsX[0] >= boardWidth) {
             inGame = false
         }
 
-        if (headPositionX[0] < 0) {
+        if (allJointsX[0] < 0) {
             inGame = false
         }
 
@@ -184,7 +187,7 @@ class Board : JPanel(), ActionListener {
 
     override fun actionPerformed(actionEvent: ActionEvent) {
         if (inGame) {
-            checkApple()
+            checkAppleCollision()
             checkCollision()
             move() // todo here do some AI input
         }
@@ -218,34 +221,4 @@ class Board : JPanel(), ActionListener {
             leftDirection = false
         }
     }
-
-//    private inner class TAdapter : KeyAdapter() {
-//        override fun keyPressed(keyEvent: KeyEvent?) {
-//            val key = keyEvent!!.keyCode
-//
-//            if (key == KeyEvent.VK_LEFT && !rightDirection) {
-//                leftDirection = true
-//                upDirection = false
-//                downDirection = false
-//            }
-//
-//            if (key == KeyEvent.VK_RIGHT && !leftDirection) {
-//                rightDirection = true
-//                upDirection = false
-//                downDirection = false
-//            }
-//
-//            if (key == KeyEvent.VK_UP && !downDirection) {
-//                upDirection = true
-//                rightDirection = false
-//                leftDirection = false
-//            }
-//
-//            if (key == KeyEvent.VK_DOWN && !upDirection) {
-//                downDirection = true
-//                rightDirection = false
-//                leftDirection = false
-//            }
-//        }
-//    }
 }
