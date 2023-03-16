@@ -3,9 +3,6 @@ package snake
 import java.awt.*
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
-import java.awt.event.KeyAdapter
-import java.awt.event.KeyEvent
-
 import javax.swing.ImageIcon
 import javax.swing.JPanel
 import javax.swing.Timer
@@ -18,14 +15,14 @@ class Board : JPanel(), ActionListener {
     private val dotSize = 10
     private val allDots = 900
     private val randPos = 29
-    private val delay = 140
+    private val delay = 100
 
-    private val headPositionX = IntArray(allDots) // ai input
-    private val headPositionY = IntArray(allDots) // ai input
+    val headPositionX = IntArray(allDots) // ai input
+    val headPositionY = IntArray(allDots) // ai input
 
-    private var snakeBodyLength: Int = 0 // ai input
-    private var applePositionX: Int = 0 // ai inpuy
-    private var applePositionY: Int = 0 // ai input
+    var snakeBodyLength: Int = 0 // ai input
+    var applePositionX: Int = 0 // ai inpuy
+    var applePositionY: Int = 0 // ai input
 
     private var leftDirection = false
     private var rightDirection = true
@@ -39,7 +36,7 @@ class Board : JPanel(), ActionListener {
     private var head: Image? = null
 
     init {
-        addKeyListener(TAdapter())
+//        addKeyListener(TAdapter())
         background = Color.black
         isFocusable = true
 
@@ -104,7 +101,8 @@ class Board : JPanel(), ActionListener {
 
         val rh = RenderingHints(
             RenderingHints.KEY_ANTIALIASING,
-            RenderingHints.VALUE_ANTIALIAS_ON)
+            RenderingHints.VALUE_ANTIALIAS_ON
+        )
 
         rh[RenderingHints.KEY_RENDERING] = RenderingHints.VALUE_RENDER_QUALITY
 
@@ -112,8 +110,10 @@ class Board : JPanel(), ActionListener {
 
         graphics.color = Color.white
         graphics.font = small
-        graphics.drawString(message, (boardWidth - fontMetrics.stringWidth(message)) / 2,
-            boardHeight / 2)
+        graphics.drawString(
+            message, (boardWidth - fontMetrics.stringWidth(message)) / 2,
+            boardHeight / 2
+        )
     }
 
     private fun checkApple() {
@@ -192,33 +192,60 @@ class Board : JPanel(), ActionListener {
         repaint()
     }
 
-    private inner class TAdapter : KeyAdapter() {
-        override fun keyPressed(keyEvent: KeyEvent?) {
-            val key = keyEvent!!.keyCode
+    enum class Direction {
+        LEFT,
+        RIGHT,
+        UP,
+        DOWN
+    }
 
-            if (key == KeyEvent.VK_LEFT && !rightDirection) {
-                leftDirection = true
-                upDirection = false
-                downDirection = false
-            }
-
-            if (key == KeyEvent.VK_RIGHT && !leftDirection) {
-                rightDirection = true
-                upDirection = false
-                downDirection = false
-            }
-
-            if (key == KeyEvent.VK_UP && !downDirection) {
-                upDirection = true
-                rightDirection = false
-                leftDirection = false
-            }
-
-            if (key == KeyEvent.VK_DOWN && !upDirection) {
-                downDirection = true
-                rightDirection = false
-                leftDirection = false
-            }
+    fun changeDirection(direction: Direction) {
+        if (direction == Direction.LEFT && !rightDirection) {
+            leftDirection = true
+            upDirection = false
+            downDirection = false
+        } else if (direction == Direction.RIGHT && !leftDirection) {
+            rightDirection = true
+            upDirection = false
+            downDirection = false
+        } else if (direction == Direction.UP && !downDirection) {
+            upDirection = true
+            rightDirection = false
+            leftDirection = false
+        } else if (direction == Direction.DOWN && !upDirection) {
+            downDirection = true
+            rightDirection = false
+            leftDirection = false
         }
     }
+
+//    private inner class TAdapter : KeyAdapter() {
+//        override fun keyPressed(keyEvent: KeyEvent?) {
+//            val key = keyEvent!!.keyCode
+//
+//            if (key == KeyEvent.VK_LEFT && !rightDirection) {
+//                leftDirection = true
+//                upDirection = false
+//                downDirection = false
+//            }
+//
+//            if (key == KeyEvent.VK_RIGHT && !leftDirection) {
+//                rightDirection = true
+//                upDirection = false
+//                downDirection = false
+//            }
+//
+//            if (key == KeyEvent.VK_UP && !downDirection) {
+//                upDirection = true
+//                rightDirection = false
+//                leftDirection = false
+//            }
+//
+//            if (key == KeyEvent.VK_DOWN && !upDirection) {
+//                downDirection = true
+//                rightDirection = false
+//                leftDirection = false
+//            }
+//        }
+//    }
 }
