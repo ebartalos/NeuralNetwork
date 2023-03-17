@@ -41,7 +41,7 @@ class Genetics(private val networks: List<Network>) {
             }
         }
 
-        for (network in networks.subList(networks.size - 2, networks.size)) {
+        for (network in networks.subList(networks.size - 20, networks.size)) {
             val randomWeights = ArrayList<Double>()
             for (i in 1..networks[0].weights().size) {
                 randomWeights.add(Random.nextDouble(-2.0, 2.0))

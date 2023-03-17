@@ -21,8 +21,8 @@ class Board : JPanel(), ActionListener {
     val allJointsY = IntArray(allDots)
 
     var snakeBodyLength: Int = 0 // ai input
-    var applePositionX: Int = 0 // ai inpuy
-    var applePositionY: Int = 0 // ai input
+    var applePositionX: Int = 30 // ai inpuy
+    var applePositionY: Int = 80 // ai input
 
     private var leftDirection = false
     private var rightDirection = true
@@ -65,7 +65,7 @@ class Board : JPanel(), ActionListener {
             allJointsY[z] = 50
         }
 
-        locateApple()
+//        locateApple()
 
         timer = Timer(delay, this)
         timer!!.start()

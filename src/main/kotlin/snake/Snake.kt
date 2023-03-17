@@ -28,7 +28,7 @@ class Snake(private val network: Network) : JFrame() {
             board.allJointsY[0],
             board.applePositionX,
             board.applePositionY,
-            board.snakeBodyLength
+//            board.snakeBodyLength
         )
         network.setInputs(inputs)
         network.evaluate()
