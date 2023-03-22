@@ -34,15 +34,24 @@ class Snake(private val network: Network) : JFrame() {
         frame.setLocation(x, y)
     }
 
-
     fun changeDirection() {
+        val distanceToApple = board.distanceToApple()
+        val distanceToWalls = board.distanceToWalls()
+        val direction = board.directionMatrix()
+
         val inputs = arrayListOf(
-            board.allJointsX[0],
-            board.allJointsY[0],
-            board.applePositionX,
-            board.applePositionY,
-//            board.snakeBodyLength
-        )
+            distanceToApple[0].toDouble() / board.height,
+            distanceToApple[1].toDouble() / board.height,
+            distanceToWalls[0].toDouble() / board.height,
+            distanceToWalls[1].toDouble() / board.height,
+            distanceToWalls[2].toDouble() / board.height,
+            distanceToWalls[3].toDouble() / board.height,
+            direction[0].toDouble(),
+            direction[1].toDouble(),
+            direction[2].toDouble(),
+            direction[3].toDouble(),
+
+            )
         network.setInputs(inputs)
         network.evaluate()
 

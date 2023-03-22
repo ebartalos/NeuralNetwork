@@ -1,11 +1,12 @@
 import ai.Network
 import ai.algorithms.Genetics
 import ai.neurons.ReLuNeuron
-import ai.neurons.TanhNeuron
+import ai.neurons.SigmoidNeuron
 import snake.Snake
 
 
 object MainSnake {
+
     @JvmStatic
     fun main(args: Array<String>) {
         val networks = arrayListOf<Network>()
@@ -30,15 +31,11 @@ object MainSnake {
             genetics.breed(mutate = true, mutationChance = Constants.MUTATION_CHANCE)
 
             println("Generation $generation best fitness $bestFitness")
-            startGame(bestNetwork, fitness, true)
-
 
             if (fitness[bestNetwork]!! > bestFitness) {
-                println("Generation $generation")
-                println("Best network fitness ${fitness[bestNetwork]!!}")
-
                 bestFitness = fitness[bestNetwork]!!
             }
+            startGame(bestNetwork, null, true)
         }
     }
 
@@ -52,20 +49,20 @@ object MainSnake {
 
     private fun createNetwork(id: Int): Network {
         val network = Network(id)
-        network.addInputLayer(4)
-        network.addHiddenLayer(ReLuNeuron::class, 9, true)
-        network.addHiddenLayer(ReLuNeuron::class, 9, true)
-        network.addHiddenLayer(ReLuNeuron::class, 9, true)
-        network.addOutputLayer(TanhNeuron::class, 4)
+        network.addInputLayer(10)
+        network.addHiddenLayer(ReLuNeuron::class, 8, true)
+        network.addHiddenLayer(ReLuNeuron::class, 8, true)
+        network.addHiddenLayer(ReLuNeuron::class, 8, true)
+        network.addOutputLayer(SigmoidNeuron::class, 4)
         network.createConnections()
 
         return network
     }
 
-    private fun startGame(network: Network, fitness: HashMap<Network, Int>, isVisible: Boolean) {
+    private fun startGame(network: Network, fitness: HashMap<Network, Int>?, goSlow: Boolean) {
         val snake = Snake(network)
         snake.isVisible = true
-        if (isVisible) {
+        if (goSlow) {
             snake.toFront()
         } else {
             snake.toBack()
@@ -73,11 +70,11 @@ object MainSnake {
 
         while (snake.board.isGameOver.not()) {
             snake.changeDirection()
-            if (isVisible) {
+            if (goSlow) {
                 Thread.sleep(150)
             }
         }
-        fitness[network] = snake.board.snakeBodyLength
+        if (fitness != null) fitness[network] = snake.board.snakeBodyLength
         snake.dispose()
     }
 }

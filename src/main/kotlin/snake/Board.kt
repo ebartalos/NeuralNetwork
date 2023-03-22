@@ -9,18 +9,18 @@ import javax.swing.JPanel
 
 class Board : JPanel(), ActionListener {
 
-    private val boardWidth = 300
-    private val boardHeight = 300
+    private val boardWidth = 200
+    private val boardHeight = 200
     private val dotSize = 10
     private val allDots = 900
     private val randPos = 29
 
-    val allJointsX = IntArray(allDots)
-    val allJointsY = IntArray(allDots)
+    private val allJointsX = IntArray(allDots)
+    private val allJointsY = IntArray(allDots)
 
-    var snakeBodyLength: Int = 0 // ai input
-    var applePositionX: Int = 30 // ai inpuy
-    var applePositionY: Int = 80 // ai input
+    var snakeBodyLength: Int = 0
+    var applePositionX: Int = 30
+    private var applePositionY: Int = 80
 
     private var leftDirection = false
     private var rightDirection = true
@@ -45,6 +45,34 @@ class Board : JPanel(), ActionListener {
         initGame()
     }
 
+    fun distanceToApple(): ArrayList<Int> {
+        val distance = arrayListOf<Int>()
+        distance.add(allJointsX[0] - applePositionX)
+        distance.add(allJointsY[0] - applePositionY)
+
+        return distance
+    }
+
+    fun distanceToWalls(): ArrayList<Int> {
+        val distance = arrayListOf<Int>()
+        distance.add(allJointsX[0])
+        distance.add(allJointsX[0] - boardHeight)
+        distance.add(allJointsY[0])
+        distance.add(allJointsY[0] - boardWidth)
+
+        return distance
+    }
+
+    fun directionMatrix(): ArrayList<Int> {
+        val directionMatrix = arrayListOf<Int>()
+        directionMatrix.add(if (leftDirection) 0 else 1)
+        directionMatrix.add(if (rightDirection) 0 else 1)
+        directionMatrix.add(if (upDirection) 0 else 1)
+        directionMatrix.add(if (downDirection) 0 else 1)
+
+        return directionMatrix
+    }
+
     private fun loadImages() {
         val dot = ImageIcon("src/main/resources/dot.png")
         ball = dot.image
@@ -60,11 +88,11 @@ class Board : JPanel(), ActionListener {
         snakeBodyLength = 3
 
         for (z in 0 until snakeBodyLength) {
-            allJointsX[z] = 50 - z * 10
-            allJointsY[z] = 50
+            allJointsX[z] = (Math.random() * boardWidth).toInt() - z * 10
+            allJointsY[z] = (Math.random() * boardHeight).toInt()
         }
 
-        locateApple()
+        setRandomPositionForApple()
     }
 
     public override fun paintComponent(graphics: Graphics) {
@@ -115,7 +143,8 @@ class Board : JPanel(), ActionListener {
     private fun checkAppleCollision() {
         if (allJointsX[0] == applePositionX && allJointsY[0] == applePositionY) {
             snakeBodyLength++
-            locateApple()
+            setRandomPositionForApple()
+            println("Podarilo")
         }
     }
 
@@ -138,7 +167,7 @@ class Board : JPanel(), ActionListener {
         moveTimer -= 1
     }
 
-    private fun checkCollision() {
+    private fun checkWallCollision() {
         for (z in snakeBodyLength downTo 1) {
             if (z > 4 && allJointsX[0] == allJointsX[z] && allJointsY[0] == allJointsY[z]) {
                 inGame = false
@@ -162,7 +191,7 @@ class Board : JPanel(), ActionListener {
         }
     }
 
-    private fun locateApple() {
+    private fun setRandomPositionForApple() {
         var r = (Math.random() * randPos).toInt()
         applePositionX = r * dotSize
 
@@ -170,13 +199,12 @@ class Board : JPanel(), ActionListener {
         applePositionY = r * dotSize
     }
 
-    override fun actionPerformed(actionEvent: ActionEvent) {
-    }
+    override fun actionPerformed(actionEvent: ActionEvent) {}
 
     fun oneStep() {
         if (inGame) {
             checkAppleCollision()
-            checkCollision()
+            checkWallCollision()
             move()
 
             if (moveTimer <= 0) {

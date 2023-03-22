@@ -114,12 +114,12 @@ class Network(val id: Int) {
      *
      * @param inputs list of values
      */
-    fun setInputs(inputs: ArrayList<Int>) {
+    fun setInputs(inputs: ArrayList<Double>) {
         val inputsIterator = inputs.listIterator()
 
         for (neuron in layers.first().neurons) {
             if (inputsIterator.hasNext()) {
-                neuron.value = inputsIterator.next().toDouble()
+                neuron.value = inputsIterator.next()
             }
         }
     }

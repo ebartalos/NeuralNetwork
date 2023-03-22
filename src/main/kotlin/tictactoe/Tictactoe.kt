@@ -132,15 +132,15 @@ class Tictactoe {
     /**
      * Board state with 0, 1, -1 (for NN learning)
      */
-    private fun adjustedBoardState(aiPlayerIndex: Int, opponentPlayerIndex: Int): ArrayList<Int> {
-        val adjustedBoardState = ArrayList<Int>()
+    private fun adjustedBoardState(aiPlayerIndex: Int, opponentPlayerIndex: Int): ArrayList<Double> {
+        val adjustedBoardState = ArrayList<Double>()
         for (element in boardState()) {
             if (element == opponentPlayerIndex) {
-                adjustedBoardState.add(-1)
+                adjustedBoardState.add(-1.0)
             } else if (element == aiPlayerIndex) {
-                adjustedBoardState.add(1)
+                adjustedBoardState.add(1.0)
             } else {
-                adjustedBoardState.add(element)
+                adjustedBoardState.add(element.toDouble())
             }
         }
         return adjustedBoardState
