@@ -30,18 +30,20 @@ class Genetics(private val networks: List<Network>) {
             }
         }
 
-        for (network in networks.subList(2, networks.size)) {
+        val lastFifth = (networks.size * 0.8).toInt()
+
+        for (network in networks.subList(2, lastFifth)) {
             network.updateWeights(network1Weights)
         }
 
         if (mutate) {
-            for (network in networks.subList(2, networks.size - 2)) {
+            for (network in networks.subList(2, lastFifth)) {
                 val mutation = Mutation(network)
                 mutation.mutate(Constants.MUTATION_RANGE_FROM, Constants.MUTATION_RANGE_TO, mutationChance)
             }
         }
 
-        for (network in networks.subList(networks.size - 20, networks.size)) {
+        for (network in networks.subList(lastFifth, networks.size)) {
             val randomWeights = ArrayList<Double>()
             for (i in 1..networks[0].weights().size) {
                 randomWeights.add(Random.nextDouble(-2.0, 2.0))

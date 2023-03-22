@@ -1,7 +1,10 @@
 package snake
 
 import ai.Network
+import java.awt.Insets
+import java.awt.Toolkit
 import javax.swing.JFrame
+
 
 class Snake(private val network: Network) : JFrame() {
     lateinit var board: Board
@@ -18,9 +21,19 @@ class Snake(private val network: Network) : JFrame() {
         isResizable = false
         pack()
 
-        setLocationRelativeTo(null)
+        setLocationToTopRight(this)
         defaultCloseOperation = EXIT_ON_CLOSE
     }
+
+    private fun setLocationToTopRight(frame: JFrame) {
+        val config = frame.graphicsConfiguration
+        val bounds = config.bounds
+        val insets: Insets = Toolkit.getDefaultToolkit().getScreenInsets(config)
+        val x = bounds.x + bounds.width - insets.right - frame.width
+        val y = bounds.y + insets.top
+        frame.setLocation(x, y)
+    }
+
 
     fun changeDirection() {
         val inputs = arrayListOf(
@@ -44,5 +57,6 @@ class Snake(private val network: Network) : JFrame() {
         val result = sortedResult.keys.reversed()[3]
 
         board.changeDirection(result)
+        board.oneStep()
     }
 }

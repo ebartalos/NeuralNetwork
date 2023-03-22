@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
 import javax.swing.ImageIcon
 import javax.swing.JPanel
-import javax.swing.Timer
 
 
 class Board : JPanel(), ActionListener {
@@ -15,7 +14,6 @@ class Board : JPanel(), ActionListener {
     private val dotSize = 10
     private val allDots = 900
     private val randPos = 29
-    val delay = 10
 
     val allJointsX = IntArray(allDots)
     val allJointsY = IntArray(allDots)
@@ -28,11 +26,12 @@ class Board : JPanel(), ActionListener {
     private var rightDirection = true
     private var upDirection = false
     private var downDirection = false
-    private var inGame = true
 
+    private var inGame = true
     var isGameOver = false
 
-    private var timer: Timer? = null
+    var moveTimer = 1000
+
     private var ball: Image? = null
     private var apple: Image? = null
     private var head: Image? = null
@@ -65,10 +64,7 @@ class Board : JPanel(), ActionListener {
             allJointsY[z] = 50
         }
 
-//        locateApple()
-
-        timer = Timer(delay, this)
-        timer!!.start()
+        locateApple()
     }
 
     public override fun paintComponent(graphics: Graphics) {
@@ -131,19 +127,15 @@ class Board : JPanel(), ActionListener {
 
         if (leftDirection) {
             allJointsX[0] -= dotSize
-        }
-
-        if (rightDirection) {
+        } else if (rightDirection) {
             allJointsX[0] += dotSize
-        }
-
-        if (upDirection) {
+        } else if (upDirection) {
             allJointsY[0] -= dotSize
-        }
-
-        if (downDirection) {
+        } else if (downDirection) {
             allJointsY[0] += dotSize
         }
+
+        moveTimer -= 1
     }
 
     private fun checkCollision() {
@@ -168,10 +160,6 @@ class Board : JPanel(), ActionListener {
         if (allJointsX[0] < 0) {
             inGame = false
         }
-
-        if (!inGame) {
-            timer!!.stop()
-        }
     }
 
     private fun locateApple() {
@@ -183,10 +171,17 @@ class Board : JPanel(), ActionListener {
     }
 
     override fun actionPerformed(actionEvent: ActionEvent) {
+    }
+
+    fun oneStep() {
         if (inGame) {
             checkAppleCollision()
             checkCollision()
-            move() // todo here do some AI input
+            move()
+
+            if (moveTimer <= 0) {
+                inGame = false
+            }
         }
 
         repaint()

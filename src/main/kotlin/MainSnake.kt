@@ -20,7 +20,7 @@ object MainSnake {
             fitness.replaceAll { _, _ -> 0 }
 
             for (network in networks) {
-                startGame(network, fitness)
+                startGame(network, fitness, false)
             }
 
             sortedFitness = fitness.toList().sortedBy { (_, value) -> value }.toMap()
@@ -28,6 +28,10 @@ object MainSnake {
 
             val genetics = Genetics(sortedFitness.keys.reversed())
             genetics.breed(mutate = true, mutationChance = Constants.MUTATION_CHANCE)
+
+            println("Generation $generation best fitness $bestFitness")
+            startGame(bestNetwork, fitness, true)
+
 
             if (fitness[bestNetwork]!! > bestFitness) {
                 println("Generation $generation")
@@ -38,7 +42,7 @@ object MainSnake {
         }
     }
 
-    private fun createNetworks(networks: ArrayList<Network>, fitness: HashMap<Network, Int>){
+    private fun createNetworks(networks: ArrayList<Network>, fitness: HashMap<Network, Int>) {
         for (networkId in 1..Constants.MAX_NEURAL_NETWORKS) {
             val network = createNetwork(networkId)
             networks.add(network)
@@ -58,13 +62,20 @@ object MainSnake {
         return network
     }
 
-    private fun startGame(network: Network, fitness: HashMap<Network, Int>) {
+    private fun startGame(network: Network, fitness: HashMap<Network, Int>, isVisible: Boolean) {
         val snake = Snake(network)
         snake.isVisible = true
+        if (isVisible) {
+            snake.toFront()
+        } else {
+            snake.toBack()
+        }
 
         while (snake.board.isGameOver.not()) {
             snake.changeDirection()
-            Thread.sleep(snake.board.delay.toLong())
+            if (isVisible) {
+                Thread.sleep(150)
+            }
         }
         fitness[network] = snake.board.snakeBodyLength
         snake.dispose()
