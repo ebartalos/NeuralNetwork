@@ -1,5 +1,6 @@
 import ai.Network
 import ai.algorithms.Genetics
+import ai.neurons.Neuron
 import ai.neurons.ReLuNeuron
 import snake.Snake
 
@@ -32,7 +33,7 @@ object MainSnake {
             if (fitness[bestNetwork]!! > bestFitness) {
                 bestFitness = fitness[bestNetwork]!!
             }
-            println("Generation $generation best fitness $bestFitness")
+            println("Generation $generation best generation fitness ${fitness[bestNetwork]!!} best overall fitness $bestFitness")
 
             startGame(bestNetwork, null, true)
         }
@@ -48,11 +49,11 @@ object MainSnake {
 
     private fun createNetwork(id: Int): Network {
         val network = Network(id)
-        network.addInputLayer(10)
-        network.addHiddenLayer(ReLuNeuron::class, 8, true)
-        network.addHiddenLayer(ReLuNeuron::class, 8, true)
+        network.addInputLayer(8)
+        network.addHiddenLayer(ReLuNeuron::class, 9, true)
+        network.addHiddenLayer(ReLuNeuron::class, 9, true)
 //        network.addHiddenLayer(ReLuNeuron::class, 8, true)
-        network.addOutputLayer(ReLuNeuron::class, 4)
+        network.addOutputLayer(Neuron::class, 4)
         network.createConnections()
 
         return network
@@ -70,10 +71,10 @@ object MainSnake {
         while (snake.board.isGameOver.not()) {
             snake.changeDirection()
             if (goSlow) {
-                Thread.sleep(150)
+                Thread.sleep(10)
             }
         }
-        if (fitness != null) fitness[network] = snake.board.snakeBodyLength
+        if (fitness != null) fitness[network] = snake.fitness()
         snake.dispose()
     }
 }

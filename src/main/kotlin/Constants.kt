@@ -6,7 +6,7 @@ object Constants {
     const val MAX_GENERATIONS = 500000
     const val MAX_ITERATIONS_IN_GENERATION = 10000000
 
-    const val MUTATION_CHANCE = 10
+    const val MUTATION_CHANCE = 2
     const val MUTATION_RANGE_FROM = 0.95
     const val MUTATION_RANGE_TO = 1.05
 

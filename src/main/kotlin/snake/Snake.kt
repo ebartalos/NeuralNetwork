@@ -4,6 +4,7 @@ import ai.Network
 import java.awt.Insets
 import java.awt.Toolkit
 import javax.swing.JFrame
+import kotlin.math.abs
 
 
 class Snake(private val network: Network) : JFrame() {
@@ -25,6 +26,10 @@ class Snake(private val network: Network) : JFrame() {
         defaultCloseOperation = EXIT_ON_CLOSE
     }
 
+    fun fitness(): Int {
+        return (board.score * 10000) + board.moveTimer
+    }
+
     private fun setLocationToTopRight(frame: JFrame) {
         val config = frame.graphicsConfiguration
         val bounds = config.bounds
@@ -40,16 +45,14 @@ class Snake(private val network: Network) : JFrame() {
         val direction = board.directionMatrix()
 
         val inputs = arrayListOf(
-            distanceToApple[0].toDouble() / board.height,
-            distanceToApple[1].toDouble() / board.height,
-            distanceToWalls[0].toDouble() / board.height,
-            distanceToWalls[1].toDouble() / board.height,
-            distanceToWalls[2].toDouble() / board.height,
-            distanceToWalls[3].toDouble() / board.height,
-            direction[0].toDouble(),
-            direction[1].toDouble(),
-            direction[2].toDouble(),
-            direction[3].toDouble(),
+            abs(distanceToApple[0].toDouble()) / board.height,
+            abs(distanceToApple[1].toDouble()) / board.height,
+            abs(distanceToApple[2].toDouble()) / board.height,
+            abs(distanceToApple[3].toDouble()) / board.height,
+            abs(distanceToWalls[0].toDouble()) / board.height,
+            abs(distanceToWalls[1].toDouble()) / board.height,
+            abs(distanceToWalls[2].toDouble()) / board.height,
+            abs(distanceToWalls[3].toDouble()) / board.height,
         )
 
         network.setInputs(inputs)
