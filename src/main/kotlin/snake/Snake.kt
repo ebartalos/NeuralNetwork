@@ -42,7 +42,6 @@ class Snake(private val network: Network) : JFrame() {
     fun changeDirection() {
         val distanceToApple = board.distanceToApple()
         val distanceToWalls = board.distanceToWalls()
-        val direction = board.directionMatrix()
 
         val inputs = arrayListOf(
             abs(distanceToApple[0].toDouble()) / board.height,

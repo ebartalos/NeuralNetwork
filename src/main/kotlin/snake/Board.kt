@@ -13,7 +13,7 @@ class Board : JPanel(), ActionListener {
     private val boardHeight = 150
     private val dotSize = 1
     private val allDots = 900
-    private val randPos = 29
+    private val randPos = 75
 
     private val allJointsX = IntArray(allDots)
     private val allJointsY = IntArray(allDots)
@@ -78,16 +78,6 @@ class Board : JPanel(), ActionListener {
         return distance
     }
 
-    fun directionMatrix(): ArrayList<Int> {
-        val directionMatrix = arrayListOf<Int>()
-        directionMatrix.add(if (leftDirection) 0 else 1)
-        directionMatrix.add(if (rightDirection) 0 else 1)
-        directionMatrix.add(if (upDirection) 0 else 1)
-        directionMatrix.add(if (downDirection) 0 else 1)
-
-        return directionMatrix
-    }
-
     private fun loadImages() {
         val dot = ImageIcon("src/main/resources/dot.png")
         ball = dot.image
@@ -101,8 +91,8 @@ class Board : JPanel(), ActionListener {
 
     private fun initGame() {
         for (z in 0 until score) {
-            allJointsX[z] = (Math.random() * boardWidth).toInt() - z * 10
-            allJointsY[z] = (Math.random() * boardHeight).toInt()
+            allJointsX[z] = boardWidth / 2
+            allJointsY[z] = boardHeight / 2
         }
 
         setRandomPositionForApple()
@@ -204,10 +194,10 @@ class Board : JPanel(), ActionListener {
     }
 
     private fun setRandomPositionForApple() {
-        var r = (Math.random() * randPos).toInt()
+        var r = (Math.random() * randPos).toInt() + (randPos / 2)
         applePositionX = r * dotSize
 
-        r = (Math.random() * randPos).toInt()
+        r = (Math.random() * randPos).toInt() + (randPos / 2)
         applePositionY = r * dotSize
     }
 
