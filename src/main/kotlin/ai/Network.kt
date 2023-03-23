@@ -4,9 +4,11 @@ import Constants
 import ai.neurons.*
 import java.io.File
 import java.util.*
+import kotlin.math.exp
 import kotlin.math.sqrt
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
+
 
 /**
  * Feed forward neural network.
@@ -80,6 +82,21 @@ class Network(val id: Int) {
         val values = ArrayList<Double>()
         layers.last().neurons.forEach { values.add(it.value) }
         return values
+    }
+
+    fun softmaxOutput(): ArrayList<Double> {
+        val values = ArrayList<Double>()
+        val output = output()
+
+        for (input in output){
+            values.add(softmax(input, output.toDoubleArray()))
+        }
+        return values
+    }
+
+     private fun softmax(input: Double, neuronValues: DoubleArray): Double {
+        val total = Arrays.stream(neuronValues).map { a: Double -> exp(a) }.sum()
+        return exp(input) / total
     }
 
     /**

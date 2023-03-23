@@ -1,7 +1,6 @@
 import ai.Network
 import ai.algorithms.Genetics
 import ai.neurons.ReLuNeuron
-import ai.neurons.SigmoidNeuron
 import snake.Snake
 
 
@@ -30,11 +29,11 @@ object MainSnake {
             val genetics = Genetics(sortedFitness.keys.reversed())
             genetics.breed(mutate = true, mutationChance = Constants.MUTATION_CHANCE)
 
-            println("Generation $generation best fitness $bestFitness")
-
             if (fitness[bestNetwork]!! > bestFitness) {
                 bestFitness = fitness[bestNetwork]!!
             }
+            println("Generation $generation best fitness $bestFitness")
+
             startGame(bestNetwork, null, true)
         }
     }
@@ -52,8 +51,8 @@ object MainSnake {
         network.addInputLayer(10)
         network.addHiddenLayer(ReLuNeuron::class, 8, true)
         network.addHiddenLayer(ReLuNeuron::class, 8, true)
-        network.addHiddenLayer(ReLuNeuron::class, 8, true)
-        network.addOutputLayer(SigmoidNeuron::class, 4)
+//        network.addHiddenLayer(ReLuNeuron::class, 8, true)
+        network.addOutputLayer(ReLuNeuron::class, 4)
         network.createConnections()
 
         return network

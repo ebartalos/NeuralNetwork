@@ -2,7 +2,7 @@
  * Place for compile time constant.
  */
 object Constants {
-    const val MAX_NEURAL_NETWORKS = 2000
+    const val MAX_NEURAL_NETWORKS = 1000
     const val MAX_GENERATIONS = 500000
     const val MAX_ITERATIONS_IN_GENERATION = 10000000
 

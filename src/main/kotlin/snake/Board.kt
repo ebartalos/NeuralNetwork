@@ -9,8 +9,8 @@ import javax.swing.JPanel
 
 class Board : JPanel(), ActionListener {
 
-    private val boardWidth = 200
-    private val boardHeight = 200
+    private val boardWidth = 300
+    private val boardHeight = 300
     private val dotSize = 10
     private val allDots = 900
     private val randPos = 29

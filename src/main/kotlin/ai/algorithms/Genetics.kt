@@ -30,14 +30,15 @@ class Genetics(private val networks: List<Network>) {
             }
         }
 
+        val passDown = 15
         val lastFifth = (networks.size * 0.8).toInt()
 
-        for (network in networks.subList(2, lastFifth)) {
+        for (network in networks.subList(passDown, lastFifth)) {
             network.updateWeights(network1Weights)
         }
 
         if (mutate) {
-            for (network in networks.subList(2, lastFifth)) {
+            for (network in networks.subList(passDown, lastFifth)) {
                 val mutation = Mutation(network)
                 mutation.mutate(Constants.MUTATION_RANGE_FROM, Constants.MUTATION_RANGE_TO, mutationChance)
             }

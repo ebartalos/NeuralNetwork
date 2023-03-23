@@ -50,20 +50,20 @@ class Snake(private val network: Network) : JFrame() {
             direction[1].toDouble(),
             direction[2].toDouble(),
             direction[3].toDouble(),
+        )
 
-            )
         network.setInputs(inputs)
         network.evaluate()
+        val softmaxOutput = network.softmaxOutput()
 
         val evaluationMatrix = mutableMapOf<Board.Direction, Double>()
-        evaluationMatrix[Board.Direction.LEFT] = network.output()[0]
-        evaluationMatrix[Board.Direction.RIGHT] = network.output()[1]
-        evaluationMatrix[Board.Direction.UP] = network.output()[2]
-        evaluationMatrix[Board.Direction.DOWN] = network.output()[3]
+        evaluationMatrix[Board.Direction.LEFT] = softmaxOutput[0]
+        evaluationMatrix[Board.Direction.RIGHT] = softmaxOutput[1]
+        evaluationMatrix[Board.Direction.UP] = softmaxOutput[2]
+        evaluationMatrix[Board.Direction.DOWN] = softmaxOutput[3]
 
         val sortedResult = evaluationMatrix.toList().sortedBy { (_, value) -> value }
-            .toMap()
-        val result = sortedResult.keys.reversed()[3]
+        val result = sortedResult.last().first
 
         board.changeDirection(result)
         board.oneStep()
