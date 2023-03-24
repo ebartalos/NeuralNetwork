@@ -12,8 +12,8 @@ class Board : JPanel(), ActionListener {
     private val boardWidth = 150
     private val boardHeight = 150
     private val dotSize = 1
+    private val appleSize = 10
     private val allDots = 900
-    private val randPos = 80
 
     private val allJointsX = IntArray(allDots)
     private val allJointsY = IntArray(allDots)
@@ -48,22 +48,22 @@ class Board : JPanel(), ActionListener {
     fun distanceToApple(): ArrayList<Int> {
         val distance = arrayListOf<Int>()
         val xDistance = allJointsX[0] - applePositionX
-        if ((xDistance) < 0) {
-            distance.add(xDistance)
-            distance.add(0)
-        } else {
-            distance.add(0)
-            distance.add(xDistance)
-        }
+//        if ((xDistance) < 0) {
+        distance.add(xDistance)
+//            distance.add(1000)
+//        } else {
+//            distance.add(1000)
+//            distance.add(xDistance)
+//        }
 
         val yDistance = allJointsY[0] - applePositionY
-        if ((yDistance) < 0) {
-            distance.add(yDistance)
-            distance.add(0)
-        } else {
-            distance.add(0)
-            distance.add(yDistance)
-        }
+//        if ((yDistance) < 0) {
+//            distance.add(yDistance)
+//            distance.add(0)
+//        } else {
+//            distance.add(0)
+        distance.add(yDistance)
+//        }
 
         return distance
     }
@@ -144,7 +144,9 @@ class Board : JPanel(), ActionListener {
     }
 
     private fun checkAppleCollision() {
-        if (allJointsX[0] == applePositionX && allJointsY[0] == applePositionY) {
+        if ((allJointsX[0] >= applePositionX) && (allJointsX[0] < applePositionX + appleSize)
+            && (allJointsY[0] >= applePositionY) && (allJointsY[0] < applePositionY + appleSize)
+        ) {
             score++
             setRandomPositionForApple()
         }
@@ -194,11 +196,11 @@ class Board : JPanel(), ActionListener {
     }
 
     private fun setRandomPositionForApple() {
-        var r = (Math.random() * randPos).toInt() + (randPos / 2)
-        applePositionX = r * dotSize
+        var r = (Math.random() * boardWidth).toInt()
+        applePositionX = r //* appleSize
 
-        r = (Math.random() * randPos).toInt() + (randPos / 2)
-        applePositionY = r * dotSize
+        r = (Math.random() * boardHeight).toInt()
+        applePositionY = r //* appleSize
     }
 
     override fun actionPerformed(actionEvent: ActionEvent) {}

@@ -71,9 +71,9 @@ object MainSnake {
 
     private fun createNetwork(id: Int): Network {
         val network = Network(id)
-        network.addInputLayer(8)
-        network.addHiddenLayer(ReLuNeuron::class, 9, true)
-        network.addHiddenLayer(ReLuNeuron::class, 9, true)
+        network.addInputLayer(6)
+        network.addHiddenLayer(ReLuNeuron::class, 8, true)
+        network.addHiddenLayer(ReLuNeuron::class, 8, true)
 //        network.addHiddenLayer(ReLuNeuron::class, 9, true)
         network.addOutputLayer(Neuron::class, 4)
         network.createConnections()
