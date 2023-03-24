@@ -13,7 +13,7 @@ class Board : JPanel(), ActionListener {
     private val boardHeight = 150
     private val dotSize = 1
     private val allDots = 900
-    private val randPos = 75
+    private val randPos = 80
 
     private val allJointsX = IntArray(allDots)
     private val allJointsY = IntArray(allDots)

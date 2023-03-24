@@ -88,13 +88,13 @@ class Network(val id: Int) {
         val values = ArrayList<Double>()
         val output = output()
 
-        for (input in output){
+        for (input in output) {
             values.add(softmax(input, output.toDoubleArray()))
         }
         return values
     }
 
-     private fun softmax(input: Double, neuronValues: DoubleArray): Double {
+    private fun softmax(input: Double, neuronValues: DoubleArray): Double {
         val total = Arrays.stream(neuronValues).map { a: Double -> exp(a) }.sum()
         return exp(input) / total
     }
@@ -232,7 +232,8 @@ class Network(val id: Int) {
         val neuronClasses = hashMapOf(
             "ReLuNeuron" to ReLuNeuron::class,
             "TanhNeuron" to TanhNeuron::class,
-            "SigmoidNeuron" to SigmoidNeuron::class
+            "SigmoidNeuron" to SigmoidNeuron::class,
+            "Neuron" to Neuron::class
         )
 
         for (index in 0 until networkStructure.size) {

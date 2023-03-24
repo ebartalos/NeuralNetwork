@@ -44,14 +44,14 @@ class Snake(private val network: Network) : JFrame() {
         val distanceToWalls = board.distanceToWalls()
 
         val inputs = arrayListOf(
-            abs(distanceToApple[0].toDouble()) / board.height,
-            abs(distanceToApple[1].toDouble()) / board.height,
-            abs(distanceToApple[2].toDouble()) / board.height,
-            abs(distanceToApple[3].toDouble()) / board.height,
-            abs(distanceToWalls[0].toDouble()) / board.height,
-            abs(distanceToWalls[1].toDouble()) / board.height,
-            abs(distanceToWalls[2].toDouble()) / board.height,
-            abs(distanceToWalls[3].toDouble()) / board.height,
+            abs(distanceToApple[0].toDouble()),
+            abs(distanceToApple[1].toDouble()),
+            abs(distanceToApple[2].toDouble()),
+            abs(distanceToApple[3].toDouble()),
+            abs(distanceToWalls[0].toDouble()),
+            abs(distanceToWalls[1].toDouble()),
+            abs(distanceToWalls[2].toDouble()),
+            abs(distanceToWalls[3].toDouble()),
         )
 
         network.setInputs(inputs)
