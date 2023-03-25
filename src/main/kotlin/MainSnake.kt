@@ -2,23 +2,30 @@ import ai.Network
 import ai.algorithms.Genetics
 import ai.neurons.Neuron
 import ai.neurons.ReLuNeuron
-import snake.ConsoleEater
+import eater.ConsoleEater
+import java.io.File
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 
 object MainSnake {
 
+    //
+    private const val TRAIN = false
+
     @JvmStatic
     fun main(args: Array<String>) {
-        val networks = arrayListOf<Network>()
-        val fitness = hashMapOf<Network, Int>()
+        if (TRAIN) {
+            val networks = arrayListOf<Network>()
+            val fitness = hashMapOf<Network, Int>()
 
-        createNetworks(networks, fitness)
-        train(networks, fitness)
-
-//        testBest()
+            createNetworks(networks, fitness)
+            train(networks, fitness)
+        } else {
+            replayBestGame("bestSnakeTest.txt")
+        }
     }
 
     private fun train(networks: ArrayList<Network>, fitness: HashMap<Network, Int>) {
@@ -30,7 +37,9 @@ object MainSnake {
             fitness.replaceAll { _, _ -> 0 }
 
             for (network in networks) {
-                fitness[network] = playConsole(network)
+                val fitnessOfNetwork = playConsole(network)
+                if (fitnessOfNetwork >= Constants.MAX_FITNESS) break
+                fitness[network] = fitnessOfNetwork
             }
 
             sortedFitness = fitness.toList().sortedBy { (_, value) -> value }.toMap()
@@ -50,13 +59,12 @@ object MainSnake {
                 .withZone(ZoneId.systemDefault())
                 .format(Instant.now())
             println("$time Gen $generation best gen fitness ${fitness[bestNetwork]!!} ATH fitness $bestFitness")
-        }
-    }
 
-    private fun testBest() {
-        val network = Network(1)
-        network.loadTrainedNetworkFromFile()
-        println("Fitness " + playConsole(network, saveToFile = true))
+            if (bestFitness >= Constants.MAX_FITNESS) {
+                println("TRAINING FINISHED! SCORE IS $bestFitness")
+                return
+            }
+        }
     }
 
     private fun createNetworks(networks: ArrayList<Network>, fitness: HashMap<Network, Int>) {
@@ -79,8 +87,6 @@ object MainSnake {
         val network = Network(id)
         network.addInputLayer(8)
         network.addHiddenLayer(ReLuNeuron::class, 10, true)
-//        network.addHiddenLayer(ReLuNeuron::class, 10, true)
-//        network.addHiddenLayer(ReLuNeuron::class, 8, true)
         network.addOutputLayer(Neuron::class, 4)
         network.createConnections()
 
@@ -91,8 +97,22 @@ object MainSnake {
         var fitness = 0
         for (i in 1..5) {
             val snake = ConsoleEater()
-            fitness += snake.play(network, printBoard, saveToFile)
+            val score = snake.play(network, printBoard, saveToFile)
+            if (score >= Constants.MAX_FITNESS) return score
+            fitness += score
         }
         return fitness
+    }
+
+
+    private fun replayBestGame(filename: String) {
+        val scanner = Scanner(File(filename))
+
+        while (scanner.hasNextLine()) {
+            for (i in 0 until 15) {
+                println(scanner.nextLine())
+            }
+            Thread.sleep(1_000)
+        }
     }
 }

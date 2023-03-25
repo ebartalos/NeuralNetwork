@@ -1,5 +1,6 @@
-package snake
+package eater
 
+import Constants
 import ai.Network
 import java.io.File
 import kotlin.math.abs
@@ -62,6 +63,9 @@ class ConsoleEater {
                 score += 1
                 maxSteps += 100
                 setRandomApplePosition()
+            }
+            if ((score * 1000) + steps >= Constants.MAX_FITNESS) {
+                break
             }
         }
         return (score * 1000) + steps
