@@ -1,23 +1,21 @@
 package eater
 
-import Constants
 import ai.Network
 import java.io.File
 import kotlin.math.abs
 import kotlin.random.Random
 
 class ConsoleEater {
-    /**
-     * 0 - empty space
-     * 1 - wall
-     * 2 - snake
-     * 3 - apple
-     */
     private val size = 15
     private val board = Array(size) { Array(size) { 0 } }
 
-    private var snakeLocationX: Int = Random.nextInt(1, size - 2)
-    private var snakeLocationY: Int = Random.nextInt(1, size - 2)
+    private val emptyMark = 0
+    private val wallMark = 1
+    private val eaterMark = 2
+    private val appleMark = 3
+
+    private var eaterLocationX: Int = Random.nextInt(1, size - 2)
+    private var eaterLocationY: Int = Random.nextInt(1, size - 2)
     private var appleLocationX: Int = Random.nextInt(2, size - 3)
     private var appleLocationY: Int = Random.nextInt(2, size - 3)
 
@@ -28,20 +26,21 @@ class ConsoleEater {
     init {
         // draw walls
         for (index in 0 until size) {
-            board[0][index] = 1
-            board[size - 1][index] = 1
-            board[index][0] = 1
-            board[index][size - 1] = 1
+            board[0][index] = wallMark
+            board[size - 1][index] = wallMark
+            board[index][0] = wallMark
+            board[index][size - 1] = wallMark
         }
 
-        while ((snakeLocationX == appleLocationX) && (snakeLocationY == appleLocationY)) {
+        // set eater and apple position
+        while ((eaterLocationX == appleLocationX) && (eaterLocationY == appleLocationY)) {
             appleLocationX = Random.nextInt(2, size - 3)
         }
-        board[snakeLocationX][snakeLocationY] = 2
-        board[appleLocationX][appleLocationY] = 3
+
+        updateBoard()
     }
 
-    fun play(network: Network, printBoard: Boolean = false, saveToFile: Boolean = false): Int {
+    fun play(network: Network, maxFitness: Int, printBoard: Boolean = false, saveToFile: Boolean = false): Int {
         val file = File("bestSnakeTest.txt")
         if (saveToFile) {
             file.writeText("")
@@ -55,7 +54,7 @@ class ConsoleEater {
             move(evaluateMove(network))
             steps += 1
 
-            if (isSnakeDead()) {
+            if (isEaterDead()) {
                 break
             }
 
@@ -64,7 +63,7 @@ class ConsoleEater {
                 maxSteps += 100
                 setRandomApplePosition()
             }
-            if ((score * 1000) + steps >= Constants.MAX_FITNESS) {
+            if ((score * 1000) + steps >= maxFitness) {
                 break
             }
         }
@@ -100,6 +99,9 @@ class ConsoleEater {
         return sortedResult.last().first
     }
 
+    /**
+     * Print current board status to console
+     */
     private fun printBoard() {
         val translator = HashMap<Int, String>()
         translator[0] = " "
@@ -113,6 +115,11 @@ class ConsoleEater {
             }
             println()
         }
+    }
+
+    private fun updateBoard() {
+        board[eaterLocationX][eaterLocationY] = eaterMark
+        board[appleLocationX][appleLocationY] = appleMark
     }
 
     private fun saveBoardStatusToFile(file: File) {
@@ -132,7 +139,7 @@ class ConsoleEater {
 
     private fun distanceToApple(): ArrayList<Int> {
         val distance = arrayListOf<Int>()
-        val distanceX = snakeLocationX - appleLocationX
+        val distanceX = eaterLocationX - appleLocationX
         if (distanceX < 0) {
             distance.add(0)
             distance.add(abs(distanceX))
@@ -141,7 +148,7 @@ class ConsoleEater {
             distance.add(0)
         }
 
-        val distanceY = snakeLocationY - appleLocationY
+        val distanceY = eaterLocationY - appleLocationY
         if (distanceY < 0) {
             distance.add(0)
             distance.add(abs(distanceY))
@@ -154,10 +161,10 @@ class ConsoleEater {
 
     private fun distanceToWalls(): ArrayList<Int> {
         val distance = arrayListOf<Int>()
-        distance.add(abs(snakeLocationX))
-        distance.add(abs((size - 1) - snakeLocationX))
-        distance.add(abs(snakeLocationY))
-        distance.add(abs((size - 1) - snakeLocationY))
+        distance.add(abs(eaterLocationX))
+        distance.add(abs((size - 1) - eaterLocationX))
+        distance.add(abs(eaterLocationY))
+        distance.add(abs((size - 1) - eaterLocationY))
         return distance
     }
 
@@ -166,41 +173,36 @@ class ConsoleEater {
     }
 
     private fun move(direction: Direction) {
-        board[snakeLocationX][snakeLocationY] = 0
+        board[eaterLocationX][eaterLocationY] = emptyMark
         if (direction == Direction.LEFT) {
-            snakeLocationX -= 1
+            eaterLocationX -= 1
         } else if (direction == Direction.RIGHT) {
-            snakeLocationX += 1
+            eaterLocationX += 1
         } else if (direction == Direction.UP) {
-            snakeLocationY -= 1
+            eaterLocationY -= 1
         } else if (direction == Direction.DOWN) {
-            snakeLocationY += 1
+            eaterLocationY += 1
         }
         updateBoard()
     }
 
+    private fun isEaterDead(): Boolean {
+        return (eaterLocationX < 1)
+                || (eaterLocationY < 1)
+                || (eaterLocationX >= size - 1)
+                || (eaterLocationY >= size - 1)
+    }
+
     private fun isAppleEaten(): Boolean {
-        return ((snakeLocationX == appleLocationX) && (snakeLocationY == appleLocationY))
+        return ((eaterLocationX == appleLocationX) && (eaterLocationY == appleLocationY))
     }
 
     private fun setRandomApplePosition() {
-        board[appleLocationX][appleLocationY] = 0
-        while ((snakeLocationX == appleLocationX) && (snakeLocationY == appleLocationY)) {
+        board[appleLocationX][appleLocationY] = emptyMark
+        while ((eaterLocationX == appleLocationX) && (eaterLocationY == appleLocationY)) {
             appleLocationX = Random.nextInt(2, size - 3)
             appleLocationY = Random.nextInt(2, size - 3)
         }
         updateBoard()
-    }
-
-    private fun isSnakeDead(): Boolean {
-        return (snakeLocationX < 1)
-                || (snakeLocationY < 1)
-                || (snakeLocationX >= size - 1)
-                || (snakeLocationY >= size - 1)
-    }
-
-    private fun updateBoard() {
-        board[snakeLocationX][snakeLocationY] = 2
-        board[appleLocationX][appleLocationY] = 3
     }
 }

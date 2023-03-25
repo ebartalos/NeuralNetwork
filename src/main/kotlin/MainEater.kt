@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 
-object MainSnake {
+object MainEater {
 
     /**
      * if true, train
@@ -34,14 +34,15 @@ object MainSnake {
     private fun train(networks: ArrayList<Network>, fitness: HashMap<Network, Int>) {
         var sortedFitness: Map<Network, Int>
         var bestFitness = 0
+        val maxFitness = 2000000
 
         for (generation in 0..Constants.MAX_GENERATIONS) {
             // reset fitness
             fitness.replaceAll { _, _ -> 0 }
 
             for (network in networks) {
-                val fitnessOfNetwork = playConsole(network)
-                if (fitnessOfNetwork >= Constants.MAX_FITNESS) break
+                val fitnessOfNetwork = playGame(network, maxFitness)
+                if (fitnessOfNetwork >= maxFitness) break
                 fitness[network] = fitnessOfNetwork
             }
 
@@ -54,7 +55,7 @@ object MainSnake {
             if (fitness[bestNetwork]!! > bestFitness) {
                 bestFitness = fitness[bestNetwork]!!
                 bestNetwork.saveTrainedNetworkToFile(overwrite = true)
-                playConsole(bestNetwork, saveToFile = true)
+                playGame(bestNetwork, maxFitness, saveToFile = true)
             }
 
             val time = DateTimeFormatter
@@ -63,7 +64,7 @@ object MainSnake {
                 .format(Instant.now())
             println("$time Gen $generation best gen fitness ${fitness[bestNetwork]!!} ATH fitness $bestFitness")
 
-            if (bestFitness >= Constants.MAX_FITNESS) {
+            if (bestFitness >= maxFitness) {
                 println("TRAINING FINISHED! SCORE IS $bestFitness")
                 return
             }
@@ -96,17 +97,21 @@ object MainSnake {
         return network
     }
 
-    private fun playConsole(network: Network, printBoard: Boolean = false, saveToFile: Boolean = false): Int {
+    private fun playGame(
+        network: Network,
+        maxFitness: Int,
+        printBoard: Boolean = false,
+        saveToFile: Boolean = false
+    ): Int {
         var fitness = 0
         for (i in 1..5) {
-            val snake = ConsoleEater()
-            val score = snake.play(network, printBoard, saveToFile)
-            if (score >= Constants.MAX_FITNESS) return score
+            val eater = ConsoleEater()
+            val score = eater.play(network, maxFitness, printBoard, saveToFile)
+            if (score >= maxFitness) return score
             fitness += score
         }
         return fitness
     }
-
 
     private fun replayBestGame(filename: String) {
         val scanner = Scanner(File(filename))
