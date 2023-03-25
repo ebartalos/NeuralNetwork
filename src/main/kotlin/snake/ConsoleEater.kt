@@ -1,5 +1,8 @@
 package snake
 
+import ai.Network
+import java.io.File
+import kotlin.math.abs
 import kotlin.random.Random
 
 class ConsoleEater {
@@ -18,7 +21,7 @@ class ConsoleEater {
     private var appleLocationY: Int = Random.nextInt(1, size - 1)
 
     private var score = 0
-    private var maxSteps = 1000
+    private val maxSteps = 500
 
 
     init {
@@ -37,23 +40,54 @@ class ConsoleEater {
         board[appleLocationX][appleLocationY] = 3
     }
 
-    fun play() {
-        while (maxSteps > 0) {
-            printBoard()
-            move(Direction.values().random())
-            maxSteps -= 1
+    fun play(network: Network, printBoard: Boolean = false, saveToFile: Boolean = false): Int {
+        val file = File("bestSnakeTest.txt")
+        if (saveToFile) {
+            file.writeText("")
+        }
+
+        var steps = 0
+        while (steps < maxSteps) {
+            if (printBoard) printBoard()
+            if (saveToFile) saveGameToFile(file)
+
+            val distanceToApple = distanceToApple()
+            val distanceToWalls = distanceToWalls()
+
+            val inputs = arrayListOf(
+                (distanceToApple[0].toDouble()),
+                (distanceToApple[1].toDouble()),
+                (distanceToWalls[0].toDouble()),
+                (distanceToWalls[1].toDouble()),
+                (distanceToWalls[2].toDouble()),
+                (distanceToWalls[3].toDouble()),
+            )
+
+            network.setInputs(inputs)
+            network.evaluate()
+            val softmaxOutput = network.softmaxOutput()
+
+            val evaluationMatrix = mutableMapOf<Direction, Double>()
+            evaluationMatrix[Direction.LEFT] = softmaxOutput[0]
+            evaluationMatrix[Direction.RIGHT] = softmaxOutput[1]
+            evaluationMatrix[Direction.UP] = softmaxOutput[2]
+            evaluationMatrix[Direction.DOWN] = softmaxOutput[3]
+
+            val sortedResult = evaluationMatrix.toList().sortedBy { (_, value) -> value }
+            val result = sortedResult.last().first
+            move(result)
+            steps += 1
 
             if (isSnakeDead()) {
                 break
             }
 
             if (isAppleEaten()) {
-                println("Ate!")
                 score += 1
                 setRandomApplePosition()
             }
         }
-        println("Score $score")
+        return (score * 10000) + steps
     }
 
     private fun printBoard() {
@@ -65,10 +99,41 @@ class ConsoleEater {
 
         for (row in 0 until size) {
             for (column in 0 until size) {
-                print(translator[board[row][column]])
+                print(translator[board[column][row]])
             }
             println()
         }
+    }
+
+    private fun saveGameToFile(file: File) {
+        val translator = HashMap<Int, String>()
+        translator[0] = " "
+        translator[1] = "*"
+        translator[2] = "X"
+        translator[3] = "O"
+
+        for (row in 0 until size) {
+            for (column in 0 until size) {
+                translator[board[column][row]]?.let { file.appendText(it) }
+            }
+            file.appendText("\n")
+        }
+    }
+
+    private fun distanceToApple(): ArrayList<Int> {
+        val distance = arrayListOf<Int>()
+        distance.add(snakeLocationX - appleLocationX)
+        distance.add(snakeLocationY - appleLocationY)
+        return distance
+    }
+
+    private fun distanceToWalls(): ArrayList<Int> {
+        val distance = arrayListOf<Int>()
+        distance.add(abs(snakeLocationX))
+        distance.add(abs(snakeLocationX - size))
+        distance.add(abs(snakeLocationY))
+        distance.add(abs(snakeLocationY - size))
+        return distance
     }
 
     enum class Direction {
@@ -86,7 +151,7 @@ class ConsoleEater {
         } else if (direction == Direction.DOWN) {
             snakeLocationY += 1
         }
-       updateBoard()
+        updateBoard()
     }
 
     private fun isAppleEaten(): Boolean {
@@ -109,7 +174,7 @@ class ConsoleEater {
                 || (snakeLocationY >= size - 1)
     }
 
-    private fun updateBoard(){
+    private fun updateBoard() {
         board[snakeLocationX][snakeLocationY] = 2
         board[appleLocationX][appleLocationY] = 3
     }

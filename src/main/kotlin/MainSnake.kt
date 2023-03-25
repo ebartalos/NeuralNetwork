@@ -2,7 +2,8 @@ import ai.Network
 import ai.algorithms.Genetics
 import ai.neurons.Neuron
 import ai.neurons.ReLuNeuron
-import snake.Snake
+import ai.neurons.TanhNeuron
+import snake.ConsoleEater
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -17,6 +18,8 @@ object MainSnake {
 
         createNetworks(networks, fitness)
         train(networks, fitness)
+
+//        testBest()
     }
 
     private fun train(networks: ArrayList<Network>, fitness: HashMap<Network, Int>) {
@@ -28,7 +31,7 @@ object MainSnake {
             fitness.replaceAll { _, _ -> 0 }
 
             for (network in networks) {
-                playGame(network, fitness, false)
+                fitness[network] = playConsole(network)
             }
 
             sortedFitness = fitness.toList().sortedBy { (_, value) -> value }.toMap()
@@ -40,6 +43,7 @@ object MainSnake {
             if (fitness[bestNetwork]!! > bestFitness) {
                 bestFitness = fitness[bestNetwork]!!
                 bestNetwork.saveTrainedNetworkToFile(overwrite = true)
+                playConsole(bestNetwork, saveToFile = true)
             }
 
             val time = DateTimeFormatter
@@ -47,10 +51,13 @@ object MainSnake {
                 .withZone(ZoneId.systemDefault())
                 .format(Instant.now())
             println("$time Gen $generation best gen fitness ${fitness[bestNetwork]!!} ATH fitness $bestFitness")
-
-            // testing game - slow
-            playGame(bestNetwork, null, true)
         }
+    }
+
+    private fun testBest() {
+        val network = Network(1)
+        network.loadTrainedNetworkFromFile()
+        println("Fitness " + playConsole(network, saveToFile = true))
     }
 
     private fun createNetworks(networks: ArrayList<Network>, fitness: HashMap<Network, Int>) {
@@ -72,31 +79,21 @@ object MainSnake {
     private fun createNetwork(id: Int): Network {
         val network = Network(id)
         network.addInputLayer(6)
+        network.addHiddenLayer(TanhNeuron::class, 8, true)
         network.addHiddenLayer(ReLuNeuron::class, 8, true)
         network.addHiddenLayer(ReLuNeuron::class, 8, true)
-//        network.addHiddenLayer(ReLuNeuron::class, 9, true)
         network.addOutputLayer(Neuron::class, 4)
         network.createConnections()
 
         return network
     }
 
-    private fun playGame(network: Network, fitness: HashMap<Network, Int>?, goSlow: Boolean) {
-        val snake = Snake(network)
-        snake.isVisible = true
-        if (goSlow) {
-            snake.toFront()
-        } else {
-            snake.toBack()
+    private fun playConsole(network: Network, printBoard: Boolean = false, saveToFile: Boolean = false): Int {
+        var fitness = 0
+        for (i in 1..5) {
+            val snake = ConsoleEater()
+            fitness += snake.play(network, printBoard, saveToFile)
         }
-
-        while (snake.board.isGameOver.not()) {
-            snake.changeDirection()
-            if (goSlow) {
-                Thread.sleep(10)
-            }
-        }
-        if (fitness != null) fitness[network] = snake.fitness()
-        snake.dispose()
+        return fitness
     }
 }
