@@ -12,7 +12,10 @@ import java.util.*
 
 object MainSnake {
 
-    //
+    /**
+     * if true, train
+     * if false, test
+     */
     private const val TRAIN = false
 
     @JvmStatic
@@ -112,7 +115,7 @@ object MainSnake {
             for (i in 0 until 15) {
                 println(scanner.nextLine())
             }
-            Thread.sleep(1_000)
+            Thread.sleep(500)
         }
     }
 }

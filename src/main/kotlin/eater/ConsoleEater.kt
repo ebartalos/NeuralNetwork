@@ -7,7 +7,7 @@ import kotlin.math.abs
 import kotlin.random.Random
 
 class ConsoleEater {
-    /***
+    /**
      * 0 - empty space
      * 1 - wall
      * 2 - snake
