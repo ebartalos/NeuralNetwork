@@ -12,16 +12,16 @@ class ConsoleEater {
      * 2 - snake
      * 3 - apple
      */
-    private val size = 20
+    private val size = 15
     private val board = Array(size) { Array(size) { 0 } }
 
-    private var snakeLocationX: Int = Random.nextInt(1, size - 1)
-    private var snakeLocationY: Int = Random.nextInt(1, size - 1)
-    private var appleLocationX: Int = Random.nextInt(1, size - 1)
-    private var appleLocationY: Int = Random.nextInt(1, size - 1)
+    private var snakeLocationX: Int = Random.nextInt(1, size - 2)
+    private var snakeLocationY: Int = Random.nextInt(1, size - 2)
+    private var appleLocationX: Int = Random.nextInt(2, size - 3)
+    private var appleLocationY: Int = Random.nextInt(2, size - 3)
 
     private var score = 0
-    private val maxSteps = 500
+    private var maxSteps = 100
 
 
     init {
@@ -34,7 +34,7 @@ class ConsoleEater {
         }
 
         while ((snakeLocationX == appleLocationX) && (snakeLocationY == appleLocationY)) {
-            appleLocationX = Random.nextInt(1, size - 1)
+            appleLocationX = Random.nextInt(2, size - 3)
         }
         board[snakeLocationX][snakeLocationY] = 2
         board[appleLocationX][appleLocationY] = 3
@@ -49,33 +49,9 @@ class ConsoleEater {
         var steps = 0
         while (steps < maxSteps) {
             if (printBoard) printBoard()
-            if (saveToFile) saveGameToFile(file)
+            if (saveToFile) saveBoardStatusToFile(file)
 
-            val distanceToApple = distanceToApple()
-            val distanceToWalls = distanceToWalls()
-
-            val inputs = arrayListOf(
-                (distanceToApple[0].toDouble()),
-                (distanceToApple[1].toDouble()),
-                (distanceToWalls[0].toDouble()),
-                (distanceToWalls[1].toDouble()),
-                (distanceToWalls[2].toDouble()),
-                (distanceToWalls[3].toDouble()),
-            )
-
-            network.setInputs(inputs)
-            network.evaluate()
-            val softmaxOutput = network.softmaxOutput()
-
-            val evaluationMatrix = mutableMapOf<Direction, Double>()
-            evaluationMatrix[Direction.LEFT] = softmaxOutput[0]
-            evaluationMatrix[Direction.RIGHT] = softmaxOutput[1]
-            evaluationMatrix[Direction.UP] = softmaxOutput[2]
-            evaluationMatrix[Direction.DOWN] = softmaxOutput[3]
-
-            val sortedResult = evaluationMatrix.toList().sortedBy { (_, value) -> value }
-            val result = sortedResult.last().first
-            move(result)
+            move(evaluateMove(network))
             steps += 1
 
             if (isSnakeDead()) {
@@ -84,10 +60,40 @@ class ConsoleEater {
 
             if (isAppleEaten()) {
                 score += 1
+                maxSteps += 100
                 setRandomApplePosition()
             }
         }
-        return (score * 10000) + steps
+        return (score * 1000) + steps
+    }
+
+    private fun evaluateMove(network: Network): Direction {
+        val distanceToApple = distanceToApple()
+        val distanceToWalls = distanceToWalls()
+
+        val inputs = arrayListOf(
+            (distanceToApple[0].toDouble()),
+            (distanceToApple[1].toDouble()),
+            (distanceToApple[2].toDouble()),
+            (distanceToApple[3].toDouble()),
+            (distanceToWalls[0].toDouble()),
+            (distanceToWalls[1].toDouble()),
+            (distanceToWalls[2].toDouble()),
+            (distanceToWalls[3].toDouble()),
+        )
+
+        network.setInputs(inputs)
+        network.evaluate()
+        val softmaxOutput = network.softmaxOutput()
+
+        val evaluationMatrix = mutableMapOf<Direction, Double>()
+        evaluationMatrix[Direction.LEFT] = softmaxOutput[0]
+        evaluationMatrix[Direction.RIGHT] = softmaxOutput[1]
+        evaluationMatrix[Direction.UP] = softmaxOutput[2]
+        evaluationMatrix[Direction.DOWN] = softmaxOutput[3]
+
+        val sortedResult = evaluationMatrix.toList().sortedBy { (_, value) -> value }
+        return sortedResult.last().first
     }
 
     private fun printBoard() {
@@ -105,7 +111,7 @@ class ConsoleEater {
         }
     }
 
-    private fun saveGameToFile(file: File) {
+    private fun saveBoardStatusToFile(file: File) {
         val translator = HashMap<Int, String>()
         translator[0] = " "
         translator[1] = "*"
@@ -122,17 +128,32 @@ class ConsoleEater {
 
     private fun distanceToApple(): ArrayList<Int> {
         val distance = arrayListOf<Int>()
-        distance.add(snakeLocationX - appleLocationX)
-        distance.add(snakeLocationY - appleLocationY)
+        val distanceX = snakeLocationX - appleLocationX
+        if (distanceX < 0) {
+            distance.add(0)
+            distance.add(abs(distanceX))
+        } else {
+            distance.add(abs(distanceX))
+            distance.add(0)
+        }
+
+        val distanceY = snakeLocationY - appleLocationY
+        if (distanceY < 0) {
+            distance.add(0)
+            distance.add(abs(distanceY))
+        } else {
+            distance.add(abs(distanceY))
+            distance.add(0)
+        }
         return distance
     }
 
     private fun distanceToWalls(): ArrayList<Int> {
         val distance = arrayListOf<Int>()
         distance.add(abs(snakeLocationX))
-        distance.add(abs(snakeLocationX - size))
+        distance.add(abs((size - 1) - snakeLocationX))
         distance.add(abs(snakeLocationY))
-        distance.add(abs(snakeLocationY - size))
+        distance.add(abs((size - 1) - snakeLocationY))
         return distance
     }
 
@@ -161,8 +182,8 @@ class ConsoleEater {
     private fun setRandomApplePosition() {
         board[appleLocationX][appleLocationY] = 0
         while ((snakeLocationX == appleLocationX) && (snakeLocationY == appleLocationY)) {
-            appleLocationX = Random.nextInt(1, size - 1)
-            appleLocationY = Random.nextInt(1, size - 1)
+            appleLocationX = Random.nextInt(2, size - 3)
+            appleLocationY = Random.nextInt(2, size - 3)
         }
         updateBoard()
     }

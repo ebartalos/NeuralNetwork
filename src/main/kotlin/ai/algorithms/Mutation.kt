@@ -7,7 +7,6 @@ import kotlin.random.Random
  * Mutation for genetic algorithms
  */
 class Mutation(private val network: Network) {
-
     /**
      * @param from lower index of mutation range
      * @param to higher index of mutation range
@@ -20,7 +19,12 @@ class Mutation(private val network: Network) {
                     if (connection.weight == 0.0) {
                         connection.weight = Random.nextDouble(-0.01, 0.01)
                     } else {
-                        connection.weight = connection.weight * Random.nextDouble(from, to)
+                        val mutationPart = (connection.weight * Random.nextDouble(from, to)) - connection.weight
+                        if (Random.nextBoolean()) {
+                            connection.weight += mutationPart
+                        } else {
+                            connection.weight -= mutationPart
+                        }
                     }
                 }
             }

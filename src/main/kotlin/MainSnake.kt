@@ -2,7 +2,6 @@ import ai.Network
 import ai.algorithms.Genetics
 import ai.neurons.Neuron
 import ai.neurons.ReLuNeuron
-import ai.neurons.TanhNeuron
 import snake.ConsoleEater
 import java.time.Instant
 import java.time.ZoneId
@@ -78,10 +77,10 @@ object MainSnake {
 
     private fun createNetwork(id: Int): Network {
         val network = Network(id)
-        network.addInputLayer(6)
-        network.addHiddenLayer(TanhNeuron::class, 8, true)
-        network.addHiddenLayer(ReLuNeuron::class, 8, true)
-        network.addHiddenLayer(ReLuNeuron::class, 8, true)
+        network.addInputLayer(8)
+        network.addHiddenLayer(ReLuNeuron::class, 10, true)
+//        network.addHiddenLayer(ReLuNeuron::class, 10, true)
+//        network.addHiddenLayer(ReLuNeuron::class, 8, true)
         network.addOutputLayer(Neuron::class, 4)
         network.createConnections()
 
