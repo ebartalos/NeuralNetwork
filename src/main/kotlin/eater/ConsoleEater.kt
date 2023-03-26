@@ -6,6 +6,7 @@ import kotlin.math.abs
 import kotlin.random.Random
 
 class ConsoleEater {
+    // 15x15
     private val size = 15
     private val board = Array(size) { Array(size) { 0 } }
 
@@ -40,6 +41,16 @@ class ConsoleEater {
         updateBoard()
     }
 
+    /**
+     * Play 1 game, until eater crashes or runs out of steps
+     *
+     * @param network neural network playing the game
+     * @param maxFitness limit when should game end (prevents infinite game)
+     * @param printBoard should board be printed into the console
+     * @param saveToFile should board be saved into the file
+     *
+     * @return fitness reached
+     */
     fun play(network: Network, maxFitness: Int, printBoard: Boolean = false, saveToFile: Boolean = false): Int {
         val file = File("bestSnakeTest.txt")
         if (saveToFile) {
@@ -117,11 +128,9 @@ class ConsoleEater {
         }
     }
 
-    private fun updateBoard() {
-        board[eaterLocationX][eaterLocationY] = eaterMark
-        board[appleLocationX][appleLocationY] = appleMark
-    }
-
+    /**
+     * Save current board status to file
+     */
     private fun saveBoardStatusToFile(file: File) {
         val translator = HashMap<Int, String>()
         translator[0] = " "
@@ -168,7 +177,7 @@ class ConsoleEater {
         return distance
     }
 
-    enum class Direction {
+    private enum class Direction {
         LEFT, RIGHT, UP, DOWN
     }
 
@@ -204,5 +213,10 @@ class ConsoleEater {
             appleLocationY = Random.nextInt(2, size - 3)
         }
         updateBoard()
+    }
+
+    private fun updateBoard() {
+        board[eaterLocationX][eaterLocationY] = eaterMark
+        board[appleLocationX][appleLocationY] = appleMark
     }
 }

@@ -84,6 +84,9 @@ class Network(val id: Int) {
         return values
     }
 
+    /**
+     * Returns value of output neurons after softmax is applied
+     */
     fun softmaxOutput(): ArrayList<Double> {
         val values = ArrayList<Double>()
         val output = output()

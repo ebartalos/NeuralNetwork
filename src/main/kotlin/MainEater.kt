@@ -24,13 +24,19 @@ object MainEater {
             val networks = arrayListOf<Network>()
             val fitness = hashMapOf<Network, Int>()
 
-            createNetworks(networks, fitness)
+            setNetworks(networks, fitness)
             train(networks, fitness)
         } else {
-            replayBestGame("bestSnakeTest.txt")
+            replayGame("bestSnakeTest.txt")
         }
     }
 
+    /**
+     * Train networks until max fitness (or max generatio limit) is reached.
+     *
+     * @param networks neural networks
+     * @param fitness neural networks' fitness
+     */
     private fun train(networks: ArrayList<Network>, fitness: HashMap<Network, Int>) {
         var sortedFitness: Map<Network, Int>
         var bestFitness = 0
@@ -71,7 +77,14 @@ object MainEater {
         }
     }
 
-    private fun createNetworks(networks: ArrayList<Network>, fitness: HashMap<Network, Int>) {
+    /**
+     * Create proper neural networks
+     *
+     * @param networks list of shell empty networks
+     * @param fitness assign default fitness value to all networks
+     *
+     */
+    private fun setNetworks(networks: ArrayList<Network>, fitness: HashMap<Network, Int>) {
         for (networkId in 1..Constants.MAX_NEURAL_NETWORKS) {
             lateinit var network: Network
 
@@ -87,6 +100,13 @@ object MainEater {
         }
     }
 
+    /**
+     * Create 1 neural network
+     *
+     * @param id unique id
+     *
+     * @return neural network
+     */
     private fun createNetwork(id: Int): Network {
         val network = Network(id)
         network.addInputLayer(8)
@@ -97,6 +117,17 @@ object MainEater {
         return network
     }
 
+    /**
+     * Neural networks plays 5 games and total score is fitness
+     * Playing 5 games assures some statistical variance
+     *
+     * @param network neural network
+     * @param maxFitness upper limit for training
+     * @param printBoard should be printed to console
+     * @param saveToFile should be saved to file
+     *
+     * @return fitness
+     */
     private fun playGame(
         network: Network,
         maxFitness: Int,
@@ -113,7 +144,12 @@ object MainEater {
         return fitness
     }
 
-    private fun replayBestGame(filename: String) {
+    /**
+     * Replays already saved game in the console
+     *
+     * @param filename file containing game notation
+     */
+    private fun replayGame(filename: String) {
         val scanner = Scanner(File(filename))
 
         while (scanner.hasNextLine()) {
