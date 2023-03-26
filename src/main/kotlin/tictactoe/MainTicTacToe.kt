@@ -1,11 +1,13 @@
+package tictactoe
+
+import Constants
 import ai.Network
 import ai.algorithms.Genetics
 import ai.neurons.ReLuNeuron
 import ai.neurons.TanhNeuron
-import tictactoe.Generator
-import tictactoe.Tictactoe
 import java.io.File
 
+@Deprecated("Not working correctly")
 object MainTicTacToe {
 
     @JvmStatic

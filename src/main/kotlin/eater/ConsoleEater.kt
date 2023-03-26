@@ -6,7 +6,8 @@ import kotlin.math.abs
 import kotlin.random.Random
 
 class ConsoleEater {
-    // 15x15
+
+    // board size - 15x15
     private val size = 15
     private val board = Array(size) { Array(size) { 0 } }
 
@@ -20,7 +21,6 @@ class ConsoleEater {
     private var appleLocationX: Int = Random.nextInt(2, size - 3)
     private var appleLocationY: Int = Random.nextInt(2, size - 3)
 
-    private var score = 0
     private var maxSteps = 100
 
 
@@ -42,7 +42,7 @@ class ConsoleEater {
     }
 
     /**
-     * Play 1 game, until eater crashes or runs out of steps
+     * Play 1 game, until eater crashes or runs out of steps.
      *
      * @param network neural network playing the game
      * @param maxFitness limit when should game end (prevents infinite game)
@@ -57,7 +57,9 @@ class ConsoleEater {
             file.writeText("")
         }
 
+        var score = 0
         var steps = 0
+
         while (steps < maxSteps) {
             if (printBoard) printBoard()
             if (saveToFile) saveBoardStatusToFile(file)
@@ -74,13 +76,27 @@ class ConsoleEater {
                 maxSteps += 100
                 setRandomApplePosition()
             }
-            if ((score * 1000) + steps >= maxFitness) {
+            if (scoreFormula(score, steps) >= maxFitness) {
                 break
             }
         }
+        return scoreFormula(score, steps)
+    }
+
+    /**
+     * Formula for calculating score (fitness).
+     */
+    private fun scoreFormula(score: Int, steps: Int): Int {
         return (score * 1000) + steps
     }
 
+    /**
+     * Networks calculates next move.
+     *
+     * @param network neural network
+     *
+     * @return direction to move
+     */
     private fun evaluateMove(network: Network): Direction {
         val distanceToApple = distanceToApple()
         val distanceToWalls = distanceToWalls()
@@ -111,7 +127,7 @@ class ConsoleEater {
     }
 
     /**
-     * Print current board status to console
+     * Print current board status to console.
      */
     private fun printBoard() {
         val translator = HashMap<Int, String>()
@@ -129,7 +145,7 @@ class ConsoleEater {
     }
 
     /**
-     * Save current board status to file
+     * Save current board status to file.
      */
     private fun saveBoardStatusToFile(file: File) {
         val translator = HashMap<Int, String>()
@@ -146,6 +162,11 @@ class ConsoleEater {
         }
     }
 
+    /**
+     * Calculate distance to the apple.
+     *
+     * @return array of distances - 4 directions
+     */
     private fun distanceToApple(): ArrayList<Int> {
         val distance = arrayListOf<Int>()
         val distanceX = eaterLocationX - appleLocationX
@@ -168,6 +189,11 @@ class ConsoleEater {
         return distance
     }
 
+    /**
+     * Calculate distance to walls.
+     *
+     * @return array of distances - 4 directions
+     */
     private fun distanceToWalls(): ArrayList<Int> {
         val distance = arrayListOf<Int>()
         distance.add(abs(eaterLocationX))
@@ -181,6 +207,9 @@ class ConsoleEater {
         LEFT, RIGHT, UP, DOWN
     }
 
+    /**
+     * Move eater on the board.
+     */
     private fun move(direction: Direction) {
         board[eaterLocationX][eaterLocationY] = emptyMark
         if (direction == Direction.LEFT) {
@@ -195,6 +224,12 @@ class ConsoleEater {
         updateBoard()
     }
 
+    /**
+     * Detect wall collision.
+     *
+     * @return true if eater crashed
+     *         false if not
+     */
     private fun isEaterDead(): Boolean {
         return (eaterLocationX < 1)
                 || (eaterLocationY < 1)
@@ -202,10 +237,19 @@ class ConsoleEater {
                 || (eaterLocationY >= size - 1)
     }
 
+    /**
+     * Detect apple collision.
+     *
+     * @return true if apple is eaten
+     *         false if not
+     */
     private fun isAppleEaten(): Boolean {
         return ((eaterLocationX == appleLocationX) && (eaterLocationY == appleLocationY))
     }
 
+    /**
+     * Set random position for apple - O - that is inside of board.
+     */
     private fun setRandomApplePosition() {
         board[appleLocationX][appleLocationY] = emptyMark
         while ((eaterLocationX == appleLocationX) && (eaterLocationY == appleLocationY)) {
@@ -215,6 +259,9 @@ class ConsoleEater {
         updateBoard()
     }
 
+    /**
+     * Update position of eater and apple on the board.
+     */
     private fun updateBoard() {
         board[eaterLocationX][eaterLocationY] = eaterMark
         board[appleLocationX][appleLocationY] = appleMark

@@ -1,8 +1,10 @@
+package eater
+
+import Constants
 import ai.Network
 import ai.algorithms.Genetics
 import ai.neurons.Neuron
 import ai.neurons.ReLuNeuron
-import eater.ConsoleEater
 import java.io.File
 import java.time.Instant
 import java.time.ZoneId
@@ -78,7 +80,7 @@ object MainEater {
     }
 
     /**
-     * Create proper neural networks
+     * Set neurons, weights and connections in neural networks.
      *
      * @param networks list of shell empty networks
      * @param fitness assign default fitness value to all networks
@@ -101,7 +103,7 @@ object MainEater {
     }
 
     /**
-     * Create 1 neural network
+     * Create 1 neural network.
      *
      * @param id unique id
      *
@@ -118,8 +120,8 @@ object MainEater {
     }
 
     /**
-     * Neural networks plays 5 games and total score is fitness
-     * Playing 5 games assures some statistical variance
+     * Neural networks plays 5 games and total score is fitness.
+     * Playing 5 games assures some statistical variance.
      *
      * @param network neural network
      * @param maxFitness upper limit for training
@@ -145,7 +147,7 @@ object MainEater {
     }
 
     /**
-     * Replays already saved game in the console
+     * Replays already saved game in the console.
      *
      * @param filename file containing game notation
      */
