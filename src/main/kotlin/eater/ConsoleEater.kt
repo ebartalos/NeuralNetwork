@@ -16,10 +16,10 @@ class ConsoleEater {
     private val eaterMark = 2
     private val appleMark = 3
 
-    private var eaterLocationX: Int = Random.nextInt(1, size - 2)
-    private var eaterLocationY: Int = Random.nextInt(1, size - 2)
-    private var appleLocationX: Int = Random.nextInt(2, size - 3)
-    private var appleLocationY: Int = Random.nextInt(2, size - 3)
+    private var eaterLocationX: Int = Random.nextInt(1, size - 1)
+    private var eaterLocationY: Int = Random.nextInt(1, size - 1)
+    private var appleLocationX: Int = Random.nextInt(1, size - 1)
+    private var appleLocationY: Int = Random.nextInt(1, size - 1)
 
     private var maxSteps = 100
 
@@ -35,7 +35,7 @@ class ConsoleEater {
 
         // set eater and apple position
         while ((eaterLocationX == appleLocationX) && (eaterLocationY == appleLocationY)) {
-            appleLocationX = Random.nextInt(2, size - 3)
+            appleLocationX = Random.nextInt(1, size - 1)
         }
 
         updateBoard()
@@ -253,8 +253,8 @@ class ConsoleEater {
     private fun setRandomApplePosition() {
         board[appleLocationX][appleLocationY] = emptyMark
         while ((eaterLocationX == appleLocationX) && (eaterLocationY == appleLocationY)) {
-            appleLocationX = Random.nextInt(2, size - 3)
-            appleLocationY = Random.nextInt(2, size - 3)
+            appleLocationX = Random.nextInt(1, size - 1)
+            appleLocationY = Random.nextInt(1, size - 1)
         }
         updateBoard()
     }

@@ -18,18 +18,28 @@ object MainEater {
      * if true, train
      * if false, test
      */
-    private const val TRAIN = false
+    enum class Activity {
+        TRAIN, REPLAY, TEST
+    }
+
+    private val activity: Activity = Activity.REPLAY
 
     @JvmStatic
     fun main(args: Array<String>) {
-        if (TRAIN) {
+        if (activity == Activity.TRAIN) {
             val networks = arrayListOf<Network>()
             val fitness = hashMapOf<Network, Int>()
 
             setNetworks(networks, fitness)
             train(networks, fitness)
-        } else {
+        } else if (activity == Activity.REPLAY) {
             replayGame("bestSnakeTest.txt")
+        } else if (activity == Activity.TEST) {
+            val network = Network(1)
+            network.loadTrainedNetworkFromFile()
+            val eater = ConsoleEater()
+            val score = eater.play(network, 2000000, printBoard = false, saveToFile = true)
+            println(score)
         }
     }
 
@@ -49,9 +59,9 @@ object MainEater {
             fitness.replaceAll { _, _ -> 0 }
 
             for (network in networks) {
-                val fitnessOfNetwork = playGame(network, maxFitness)
-                if (fitnessOfNetwork >= maxFitness) break
+                val fitnessOfNetwork = playGames(network, maxFitness)
                 fitness[network] = fitnessOfNetwork
+                if (fitnessOfNetwork >= maxFitness) break
             }
 
             sortedFitness = fitness.toList().sortedBy { (_, value) -> value }.toMap()
@@ -63,7 +73,11 @@ object MainEater {
             if (fitness[bestNetwork]!! > bestFitness) {
                 bestFitness = fitness[bestNetwork]!!
                 bestNetwork.saveTrainedNetworkToFile(overwrite = true)
-                playGame(bestNetwork, maxFitness, saveToFile = true)
+                playGames(bestNetwork, maxFitness, saveToFile = true)
+            }
+
+            if (fitness[bestNetwork]!! == 0) {
+                println("pica")
             }
 
             val time = DateTimeFormatter
@@ -130,7 +144,7 @@ object MainEater {
      *
      * @return fitness
      */
-    private fun playGame(
+    private fun playGames(
         network: Network,
         maxFitness: Int,
         printBoard: Boolean = false,
