@@ -7,35 +7,36 @@ import kotlin.random.Random
 
 class ConsoleEater {
 
-    // board size - 15x15
-    private val size = 15
-    private val board = Array(size) { Array(size) { 0 } }
+    // board size (square) - 15x15
+    private val sideLength = 15
+    private val board = Array(sideLength) { Array(sideLength) { 0 } }
 
     private val emptyMark = 0
     private val wallMark = 1
     private val eaterMark = 2
     private val appleMark = 3
 
-    private var eaterLocationX: Int = Random.nextInt(1, size - 1)
-    private var eaterLocationY: Int = Random.nextInt(1, size - 1)
-    private var appleLocationX: Int = Random.nextInt(1, size - 1)
-    private var appleLocationY: Int = Random.nextInt(1, size - 1)
+    private var eaterLocationX: Int = Random.nextInt(1, sideLength - 1)
+    private var eaterLocationY: Int = Random.nextInt(1, sideLength - 1)
+    private var appleLocationX: Int = Random.nextInt(1, sideLength - 1)
+    private var appleLocationY: Int = Random.nextInt(1, sideLength - 1)
 
-    private var maxSteps = 100
+    private var maxSteps = 50
+    private val stepsIncrement = 50
 
 
     init {
         // draw walls
-        for (index in 0 until size) {
+        for (index in 0 until sideLength) {
             board[0][index] = wallMark
-            board[size - 1][index] = wallMark
+            board[sideLength - 1][index] = wallMark
             board[index][0] = wallMark
-            board[index][size - 1] = wallMark
+            board[index][sideLength - 1] = wallMark
         }
 
         // set eater and apple position
         while ((eaterLocationX == appleLocationX) && (eaterLocationY == appleLocationY)) {
-            appleLocationX = Random.nextInt(1, size - 1)
+            appleLocationX = Random.nextInt(1, sideLength - 1)
         }
 
         updateBoard()
@@ -73,7 +74,7 @@ class ConsoleEater {
 
             if (isAppleEaten()) {
                 score += 1
-                maxSteps += 100
+                maxSteps += stepsIncrement
                 setRandomApplePosition()
             }
             if (scoreFormula(score, steps) >= maxFitness) {
@@ -102,14 +103,14 @@ class ConsoleEater {
         val distanceToWalls = distanceToWalls()
 
         val inputs = arrayListOf(
-            (distanceToApple[0].toDouble()),
-            (distanceToApple[1].toDouble()),
-            (distanceToApple[2].toDouble()),
-            (distanceToApple[3].toDouble()),
-            (distanceToWalls[0].toDouble()),
-            (distanceToWalls[1].toDouble()),
-            (distanceToWalls[2].toDouble()),
-            (distanceToWalls[3].toDouble()),
+            distanceToApple[0].toDouble(),
+            distanceToApple[1].toDouble(),
+            distanceToApple[2].toDouble(),
+            distanceToApple[3].toDouble(),
+            distanceToWalls[0].toDouble(),
+            distanceToWalls[1].toDouble(),
+            distanceToWalls[2].toDouble(),
+            distanceToWalls[3].toDouble(),
         )
 
         network.setInputs(inputs)
@@ -136,8 +137,8 @@ class ConsoleEater {
         translator[2] = "X"
         translator[3] = "O"
 
-        for (row in 0 until size) {
-            for (column in 0 until size) {
+        for (row in 0 until sideLength) {
+            for (column in 0 until sideLength) {
                 print(translator[board[column][row]])
             }
             println()
@@ -154,8 +155,8 @@ class ConsoleEater {
         translator[2] = "X"
         translator[3] = "O"
 
-        for (row in 0 until size) {
-            for (column in 0 until size) {
+        for (row in 0 until sideLength) {
+            for (column in 0 until sideLength) {
                 translator[board[column][row]]?.let { file.appendText(it) }
             }
             file.appendText("\n")
@@ -197,9 +198,9 @@ class ConsoleEater {
     private fun distanceToWalls(): ArrayList<Int> {
         val distance = arrayListOf<Int>()
         distance.add(abs(eaterLocationX))
-        distance.add(abs((size - 1) - eaterLocationX))
+        distance.add(abs((sideLength - 1) - eaterLocationX))
         distance.add(abs(eaterLocationY))
-        distance.add(abs((size - 1) - eaterLocationY))
+        distance.add(abs((sideLength - 1) - eaterLocationY))
         return distance
     }
 
@@ -233,8 +234,8 @@ class ConsoleEater {
     private fun isEaterDead(): Boolean {
         return (eaterLocationX < 1)
                 || (eaterLocationY < 1)
-                || (eaterLocationX >= size - 1)
-                || (eaterLocationY >= size - 1)
+                || (eaterLocationX >= sideLength - 1)
+                || (eaterLocationY >= sideLength - 1)
     }
 
     /**
@@ -253,8 +254,8 @@ class ConsoleEater {
     private fun setRandomApplePosition() {
         board[appleLocationX][appleLocationY] = emptyMark
         while ((eaterLocationX == appleLocationX) && (eaterLocationY == appleLocationY)) {
-            appleLocationX = Random.nextInt(1, size - 1)
-            appleLocationY = Random.nextInt(1, size - 1)
+            appleLocationX = Random.nextInt(1, sideLength - 1)
+            appleLocationY = Random.nextInt(1, sideLength - 1)
         }
         updateBoard()
     }

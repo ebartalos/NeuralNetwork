@@ -22,7 +22,7 @@ object MainEater {
         TRAIN, REPLAY, TEST
     }
 
-    private val activity: Activity = Activity.REPLAY
+    private val activity: Activity = Activity.TEST
 
     @JvmStatic
     fun main(args: Array<String>) {
@@ -38,7 +38,7 @@ object MainEater {
             val network = Network(1)
             network.loadTrainedNetworkFromFile()
             val eater = ConsoleEater()
-            val score = eater.play(network, 2000000, printBoard = false, saveToFile = true)
+            val score = eater.play(network, 2000000, printBoard = true, saveToFile = false)
             println(score)
         }
     }
