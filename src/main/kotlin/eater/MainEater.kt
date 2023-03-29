@@ -23,6 +23,7 @@ object MainEater {
     }
 
     private val activity: Activity = Activity.TEST
+    private const val MAX_FITNESS = 10000000
 
     @JvmStatic
     fun main(args: Array<String>) {
@@ -38,7 +39,7 @@ object MainEater {
             val network = Network(1)
             network.loadTrainedNetworkFromFile()
             val eater = ConsoleEater()
-            val score = eater.play(network, 2000000, printBoard = true, saveToFile = false)
+            val score = eater.play(network, MAX_FITNESS, printBoard = true, saveToFile = false)
             println(score)
         }
     }
@@ -52,16 +53,15 @@ object MainEater {
     private fun train(networks: ArrayList<Network>, fitness: HashMap<Network, Int>) {
         var sortedFitness: Map<Network, Int>
         var bestFitness = 0
-        val maxFitness = 2000000
 
         for (generation in 0..Constants.MAX_GENERATIONS) {
             // reset fitness
             fitness.replaceAll { _, _ -> 0 }
 
             for (network in networks) {
-                val fitnessOfNetwork = playGames(network, maxFitness)
+                val fitnessOfNetwork = playGame(network, MAX_FITNESS)
                 fitness[network] = fitnessOfNetwork
-                if (fitnessOfNetwork >= maxFitness) break
+                if (fitnessOfNetwork >= MAX_FITNESS) break
             }
 
             sortedFitness = fitness.toList().sortedBy { (_, value) -> value }.toMap()
@@ -73,11 +73,7 @@ object MainEater {
             if (fitness[bestNetwork]!! > bestFitness) {
                 bestFitness = fitness[bestNetwork]!!
                 bestNetwork.saveTrainedNetworkToFile(overwrite = true)
-                playGames(bestNetwork, maxFitness, saveToFile = true)
-            }
-
-            if (fitness[bestNetwork]!! == 0) {
-                println("pica")
+                playGame(bestNetwork, MAX_FITNESS, saveToFile = true)
             }
 
             val time = DateTimeFormatter
@@ -86,7 +82,7 @@ object MainEater {
                 .format(Instant.now())
             println("$time Gen $generation best gen fitness ${fitness[bestNetwork]!!} ATH fitness $bestFitness")
 
-            if (bestFitness >= maxFitness) {
+            if (bestFitness >= MAX_FITNESS) {
                 println("TRAINING FINISHED! SCORE IS $bestFitness")
                 return
             }
@@ -134,8 +130,6 @@ object MainEater {
     }
 
     /**
-     * Neural networks plays 5 games and total score is fitness.
-     * Playing 5 games assures some statistical variance.
      *
      * @param network neural network
      * @param maxFitness upper limit for training
@@ -144,20 +138,14 @@ object MainEater {
      *
      * @return fitness
      */
-    private fun playGames(
+    private fun playGame(
         network: Network,
         maxFitness: Int,
         printBoard: Boolean = false,
         saveToFile: Boolean = false
     ): Int {
-        var fitness = 0
-        for (i in 1..5) {
-            val eater = ConsoleEater()
-            val score = eater.play(network, maxFitness, printBoard, saveToFile)
-            if (score >= maxFitness) return score
-            fitness += score
-        }
-        return fitness
+        val eater = ConsoleEater()
+        return eater.play(network, maxFitness, printBoard, saveToFile)
     }
 
     /**
