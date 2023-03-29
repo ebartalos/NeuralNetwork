@@ -1,6 +1,7 @@
 package eater
 
 import ai.Network
+import eater.gui.GUI
 import java.io.File
 import kotlin.math.abs
 import kotlin.random.Random
@@ -52,10 +53,22 @@ class ConsoleEater {
      *
      * @return fitness reached
      */
-    fun play(network: Network, maxFitness: Int, printBoard: Boolean = false, saveToFile: Boolean = false): Int {
+    fun play(
+        network: Network,
+        maxFitness: Int,
+        printBoard: Boolean = false,
+        saveToFile: Boolean = false,
+        useGUI: Boolean = false
+    ): Int {
         val file = File("bestSnakeTest.txt")
         if (saveToFile) {
             file.writeText("")
+        }
+
+        lateinit var gui: GUI
+        if (useGUI) {
+            gui = GUI(15)
+            gui.isVisible = true
         }
 
         var score = 0
@@ -64,6 +77,10 @@ class ConsoleEater {
         while (steps < maxSteps) {
             if (printBoard) printBoard()
             if (saveToFile) saveBoardStatusToFile(file)
+            if (useGUI) {
+                gui.update(arrayListOf(eaterLocationX, eaterLocationY, appleLocationX, appleLocationY))
+                Thread.sleep(500)
+            }
 
             move(evaluateMove(network))
             steps += 1

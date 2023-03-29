@@ -164,7 +164,7 @@ object MainEater {
         val network = Network(1)
         network.loadTrainedNetworkFromFile()
         val eater = ConsoleEater()
-        val score = eater.play(network, MAX_FITNESS, printBoard = true, saveToFile = false)
+        val score = eater.play(network, MAX_FITNESS, printBoard = true, saveToFile = false, useGUI = true)
         println(score)
     }
 }
