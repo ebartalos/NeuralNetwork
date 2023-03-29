@@ -6,7 +6,7 @@ import java.io.File
 import kotlin.math.abs
 import kotlin.random.Random
 
-class ConsoleEater {
+class Eater {
 
     // board size (square) - 15x15
     private val sideLength = 15
@@ -60,7 +60,7 @@ class ConsoleEater {
         saveToFile: Boolean = false,
         useGUI: Boolean = false
     ): Int {
-        val file = File("bestSnakeTest.txt")
+        val file = File("bestEaterTest.txt")
         if (saveToFile) {
             file.writeText("")
         }
@@ -79,7 +79,7 @@ class ConsoleEater {
             if (saveToFile) saveBoardStatusToFile(file)
             if (useGUI) {
                 gui.update(arrayListOf(eaterLocationX, eaterLocationY, appleLocationX, appleLocationY))
-                Thread.sleep(500)
+                Thread.sleep(50)
             }
 
             move(evaluateMove(network))

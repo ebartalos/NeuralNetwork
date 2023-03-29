@@ -30,7 +30,7 @@ object MainEater {
     fun main(args: Array<String>) {
         when (activity) {
             Activity.TRAIN -> train()
-            Activity.REPLAY -> replay("bestSnakeTest.txt")
+            Activity.REPLAY -> replay("bestEaterTest.txt")
             Activity.TEST -> test()
         }
     }
@@ -137,7 +137,7 @@ object MainEater {
         printBoard: Boolean = false,
         saveToFile: Boolean = false
     ): Int {
-        val eater = ConsoleEater()
+        val eater = Eater()
         return eater.play(network, maxFitness, printBoard, saveToFile)
     }
 
@@ -163,8 +163,8 @@ object MainEater {
     private fun test() {
         val network = Network(1)
         network.loadTrainedNetworkFromFile()
-        val eater = ConsoleEater()
-        val score = eater.play(network, MAX_FITNESS, printBoard = true, saveToFile = false, useGUI = true)
+        val eater = Eater()
+        val score = eater.play(network, MAX_FITNESS, printBoard = false, saveToFile = false, useGUI = true)
         println(score)
     }
 }
