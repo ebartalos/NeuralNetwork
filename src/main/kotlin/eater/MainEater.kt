@@ -15,11 +15,12 @@ import java.util.*
 object MainEater {
 
     /**
-     * if true, train
-     * if false, test
+     * TRAIN - trains network
+     * TEST - load weights from file and test network in console
+     * REPLAY - replay previously saved game from file to console
      */
     enum class Activity {
-        TRAIN, REPLAY, TEST
+        TRAIN, TEST, REPLAY
     }
 
     private val activity: Activity = Activity.TEST
@@ -27,30 +28,22 @@ object MainEater {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        if (activity == Activity.TRAIN) {
-            val networks = arrayListOf<Network>()
-            val fitness = hashMapOf<Network, Int>()
-
-            setNetworks(networks, fitness)
-            train(networks, fitness)
-        } else if (activity == Activity.REPLAY) {
-            replayGame("bestSnakeTest.txt")
-        } else if (activity == Activity.TEST) {
-            val network = Network(1)
-            network.loadTrainedNetworkFromFile()
-            val eater = ConsoleEater()
-            val score = eater.play(network, MAX_FITNESS, printBoard = true, saveToFile = false)
-            println(score)
+        when (activity) {
+            Activity.TRAIN -> train()
+            Activity.REPLAY -> replay("bestSnakeTest.txt")
+            Activity.TEST -> test()
         }
     }
 
     /**
      * Train networks until max fitness (or max generatio limit) is reached.
-     *
-     * @param networks neural networks
-     * @param fitness neural networks' fitness
      */
-    private fun train(networks: ArrayList<Network>, fitness: HashMap<Network, Int>) {
+    private fun train() {
+        val networks = arrayListOf<Network>()
+        val fitness = hashMapOf<Network, Int>()
+
+        setNetworks(networks, fitness)
+
         var sortedFitness: Map<Network, Int>
         var bestFitness = 0
 
@@ -153,7 +146,7 @@ object MainEater {
      *
      * @param filename file containing game notation
      */
-    private fun replayGame(filename: String) {
+    private fun replay(filename: String) {
         val scanner = Scanner(File(filename))
 
         while (scanner.hasNextLine()) {
@@ -162,5 +155,16 @@ object MainEater {
             }
             Thread.sleep(500)
         }
+    }
+
+    /**
+     * Load weights from file and test network in console.
+     */
+    private fun test() {
+        val network = Network(1)
+        network.loadTrainedNetworkFromFile()
+        val eater = ConsoleEater()
+        val score = eater.play(network, MAX_FITNESS, printBoard = true, saveToFile = false)
+        println(score)
     }
 }
