@@ -16,7 +16,7 @@ object MainEater {
 
     /**
      * TRAIN - trains network
-     * TEST - load weights from file and test network in console
+     * TEST - load weights from file and test network in GUI
      * REPLAY - replay previously saved game from file to console
      */
     enum class Activity {
@@ -165,6 +165,5 @@ object MainEater {
         network.loadTrainedNetworkFromFile()
         val eater = Eater()
         val score = eater.play(network, MAX_FITNESS, printBoard = false, saveToFile = false, useGUI = true)
-        println(score)
     }
 }

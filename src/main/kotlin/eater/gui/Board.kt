@@ -4,8 +4,9 @@ import java.awt.*
 import javax.swing.ImageIcon
 import javax.swing.JPanel
 
+
 class Board(sideLength: Int) : JPanel() {
-    private val dotSize = 10
+    private val dotSize = 20
 
     private val boardWidth = sideLength * dotSize
     private val boardHeight = sideLength * dotSize
@@ -27,8 +28,8 @@ class Board(sideLength: Int) : JPanel() {
     }
 
     private fun loadImages() {
-        eater = ImageIcon("src/main/resources/head.png").image
-        apple = ImageIcon("src/main/resources/apple.png").image
+        eater = ImageIcon("src/main/resources/head.png").image.getScaledInstance(dotSize, dotSize, Image.SCALE_DEFAULT)
+        apple = ImageIcon("src/main/resources/apple.png").image.getScaledInstance(dotSize, dotSize, Image.SCALE_DEFAULT)
     }
 
     public override fun paintComponent(g: Graphics) {

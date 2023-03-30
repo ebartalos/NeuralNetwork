@@ -22,8 +22,8 @@ class Eater {
     private var appleLocationX: Int = Random.nextInt(1, sideLength - 1)
     private var appleLocationY: Int = Random.nextInt(1, sideLength - 1)
 
-    private var maxSteps = 50
     private val stepsIncrement = 50
+    private var maxSteps = stepsIncrement
 
 
     init {
@@ -67,7 +67,7 @@ class Eater {
 
         lateinit var gui: GUI
         if (useGUI) {
-            gui = GUI(15)
+            gui = GUI(sideLength)
             gui.isVisible = true
         }
 

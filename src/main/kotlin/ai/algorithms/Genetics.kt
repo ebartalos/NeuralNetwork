@@ -30,7 +30,7 @@ class Genetics(private val networks: List<Network>) {
             }
         }
 
-        val passDown = 15
+        val passDown = 5
         val lastFifth = (networks.size * 0.8).toInt()
 
         for (network in networks.subList(passDown, lastFifth)) {
