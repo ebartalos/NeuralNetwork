@@ -10,6 +10,10 @@ import java.io.File
 @Deprecated("Not working correctly")
 object MainTicTacToe {
 
+    private const val MAX_ITERATIONS_IN_GENERATION = 10000000
+    private const val LOG_DIRECTORY = "src/logs"
+
+
     @JvmStatic
     fun main(args: Array<String>) {
         ga()
@@ -49,7 +53,7 @@ object MainTicTacToe {
             fitness[network] = 0
         }
 
-        val directory = File(Constants.LOG_DIRECTORY)
+        val directory = File(LOG_DIRECTORY)
         emptyLogsDirectory(directory)
 
         generationLoop@ for (generation in 0..Constants.MAX_GENERATIONS) {
@@ -110,7 +114,7 @@ object MainTicTacToe {
         fitness: HashMap<Network, Int>
     ) {
         val generator = Generator(from = 1111, to = 9999)
-        iterationLoop@ for (game in 1..Constants.MAX_ITERATIONS_IN_GENERATION) {
+        iterationLoop@ for (game in 1..MAX_ITERATIONS_IN_GENERATION) {
             val playerInput = Tictactoe.PlayerInputs.GENERATOR
             val result = tictactoe.play(network, aiPlayerIndex, playerInput, generator = generator)
 
@@ -133,7 +137,7 @@ object MainTicTacToe {
         val match = arrayOf(0, 0, 0)
         val tictactoe = Tictactoe()
 
-        val generationLogFile = File("${Constants.LOG_DIRECTORY}/${generation}")
+        val generationLogFile = File("${LOG_DIRECTORY}/${generation}")
         generationLogFile.writeText("") // delete content of file if exists
 
         for (i in 1..100) {
@@ -156,13 +160,13 @@ object MainTicTacToe {
         println("Random won: ${match[2]}\n")
 
         network.saveTrainedNetworkToFile(generationLogFile, overwrite = false)
-        generationLogFile.renameTo(File("${Constants.LOG_DIRECTORY}/${aiPlayerIndex}--$generation--${match[0]}-${match[1]}-${match[2]}--${fitness}.txt"))
+        generationLogFile.renameTo(File("${LOG_DIRECTORY}/${aiPlayerIndex}--$generation--${match[0]}-${match[1]}-${match[2]}--${fitness}.txt"))
 
         network.saveTrainedNetworkToFile(overwrite = true)
     }
 
     private fun emptyLogsDirectory(directory: File) {
-        for (file in directory.listFiles()) {
+        for (file in directory.listFiles()!!) {
             if (!file.isDirectory) {
                 file.delete()
             }

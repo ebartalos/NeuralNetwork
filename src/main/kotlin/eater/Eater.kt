@@ -9,7 +9,7 @@ import kotlin.random.Random
 class Eater {
 
     // board size (square) - 15x15
-    private val sideLength = 20
+    private val sideLength = 15
     private val board = Array(sideLength) { Array(sideLength) { 0 } }
 
     private val emptyMark = 0

@@ -153,7 +153,7 @@ object MainEater {
             for (i in 0 until 15) {
                 println(scanner.nextLine())
             }
-            Thread.sleep(500)
+            Thread.sleep(50)
         }
     }
 
