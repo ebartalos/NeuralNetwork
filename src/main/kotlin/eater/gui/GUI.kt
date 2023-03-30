@@ -2,15 +2,11 @@ package eater.gui
 
 import javax.swing.JFrame
 
-class GUI(private val sideLength: Int) : JFrame() {
+class GUI(sideLength: Int) : JFrame() {
 
-    private lateinit var board: Board
+    private var board: Board
 
     init {
-        initUI()
-    }
-
-    private fun initUI() {
         board = Board(sideLength = sideLength)
         add(board)
 
@@ -25,5 +21,9 @@ class GUI(private val sideLength: Int) : JFrame() {
 
     fun update(positions: ArrayList<Int>) {
         board.update(positions)
+    }
+
+    fun quit() {
+        this.dispose()
     }
 }

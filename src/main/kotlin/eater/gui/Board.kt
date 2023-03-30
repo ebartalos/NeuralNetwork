@@ -28,8 +28,12 @@ class Board(sideLength: Int) : JPanel() {
     }
 
     private fun loadImages() {
-        eater = ImageIcon("src/main/resources/head.png").image.getScaledInstance(dotSize, dotSize, Image.SCALE_DEFAULT)
-        apple = ImageIcon("src/main/resources/apple.png").image.getScaledInstance(dotSize, dotSize, Image.SCALE_DEFAULT)
+        eater = ImageIcon("src/main/resources/head.png")
+            .image
+            .getScaledInstance(dotSize, dotSize, Image.SCALE_SMOOTH)
+        apple = ImageIcon("src/main/resources/apple.png")
+            .image
+            .getScaledInstance(dotSize, dotSize, Image.SCALE_SMOOTH)
     }
 
     public override fun paintComponent(g: Graphics) {
