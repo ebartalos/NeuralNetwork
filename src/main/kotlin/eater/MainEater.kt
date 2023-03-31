@@ -126,7 +126,6 @@ object MainEater {
      *
      * @param network neural network
      * @param maxFitness upper limit for training
-     * @param printBoard should be printed to console
      * @param saveToFile should be saved to file
      *
      * @return fitness
@@ -134,11 +133,10 @@ object MainEater {
     private fun playGame(
         network: Network,
         maxFitness: Int,
-        printBoard: Boolean = false,
         saveToFile: Boolean = false
     ): Int {
         val eater = Eater()
-        return eater.play(network, maxFitness, printBoard, saveToFile)
+        return eater.play(network, maxFitness, saveToFile)
     }
 
     /**
@@ -158,12 +156,12 @@ object MainEater {
     }
 
     /**
-     * Load weights from file and test network in console.
+     * Load weights from file and test network in GUI.
      */
     private fun test() {
         val network = Network(1)
         network.loadTrainedNetworkFromFile()
         val eater = Eater()
-        eater.play(network, MAX_FITNESS, printBoard = false, saveToFile = false, useGUI = true)
+        eater.play(network, MAX_FITNESS, saveToFile = false, useGUI = true)
     }
 }

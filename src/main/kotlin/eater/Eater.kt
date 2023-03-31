@@ -48,15 +48,14 @@ class Eater {
      *
      * @param network neural network playing the game
      * @param maxFitness limit when should game end (prevents infinite game)
-     * @param printBoard should board be printed into the console
      * @param saveToFile should board be saved into the file
+     * @param useGUI should be shown in GUI
      *
      * @return fitness reached
      */
     fun play(
         network: Network,
         maxFitness: Int,
-        printBoard: Boolean = false,
         saveToFile: Boolean = false,
         useGUI: Boolean = false
     ): Int {
@@ -75,7 +74,6 @@ class Eater {
         var steps = 0
 
         while (steps < maxSteps) {
-            if (printBoard) printBoard()
             if (saveToFile) saveBoardStatusToFile(file)
             if (useGUI) {
                 gui.update(arrayListOf(eaterLocationX, eaterLocationY, appleLocationX, appleLocationY))
@@ -144,24 +142,6 @@ class Eater {
 
         val sortedResult = evaluationMatrix.toList().sortedBy { (_, value) -> value }
         return sortedResult.last().first
-    }
-
-    /**
-     * Print current board status to console.
-     */
-    private fun printBoard() {
-        val translator = HashMap<Int, String>()
-        translator[0] = " "
-        translator[1] = "*"
-        translator[2] = "X"
-        translator[3] = "O"
-
-        for (row in 0 until sideLength) {
-            for (column in 0 until sideLength) {
-                print(translator[board[column][row]])
-            }
-            println()
-        }
     }
 
     /**

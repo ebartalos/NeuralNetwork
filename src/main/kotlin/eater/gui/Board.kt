@@ -5,7 +5,7 @@ import javax.swing.ImageIcon
 import javax.swing.JPanel
 
 
-class Board(sideLength: Int) : JPanel() {
+class Board(val sideLength: Int) : JPanel() {
     private val dotSize = 25
 
     private val boardWidth = sideLength * dotSize
@@ -39,10 +39,6 @@ class Board(sideLength: Int) : JPanel() {
     public override fun paintComponent(g: Graphics) {
         super.paintComponent(g)
 
-        doDrawing(g)
-    }
-
-    private fun doDrawing(g: Graphics) {
         g.drawImage(apple, appleX, appleY, this)
         g.drawImage(eater, eaterX, eaterY, this)
 

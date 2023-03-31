@@ -15,7 +15,7 @@ import kotlin.reflect.full.createInstance
  *
  * @param id of the network - used for debugging purposes
  */
-class Network(val id: Int) {
+class Network(private val id: Int) {
 
     var layers = ArrayList<Layer>()
 
