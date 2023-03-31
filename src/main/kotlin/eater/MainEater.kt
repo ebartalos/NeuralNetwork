@@ -5,11 +5,9 @@ import ai.Network
 import ai.algorithms.Genetics
 import ai.neurons.Neuron
 import ai.neurons.ReLuNeuron
-import java.io.File
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 
 object MainEater {
@@ -17,10 +15,9 @@ object MainEater {
     /**
      * TRAIN - trains network
      * TEST - load weights from file and test network in GUI
-     * REPLAY - replay previously saved game from file to console
      */
     enum class Activity {
-        TRAIN, TEST, REPLAY
+        TRAIN, TEST
     }
 
     private val activity: Activity = Activity.TEST
@@ -30,7 +27,6 @@ object MainEater {
     fun main(args: Array<String>) {
         when (activity) {
             Activity.TRAIN -> train()
-            Activity.REPLAY -> replay("bestEaterTest.txt")
             Activity.TEST -> test()
         }
     }
@@ -66,7 +62,7 @@ object MainEater {
             if (fitness[bestNetwork]!! > bestFitness) {
                 bestFitness = fitness[bestNetwork]!!
                 bestNetwork.saveTrainedNetworkToFile(overwrite = true)
-                playGame(bestNetwork, MAX_FITNESS, saveToFile = true)
+                playGame(bestNetwork, MAX_FITNESS)
             }
 
             val time = DateTimeFormatter
@@ -126,33 +122,12 @@ object MainEater {
      *
      * @param network neural network
      * @param maxFitness upper limit for training
-     * @param saveToFile should be saved to file
      *
      * @return fitness
      */
-    private fun playGame(
-        network: Network,
-        maxFitness: Int,
-        saveToFile: Boolean = false
-    ): Int {
+    private fun playGame(network: Network, maxFitness: Int): Int {
         val eater = Eater()
-        return eater.play(network, maxFitness, saveToFile)
-    }
-
-    /**
-     * Replays already saved game in the console.
-     *
-     * @param filename file containing game notation
-     */
-    private fun replay(filename: String) {
-        val scanner = Scanner(File(filename))
-
-        while (scanner.hasNextLine()) {
-            for (i in 0 until 15) {
-                println(scanner.nextLine())
-            }
-            Thread.sleep(50)
-        }
+        return eater.play(network, maxFitness)
     }
 
     /**
@@ -162,6 +137,6 @@ object MainEater {
         val network = Network(1)
         network.loadTrainedNetworkFromFile()
         val eater = Eater()
-        eater.play(network, MAX_FITNESS, saveToFile = false, useGUI = true)
+        eater.play(network, MAX_FITNESS, useGUI = true)
     }
 }

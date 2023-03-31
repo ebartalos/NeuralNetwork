@@ -2,7 +2,6 @@ package eater
 
 import ai.Network
 import eater.gui.GUI
-import java.io.File
 import kotlin.math.abs
 import kotlin.random.Random
 
@@ -48,22 +47,11 @@ class Eater {
      *
      * @param network neural network playing the game
      * @param maxFitness limit when should game end (prevents infinite game)
-     * @param saveToFile should board be saved into the file
      * @param useGUI should be shown in GUI
      *
      * @return fitness reached
      */
-    fun play(
-        network: Network,
-        maxFitness: Int,
-        saveToFile: Boolean = false,
-        useGUI: Boolean = false
-    ): Int {
-        val file = File("bestEaterTest.txt")
-        if (saveToFile) {
-            file.writeText("")
-        }
-
+    fun play(network: Network, maxFitness: Int, useGUI: Boolean = false): Int {
         lateinit var gui: GUI
         if (useGUI) {
             gui = GUI(sideLength)
@@ -74,7 +62,6 @@ class Eater {
         var steps = 0
 
         while (steps < maxSteps) {
-            if (saveToFile) saveBoardStatusToFile(file)
             if (useGUI) {
                 gui.update(arrayListOf(eaterLocationX, eaterLocationY, appleLocationX, appleLocationY))
                 Thread.sleep(50)
@@ -142,24 +129,6 @@ class Eater {
 
         val sortedResult = evaluationMatrix.toList().sortedBy { (_, value) -> value }
         return sortedResult.last().first
-    }
-
-    /**
-     * Save current board status to file.
-     */
-    private fun saveBoardStatusToFile(file: File) {
-        val translator = HashMap<Int, String>()
-        translator[0] = " "
-        translator[1] = "*"
-        translator[2] = "X"
-        translator[3] = "O"
-
-        for (row in 0 until sideLength) {
-            for (column in 0 until sideLength) {
-                translator[board[column][row]]?.let { file.appendText(it) }
-            }
-            file.appendText("\n")
-        }
     }
 
     /**
