@@ -11,8 +11,4 @@ open class Neuron {
     fun calculate(vector: Double) {
         value = activationMethod(vector)
     }
-
-    open fun derivative(): Double {
-        return value
-    }
 }
