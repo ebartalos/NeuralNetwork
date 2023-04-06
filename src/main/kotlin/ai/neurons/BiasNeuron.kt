@@ -3,7 +3,7 @@ package ai.neurons
 
 class BiasNeuron : Neuron() {
 
-    override fun activationMethod(vector: Double): Double {
+    override fun activationFunction(vector: Double): Double {
         return 1.0
     }
 }

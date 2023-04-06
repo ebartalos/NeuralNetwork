@@ -4,7 +4,7 @@ import kotlin.math.tanh
 
 class TanhNeuron : Neuron() {
 
-    override fun activationMethod(vector: Double): Double {
+    override fun activationFunction(vector: Double): Double {
         return tanh(vector)
     }
 }
