@@ -22,13 +22,13 @@ class Network(private val id: Int) {
     /**
      * Adds input layer to neural network.
      *
-     * @param amountOfNeurons how many neurons should be added
+     * @param numberOfNeurons how many neurons should be added
      * @param biasNeuron if true, bias neuron will be added
      *                   if false, bias neuron will not be added
      */
-    fun addInputLayer(amountOfNeurons: Int, biasNeuron: Boolean = true) {
+    fun addInputLayer(numberOfNeurons: Int, biasNeuron: Boolean = true) {
         val inputLayer = Layer()
-        for (index in 1..amountOfNeurons) {
+        for (index in 1..numberOfNeurons) {
             inputLayer.addNeuron(Neuron())
         }
         if (biasNeuron) inputLayer.addNeuron(BiasNeuron())
@@ -39,11 +39,11 @@ class Network(private val id: Int) {
      * Adds output layer to neural network.
      *
      * @param neuronType type of neuron
-     * @param amountOfNeurons how many neurons should be added
+     * @param numberOfNeurons how many neurons should be added
      */
-    fun <T : Any> addOutputLayer(neuronType: KClass<T>, amountOfNeurons: Int) {
+    fun <T : Any> addOutputLayer(neuronType: KClass<T>, numberOfNeurons: Int) {
         val outputLayer = Layer()
-        for (index in 1..amountOfNeurons) {
+        for (index in 1..numberOfNeurons) {
             outputLayer.addNeuron(neuronType.createInstance() as Neuron)
         }
         layers.add(outputLayer)
@@ -53,13 +53,13 @@ class Network(private val id: Int) {
      * Adds hidden layer to neural network.
      *
      * @param neuronType type of neuron
-     * @param amountOfNeurons how many neurons should be added
+     * @param numberOfNeurons how many neurons should be added
      * @param biasNeuron if true, bias neuron will be added
      *                   if false, bias neuron will not be added
      */
-    fun <T : Any> addHiddenLayer(neuronType: KClass<T>, amountOfNeurons: Int, biasNeuron: Boolean = true) {
+    fun <T : Any> addHiddenLayer(neuronType: KClass<T>, numberOfNeurons: Int, biasNeuron: Boolean = true) {
         val layer = Layer()
-        for (index in 1..amountOfNeurons) {
+        for (index in 1..numberOfNeurons) {
             layer.addNeuron(neuronType.createInstance() as Neuron)
         }
         if (biasNeuron) layer.addNeuron(BiasNeuron())

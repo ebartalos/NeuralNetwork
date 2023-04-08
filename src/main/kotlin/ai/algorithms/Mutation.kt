@@ -18,13 +18,10 @@ class Mutation(private val network: Network) {
                 if (Random.nextInt() % 100 < chance) {
                     if (connection.weight == 0.0) {
                         connection.weight = Random.nextDouble(-0.01, 0.01)
+                    } else if (Random.nextBoolean()) {
+                        connection.weight += (connection.weight * Random.nextDouble(from, to)) - connection.weight
                     } else {
-                        val mutationPart = (connection.weight * Random.nextDouble(from, to)) - connection.weight
-                        if (Random.nextBoolean()) {
-                            connection.weight += mutationPart
-                        } else {
-                            connection.weight -= mutationPart
-                        }
+                        connection.weight -= (connection.weight * Random.nextDouble(from, to)) - connection.weight
                     }
                 }
             }
