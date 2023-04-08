@@ -4,11 +4,11 @@ open class Neuron {
 
     var value = 1.0
 
-    open fun activationFunction(vector: Double): Double {
+    open fun activation(vector: Double): Double {
         return vector
     }
 
     fun calculate(vector: Double) {
-        value = activationFunction(vector)
+        value = activation(vector)
     }
 }

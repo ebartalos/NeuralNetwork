@@ -21,7 +21,7 @@ class Layer {
     }
 
     /**
-     * Calculates value of each neuron in the layer.
+     * Calculate value of each neuron in the layer.
      */
     fun evaluate() {
         if (incomingConnections.isNotEmpty()) {
@@ -38,7 +38,7 @@ class Layer {
     }
 
     /**
-     * Changes weights' value to specified one.
+     * Change weights' value to specified one.
      *
      * @param weights desired weights' values
      * @param isOutgoing if true, update outgoing connections
@@ -52,7 +52,7 @@ class Layer {
     }
 
     /**
-     * Returns all weights of layer.
+     * Return all weights of layer.
      */
     fun weights(): ArrayList<Double> {
         val weights = ArrayList<Double>()

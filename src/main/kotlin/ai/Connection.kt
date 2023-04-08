@@ -10,10 +10,10 @@ import ai.neurons.Neuron
  * @param outputNeuron neuron where connection ends
  * @param weightHeuristic if true, set weight by passed heuristic, if false, set weight randomly
  */
-class Connection(
+data class Connection(
     var inputNeuron: Neuron,
     var outputNeuron: Neuron,
-    weightHeuristic: Double? = null
+    var weightHeuristic: Double? = null
 ) {
     var weight: Double = weightHeuristic ?: Math.random()
 }

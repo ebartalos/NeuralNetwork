@@ -20,7 +20,7 @@ class Network(private val id: Int) {
     var layers = ArrayList<Layer>()
 
     /**
-     * Adds input layer to neural network.
+     * Add input layer to neural network.
      *
      * @param numberOfNeurons how many neurons should be added
      * @param biasNeuron if true, bias neuron will be added
@@ -36,7 +36,7 @@ class Network(private val id: Int) {
     }
 
     /**
-     * Adds output layer to neural network.
+     * Add output layer to neural network.
      *
      * @param neuronType type of neuron
      * @param numberOfNeurons how many neurons should be added
@@ -50,7 +50,7 @@ class Network(private val id: Int) {
     }
 
     /**
-     * Adds hidden layer to neural network.
+     * Add hidden layer to neural network.
      *
      * @param neuronType type of neuron
      * @param numberOfNeurons how many neurons should be added
@@ -68,7 +68,7 @@ class Network(private val id: Int) {
     }
 
     /**
-     * Evaluates the whole network, e.g. calculate value of each neuron in each layer,
+     * Evaluate the whole network, e.g. calculate value of each neuron in each layer,
      * starting from input and forward via hidden to outputs
      */
     fun evaluate() {
@@ -76,7 +76,7 @@ class Network(private val id: Int) {
     }
 
     /**
-     * Returns values of output neurons.
+     * Return values of output neurons.
      */
     fun output(): ArrayList<Double> {
         val values = ArrayList<Double>()
@@ -85,7 +85,7 @@ class Network(private val id: Int) {
     }
 
     /**
-     * Returns value of output neurons after softmax is applied
+     * Return value of output neurons after softmax is applied
      */
     fun softmaxOutput(): ArrayList<Double> {
         val values = ArrayList<Double>()
@@ -103,7 +103,7 @@ class Network(private val id: Int) {
     }
 
     /**
-     * Updates values of weights.
+     * Update values of weights.
      *
      * @param weights new values
      */
@@ -130,7 +130,7 @@ class Network(private val id: Int) {
     }
 
     /**
-     * Sets inputs for the network.
+     * Set inputs for the network.
      *
      * @param inputs list of values
      */
@@ -145,7 +145,7 @@ class Network(private val id: Int) {
     }
 
     /**
-     * Creates connections between layers.
+     * Create connections between layers.
      * Has to be called after ALL layers are added.
      */
     fun createConnections() {
@@ -154,22 +154,29 @@ class Network(private val id: Int) {
                 if (outputNeuron is BiasNeuron) continue
 
                 for (inputNeuron in firstLayer.neurons) {
-                    val connection =
-                        if (inputNeuron is BiasNeuron) {
-                            Connection(inputNeuron, outputNeuron, listOf(0.2, -0.2).random())
-                        } else if (outputNeuron is ReLuNeuron) {
-                            Connection(inputNeuron, outputNeuron, heHeuristics(firstLayer.neurons.size))
-                        } else if ((outputNeuron is TanhNeuron) || (outputNeuron is SigmoidNeuron)) {
-                            Connection(inputNeuron, outputNeuron, xavierHeuristics(firstLayer.neurons.size))
-                        } else {
-                            Connection(inputNeuron, outputNeuron)
-                        }
-
-                    firstLayer.outgoingConnections.add(connection)
-                    secondLayer.incomingConnections.add(connection)
+                    createConnection(firstLayer, secondLayer, inputNeuron, outputNeuron)
                 }
             }
         }
+    }
+
+    /**
+     * Add 1 connection between neurons.
+     */
+    private fun createConnection(firstLayer: Layer, secondLayer: Layer, inputNeuron: Neuron, outputNeuron: Neuron) {
+        val connection =
+            if (inputNeuron is BiasNeuron) {
+                Connection(inputNeuron, outputNeuron, listOf(0.2, -0.2).random())
+            } else if (outputNeuron is ReLuNeuron) {
+                Connection(inputNeuron, outputNeuron, heHeuristics(firstLayer.neurons.size))
+            } else if ((outputNeuron is TanhNeuron) || (outputNeuron is SigmoidNeuron)) {
+                Connection(inputNeuron, outputNeuron, xavierHeuristics(firstLayer.neurons.size))
+            } else {
+                Connection(inputNeuron, outputNeuron)
+            }
+
+        firstLayer.outgoingConnections.add(connection)
+        secondLayer.incomingConnections.add(connection)
     }
 
     /**
@@ -192,8 +199,7 @@ class Network(private val id: Int) {
     }
 
     /**
-     * Saves network details (layers, number/types of neurons, weights' values) to the file.
-     * Target file will be overwritten.
+     * Save network details (layers, number/types of neurons, weights' values) to the file.
      *
      * @param file target file for saving
      * @param overwrite true if target file should be overwritten
@@ -216,7 +222,7 @@ class Network(private val id: Int) {
     }
 
     /**
-     * Loads saved network (from method saveTrainedNetworkToFile) to the network.
+     * Load saved network (from method saveTrainedNetworkToFile) to the network.
      *
      * @param file file with saved network
      */

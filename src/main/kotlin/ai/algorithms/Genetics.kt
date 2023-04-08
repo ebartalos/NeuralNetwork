@@ -39,8 +39,7 @@ class Genetics(private val networks: List<Network>) {
 
         if (mutate) {
             for (network in networks.subList(passDown, lastFifth)) {
-                val mutation = Mutation(network)
-                mutation.mutate(Constants.MUTATION_RANGE_FROM, Constants.MUTATION_RANGE_TO, mutationChance)
+                mutate(network, Constants.MUTATION_RANGE_FROM, Constants.MUTATION_RANGE_TO, mutationChance)
             }
         }
 
@@ -50,6 +49,30 @@ class Genetics(private val networks: List<Network>) {
                 randomWeights.add(Random.nextDouble(-2.0, 2.0))
             }
             network.updateWeights(randomWeights)
+        }
+    }
+
+    /**
+     * Mutate network.
+     *
+     * @param network neural network
+     * @param from lower index of mutation range
+     * @param to higher index of mutation range
+     * @param chance percentual chance to mutate
+     */
+    private fun mutate(network: Network, from: Double, to: Double, chance: Int) {
+        for (layer in network.layers) {
+            for (connection in layer.outgoingConnections) {
+                if (Random.nextInt() % 100 < chance) {
+                    if (connection.weight == 0.0) {
+                        connection.weight = Random.nextDouble(-0.01, 0.01)
+                    } else if (Random.nextBoolean()) {
+                        connection.weight += (connection.weight * Random.nextDouble(from, to)) - connection.weight
+                    } else {
+                        connection.weight -= (connection.weight * Random.nextDouble(from, to)) - connection.weight
+                    }
+                }
+            }
         }
     }
 }
