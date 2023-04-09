@@ -8,7 +8,8 @@ import ai.neurons.Neuron
  *
  * @param inputNeuron neuron where connection starts
  * @param outputNeuron neuron where connection ends
- * @param weightHeuristic if true, set weight by passed heuristic, if false, set weight randomly
+ * @param weightHeuristic if true, set initial weight by passed heuristic
+ *                        if false, set weight randomly
  */
 data class Connection(
     var inputNeuron: Neuron,

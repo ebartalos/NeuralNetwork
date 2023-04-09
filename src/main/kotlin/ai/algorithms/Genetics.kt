@@ -4,11 +4,16 @@ import Constants
 import ai.Network
 import kotlin.random.Random
 
+/**
+ * @param networks ordered list of networks by fitness (starting with best fitness)
+ */
 class Genetics(private val networks: List<Network>) {
 
     /**
-     * Takes two best networks, breeds them and fills rest of the lists with children.
-     * Two networks with lowest fitness are created randomly to avoid reaching local maximums.
+     * Take two best networks and breed them.
+     * Top 1% of the networks is passed down.
+     * Bottom 20% of the networks are created randomly to avoid reaching local maximums.
+     * Rest is filled with bred (and optionally mutated) networks.
      *
      * @param mutate determines if kids should be mutated
      * @param mutationChance percentual chance to mutation for each weight

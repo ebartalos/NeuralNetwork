@@ -12,10 +12,8 @@ import kotlin.reflect.full.createInstance
 
 /**
  * Feed forward neural network.
- *
- * @param id of the network - used for debugging purposes
  */
-class Network(private val id: Int) {
+class Network {
 
     var layers = ArrayList<Layer>()
 

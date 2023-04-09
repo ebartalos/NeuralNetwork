@@ -48,7 +48,7 @@ object MainEater {
             fitness.replaceAll { _, _ -> 0 }
 
             for (network in networks) {
-                val fitnessOfNetwork = playGame(network, MAX_FITNESS)
+                val fitnessOfNetwork = playGame(network)
                 fitness[network] = fitnessOfNetwork
                 if (fitnessOfNetwork >= MAX_FITNESS) break
             }
@@ -62,7 +62,7 @@ object MainEater {
             if (fitness[bestNetwork]!! > bestFitness) {
                 bestFitness = fitness[bestNetwork]!!
                 bestNetwork.saveTrainedNetworkToFile(overwrite = true)
-                playGame(bestNetwork, MAX_FITNESS)
+                playGame(bestNetwork)
             }
 
             val time = DateTimeFormatter
@@ -90,10 +90,10 @@ object MainEater {
             lateinit var network: Network
 
             if (Constants.LOAD_NETWORK_FILE_ON_START) {
-                network = Network(networkId)
+                network = Network()
                 network.loadTrainedNetworkFromFile()
             } else {
-                network = createNetwork(networkId)
+                network = createNetwork()
             }
 
             networks.add(network)
@@ -108,8 +108,8 @@ object MainEater {
      *
      * @return neural network
      */
-    private fun createNetwork(id: Int): Network {
-        val network = Network(id)
+    private fun createNetwork(): Network {
+        val network = Network()
         network.addInputLayer(8)
         network.addHiddenLayer(ReLuNeuron::class, 10, true)
         network.addOutputLayer(Neuron::class, 4)
@@ -125,16 +125,16 @@ object MainEater {
      *
      * @return fitness
      */
-    private fun playGame(network: Network, maxFitness: Int): Int {
+    private fun playGame(network: Network): Int {
         val eater = Eater()
-        return eater.play(network, maxFitness)
+        return eater.play(network, MAX_FITNESS)
     }
 
     /**
      * Load weights from file and test network in GUI.
      */
     private fun test() {
-        val network = Network(1)
+        val network = Network()
         network.loadTrainedNetworkFromFile()
         val eater = Eater()
         eater.play(network, MAX_FITNESS, useGUI = true)
