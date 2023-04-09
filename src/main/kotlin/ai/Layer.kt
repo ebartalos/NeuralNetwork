@@ -54,11 +54,7 @@ class Layer {
     /**
      * Return all weights of layer.
      */
-    fun weights(): ArrayList<Double> {
-        val weights = ArrayList<Double>()
-        for (connection in outgoingConnections) {
-            weights.add(connection.weight)
-        }
-        return weights
+    fun weights(): MutableList<Double> {
+        return outgoingConnections.stream().map { it.weight }.toList()
     }
 }

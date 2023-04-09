@@ -110,6 +110,7 @@ object MainEater {
      */
     private fun createNetwork(): Network {
         val network = Network()
+
         network.addInputLayer(8)
         network.addHiddenLayer(ReLuNeuron::class, 10, true)
         network.addOutputLayer(Neuron::class, 4)
@@ -119,15 +120,13 @@ object MainEater {
     }
 
     /**
-     *
+     * Play one game
      * @param network neural network
-     * @param maxFitness upper limit for training
      *
      * @return fitness
      */
     private fun playGame(network: Network): Int {
-        val eater = Eater()
-        return eater.play(network, MAX_FITNESS)
+        return Eater().play(network, MAX_FITNESS)
     }
 
     /**
@@ -136,7 +135,7 @@ object MainEater {
     private fun test() {
         val network = Network()
         network.loadTrainedNetworkFromFile()
-        val eater = Eater()
-        eater.play(network, MAX_FITNESS, useGUI = true)
+        network.weights()
+        Eater().play(network, MAX_FITNESS, useGUI = true)
     }
 }

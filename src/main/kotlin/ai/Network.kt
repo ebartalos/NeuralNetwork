@@ -181,16 +181,14 @@ class Network {
      * Default for ReLu neurons.
      */
     private fun heHeuristics(previousLayerNeurons: Int): Double {
-        val random = Random()
-        return random.nextGaussian(0.0, sqrt(2.0 / previousLayerNeurons.toDouble()))
+        return Random().nextGaussian(0.0, sqrt(2.0 / previousLayerNeurons.toDouble()))
     }
 
     /**
      * Default for Tanh and Sigmoid neurons.
      */
     private fun xavierHeuristics(previousLayerNeurons: Int): Double {
-        val random = Random()
-        return random.nextDouble(
+        return Random().nextDouble(
             -(1 / sqrt(previousLayerNeurons.toDouble())),
             1 / sqrt(previousLayerNeurons.toDouble())
         )
