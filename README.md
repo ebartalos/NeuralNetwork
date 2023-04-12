@@ -1,9 +1,22 @@
+Simple head-only no-growing snake game to showcase neural network and genetic algorithms.
 
-Implemented (deep) neural network from scratch. I also implemented genetic algorithms - breeding and mutation. 
-NN is tested on console "eater" game (simple snake game without growing body).
+## Features
 
-sections:
-1. Neurons, neural network
-2. mutation, breeding
-3. eater - gui, rules
-4. training network for eater
+- Neural network implementation from scratch that adheres to the OOP principles
+- Several neurons types - Rectified Linear, Sigmoid and Hypertangens
+- Genetic algorithms - breeding and mutation
+- Training function automatically saves best network to the file and will resume back when program is run again
+- Simple GUI eater game with already trained neural network
+
+## How to run
+
+You need to have Java 17+ with Kotlin installed. Just run main in MainEater. You can select activity in MainEater -
+Test (showcases already trained network solving eater game) or Train (training network).
+
+## Todo
+
+- Backpropagation
+
+## Bug reporting
+
+If you find a bug, open issue here at Github.
