@@ -66,11 +66,37 @@ class Network {
     }
 
     /**
-     * Evaluate the whole network, e.g. calculate value of each neuron in each layer,
+     * Forward propagate the whole network, e.g. calculate value of each neuron in each layer,
      * starting from input and forward via hidden to outputs
      */
-    fun evaluate() {
+    fun propagate() {
         layers.forEach { it.evaluate() }
+    }
+
+    /**
+     * Backpropagate the whole network and adjust weights based by error and learning rate.
+     * Has to be called after forward propagation is done!
+     */
+    fun backpropagate(expectedOutput: Double, learningRate: Double) {
+        val error = expectedOutput - output().first()
+
+        val gradients = mutableListOf<Double>()
+        for (reversedLayer in layers.reversed()) {
+            for (connection in reversedLayer.incomingConnections) {
+                val gradient =
+                    learningRate * error * connection.inputNeuron.value * connection.inputNeuron.derivative(
+                        connection.outputNeuron.value
+                    )
+                gradients.add(gradient)
+            }
+        }
+
+        val gradientsIterator = gradients.iterator()
+        for (reversedLayer in layers.reversed()) {
+            for (connection in reversedLayer.incomingConnections) {
+                connection.weight += gradientsIterator.next()
+            }
+        }
     }
 
     /**

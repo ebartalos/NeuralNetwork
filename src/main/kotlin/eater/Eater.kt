@@ -118,7 +118,7 @@ class Eater {
         )
 
         network.setInputs(inputs)
-        network.evaluate()
+        network.propagate()
         val softmaxOutput = network.softmaxOutput()
 
         val evaluationMatrix = mutableMapOf<Direction, Double>()

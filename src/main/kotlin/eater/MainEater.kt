@@ -103,9 +103,7 @@ object MainEater {
 
     /**
      * Create 1 neural network.
-     *
-     * @param id unique id
-     *
+     **
      * @return neural network
      */
     private fun createNetwork(): Network {
