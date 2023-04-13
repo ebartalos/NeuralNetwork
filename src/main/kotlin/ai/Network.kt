@@ -78,6 +78,7 @@ class Network {
      * Has to be called after forward propagation is done!
      */
     fun backpropagate(expectedOutput: Double, learningRate: Double) {
+        // TODO make it so it will take into the account all outputs
         val error = expectedOutput - output().first()
 
         val gradients = mutableListOf<Double>()
