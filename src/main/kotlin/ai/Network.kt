@@ -77,25 +77,31 @@ class Network {
      * Backpropagate the whole network and adjust weights based by error and learning rate.
      * Has to be called after forward propagation is done!
      */
-    fun backpropagate(expectedOutput: Double, learningRate: Double) {
-        // TODO make it so it will take into the account all outputs
-        val error = expectedOutput - output().first()
+    fun backpropagate(expectedOutputs: List<Double>, learningRate: Double) {
+        val errors = arrayListOf<Double>()
+        val expectedOutputsIterator = expectedOutputs.iterator()
 
-        val gradients = mutableListOf<Double>()
-        for (reversedLayer in layers.reversed()) {
-            for (connection in reversedLayer.incomingConnections) {
-                val gradient =
-                    learningRate * error * connection.inputNeuron.value * connection.inputNeuron.derivative(
-                        connection.outputNeuron.value
-                    )
-                gradients.add(gradient)
-            }
+        for (output in output()) {
+            errors.add(expectedOutputsIterator.next() - output)
         }
 
-        val gradientsIterator = gradients.iterator()
-        for (reversedLayer in layers.reversed()) {
-            for (connection in reversedLayer.incomingConnections) {
-                connection.weight += gradientsIterator.next()
+        for (error in errors) {
+            val gradients = mutableListOf<Double>()
+            for (reversedLayer in layers.reversed()) {
+                for (connection in reversedLayer.incomingConnections) {
+                    val gradient =
+                        learningRate * error * connection.inputNeuron.value * connection.inputNeuron.derivative(
+                            connection.outputNeuron.value
+                        )
+                    gradients.add(gradient)
+                }
+            }
+
+            val gradientsIterator = gradients.iterator()
+            for (reversedLayer in layers.reversed()) {
+                for (connection in reversedLayer.incomingConnections) {
+                    connection.weight += gradientsIterator.next()
+                }
             }
         }
     }

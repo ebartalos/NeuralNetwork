@@ -18,18 +18,18 @@ object MainXOR {
         val inputVector = ArrayList<Pair<Double, Double>>()
         val outputVector = ArrayList<Double>()
 
-        inputVector.add(Pair(0.0, 0.0))
+        inputVector.add(Pair(1.0, 1.0))
         outputVector.add(0.0)
 
-        inputVector.add(Pair(1.0, 1.0))
+        inputVector.add(Pair(0.0, 0.0))
         outputVector.add(1.0)
 
-        for (epoch in 0..300) {
+        for (epoch in 0..3000) {
             for (index in 0 until inputVector.size) {
                 network.setInputs(arrayListOf(inputVector[index].first, inputVector[index].second))
                 network.propagate()
 
-                network.backpropagate(outputVector[index], learningRate)
+                network.backpropagate(listOf(outputVector[index]), learningRate)
             }
         }
 
