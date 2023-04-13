@@ -15,6 +15,6 @@ class SigmoidNeuron : Neuron() {
     }
 
     override fun derivative(value: Double): Double {
-        return value * activation(1.0 - value)
+        return activation(value) * activation(1.0 - value)
     }
 }
