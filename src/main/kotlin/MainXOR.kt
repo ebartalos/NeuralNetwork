@@ -1,6 +1,6 @@
 import ai.Network
-import ai.neurons.Neuron
 import ai.neurons.SigmoidNeuron
+import kotlin.math.abs
 
 
 object MainXOR {
@@ -10,10 +10,11 @@ object MainXOR {
 
         network.addInputLayer(2, true)
         network.addHiddenLayer(SigmoidNeuron::class, 2, true)
-        network.addOutputLayer(Neuron::class, 1)
+        network.addOutputLayer(SigmoidNeuron::class, 1)
         network.createConnections()
 
-        val learningRate = 0.2
+        val learningRate = 0.25
+        val acceptedError = 0.1
 
         val inputVector = ArrayList<Pair<Double, Double>>()
         val outputVector = ArrayList<Double>()
@@ -30,12 +31,22 @@ object MainXOR {
         inputVector.add(Pair(1.0, 0.0))
         outputVector.add(1.0)
 
-        for (epoch in 0..100000) {
+        for (epoch in 0..10000000) {
+            var isTrainingDone = true
             for (index in 0 until inputVector.size) {
                 network.setInputs(arrayListOf(inputVector[index].first, inputVector[index].second))
                 network.propagate()
 
+                if (abs(outputVector[index] - network.output().first()) > acceptedError) {
+                    isTrainingDone = false
+                }
+
                 network.backpropagate(listOf(outputVector[index]), learningRate)
+            }
+
+            if (isTrainingDone) {
+                println("training done in epoch $epoch")
+                break
             }
         }
 

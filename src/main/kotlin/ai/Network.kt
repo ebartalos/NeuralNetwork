@@ -85,12 +85,12 @@ class Network {
             errors.add(expectedOutputsIterator.next() - output)
         }
 
-        for (error in errors) {
+        for (outputError in errors) {
             val gradients = mutableListOf<Double>()
             for (reversedLayer in layers.reversed()) {
                 for (connection in reversedLayer.incomingConnections) {
                     val gradient =
-                        learningRate * error * connection.inputNeuron.value * connection.outputNeuron.derivative()
+                        learningRate * outputError * connection.inputNeuron.value * connection.outputNeuron.derivative()
                     gradients.add(gradient)
                 }
             }
