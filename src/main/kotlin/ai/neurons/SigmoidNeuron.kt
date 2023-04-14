@@ -6,15 +6,14 @@ class SigmoidNeuron : Neuron() {
 
     override fun activation(vector: Double): Double {
         return if (vector >= 0) {
-            val z = exp(-vector)
-            1 / (1 + z)
+            1 / (1 + exp(-vector))
         } else {
             val z = exp(vector)
             z / (1 + z)
         }
     }
 
-    override fun derivative(value: Double): Double {
+    override fun derivative(): Double {
         return activation(value) * activation(1.0 - value)
     }
 }

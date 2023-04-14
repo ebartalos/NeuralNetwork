@@ -90,13 +90,12 @@ class Network {
             for (reversedLayer in layers.reversed()) {
                 for (connection in reversedLayer.incomingConnections) {
                     val gradient =
-                        learningRate * error * connection.inputNeuron.value * connection.inputNeuron.derivative(
-                            connection.outputNeuron.value
-                        )
+                        learningRate * error * connection.inputNeuron.value * connection.outputNeuron.derivative()
                     gradients.add(gradient)
                 }
             }
 
+            // update weights
             val gradientsIterator = gradients.iterator()
             for (reversedLayer in layers.reversed()) {
                 for (connection in reversedLayer.incomingConnections) {

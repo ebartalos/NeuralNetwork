@@ -8,7 +8,7 @@ class TanhNeuron : Neuron() {
         return tanh(vector)
     }
 
-    override fun derivative(value: Double): Double {
+    override fun derivative(): Double {
         return 1 - (value * value)
     }
 }

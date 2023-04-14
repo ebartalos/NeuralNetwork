@@ -8,7 +8,7 @@ class ReLuNeuron : Neuron() {
         return max(0.0, vector)
     }
 
-    override fun derivative(value: Double): Double {
+    override fun derivative(): Double {
         return if (value <= 0) 0.0 else 1.0
     }
 }

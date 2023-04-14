@@ -9,7 +9,7 @@ class BiasNeuron : Neuron() {
         return biasValue
     }
 
-    override fun derivative(value: Double): Double {
+    override fun derivative(): Double {
         return biasValue
     }
 }

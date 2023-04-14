@@ -12,7 +12,7 @@ open class Neuron {
         value = activation(vector)
     }
 
-    open fun derivative(value: Double): Double {
+    open fun derivative(): Double {
         return 1.0
     }
 }
