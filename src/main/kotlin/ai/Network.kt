@@ -76,6 +76,9 @@ class Network {
     /**
      * Backpropagate the whole network and adjust weights based by error and learning rate.
      * Has to be called after forward propagation is done!
+     *
+     * @param expectedOutputs expected outputs
+     * @param learningRate learning rate
      */
     fun backpropagate(expectedOutputs: List<Double>, learningRate: Double) {
         val errors = arrayListOf<Double>()
@@ -86,6 +89,7 @@ class Network {
         }
 
         for (outputError in errors) {
+            // calculate eror gradients
             val gradients = mutableListOf<Double>()
             for (reversedLayer in layers.reversed()) {
                 for (connection in reversedLayer.incomingConnections) {

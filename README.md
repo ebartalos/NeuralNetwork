@@ -2,11 +2,17 @@ Simple head-only no-growing snake game to showcase neural network and genetic al
 
 ## Features
 
+### Part 1
+
 - Neural network implementation from scratch that adheres to the OOP principles
 - Several neurons types - Rectified Linear, Sigmoid and Hypertangens
 - Genetic algorithms - breeding and mutation
 - Training function automatically saves best network to the file and will resume back when program is run again
 - Simple GUI eater game with already trained neural network
+
+### Part 2
+
+- Backpropagation demostrated in XOR
 
 ## How to run
 

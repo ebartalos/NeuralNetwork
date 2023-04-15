@@ -31,7 +31,7 @@ object MainXOR {
         inputVector.add(Pair(1.0, 0.0))
         outputVector.add(1.0)
 
-        for (epoch in 0..10000000) {
+        for (epoch in 0..100000) {
             var isTrainingDone = true
             for (index in 0 until inputVector.size) {
                 network.setInputs(arrayListOf(inputVector[index].first, inputVector[index].second))
