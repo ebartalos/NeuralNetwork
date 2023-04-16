@@ -6,13 +6,6 @@ import kotlin.math.abs
 object MainXOR {
     @JvmStatic
     fun main(args: Array<String>) {
-        val network = Network()
-
-        network.addInputLayer(2, true)
-        network.addHiddenLayer(SigmoidNeuron::class, 2, true)
-        network.addOutputLayer(SigmoidNeuron::class, 1)
-        network.createConnections()
-
         val learningRate = 0.25
         val acceptedError = 0.1
 
@@ -31,30 +24,44 @@ object MainXOR {
         inputVector.add(Pair(1.0, 0.0))
         outputVector.add(1.0)
 
-        for (epoch in 0..100000) {
-            var isTrainingDone = true
-            for (index in 0 until inputVector.size) {
-                network.setInputs(arrayListOf(inputVector[index].first, inputVector[index].second))
-                network.propagate()
+        lateinit var trainedNetwork: Network
 
-                if (abs(outputVector[index] - network.output().first()) > acceptedError) {
-                    isTrainingDone = false
+        // nice infinite loop to avoid other 15 local minimums
+        avoidLocalMinimum@ while (true) {
+            val network = Network()
+
+            network.addInputLayer(2, true)
+            network.addHiddenLayer(SigmoidNeuron::class, 2, true)
+            network.addOutputLayer(SigmoidNeuron::class, 1)
+            network.createConnections()
+
+            for (epoch in 0..10000) {
+                var isTrainingDone = true
+                for (index in 0 until inputVector.size) {
+                    network.setInputs(arrayListOf(inputVector[index].first, inputVector[index].second))
+                    network.propagate()
+
+                    if (abs(outputVector[index] - network.output().first()) > acceptedError) {
+                        isTrainingDone = false
+                    }
+
+                    network.backpropagate(listOf(outputVector[index]), learningRate)
                 }
 
-                network.backpropagate(listOf(outputVector[index]), learningRate)
-            }
-
-            if (isTrainingDone) {
-                println("training done in epoch $epoch")
-                break
+                if (isTrainingDone) {
+                    println("Training done in epoch $epoch")
+                    trainedNetwork = network
+                    break@avoidLocalMinimum
+                }
             }
         }
 
         for (i in 0 until inputVector.size) {
-            network.setInputs(arrayListOf(inputVector[i].first, inputVector[i].second))
-            network.propagate()
+            trainedNetwork.setInputs(arrayListOf(inputVector[i].first, inputVector[i].second))
+            trainedNetwork.propagate()
             println(
-                "${inputVector[i].first}, ${inputVector[i].second}, ${outputVector[i]} = " + network.output().first()
+                "${inputVector[i].first}, ${inputVector[i].second}, expected output ${outputVector[i]}, real output " + trainedNetwork.output()
+                    .first()
                     .toString()
             )
         }
