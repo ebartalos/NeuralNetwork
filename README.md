@@ -19,6 +19,9 @@ Simple head-only no-growing snake game to showcase neural network and genetic al
 You need to have Java 17+ with Kotlin installed. Just run main in MainEater. You can select activity in MainEater -
 Test (showcases already trained network solving eater game) or Train (training network).
 
+## TODO
+- multhreading for training (whenever I feel like using bullshit called Gradle)
+
 ## Bug reporting
 
 If you find a bug, open issue here at Github.
