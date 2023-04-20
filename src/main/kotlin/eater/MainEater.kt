@@ -22,6 +22,8 @@ object MainEater {
     }
 
     private val activity: Activity = Activity.TEST
+
+    // artificial high number
     private const val MAX_FITNESS = 10000000
 
     @JvmStatic
@@ -48,26 +50,9 @@ object MainEater {
             // reset fitness
             fitness.replaceAll { _, _ -> 0 }
 
-            if (Constants.TRAIN_IN_PARALLEL) {
-                val networkIterator = networks.iterator()
-
-                runBlocking {
-                    val tasks = mutableListOf<Deferred<Unit>>()
-                    do {
-                        val network = networkIterator.next()
-                        tasks.add(async(Dispatchers.IO) {
-                            fitness[network] = playGame(network)
-                        })
-                    } while (networkIterator.hasNext())
-
-                    tasks.awaitAll()
-                }
-            } else {
-                for (network in networks) {
-                    val fitnessOfNetwork = playGame(network)
-                    fitness[network] = fitnessOfNetwork
-                    if (fitnessOfNetwork >= MAX_FITNESS) break
-                }
+            when (Constants.TRAIN_IN_PARALLEL) {
+                true -> trainInParallel(networks, fitness)
+                false -> trainSequentially(networks, fitness)
             }
 
             sortedFitness = fitness.toList().sortedBy { (_, value) -> value }.toMap()
@@ -93,6 +78,42 @@ object MainEater {
                 println("TRAINING FINISHED! SCORE IS $bestFitness")
                 return
             }
+        }
+    }
+
+    /**
+     * Train networks in parallel using coroutines - faster, but exhausting
+     *
+     * @param networks all networks
+     * @param fitness all networks' fitness
+     */
+    private fun trainInParallel(networks: ArrayList<Network>, fitness: HashMap<Network, Int>) {
+        val networkIterator = networks.iterator()
+
+        runBlocking {
+            val tasks = mutableListOf<Deferred<Unit>>()
+            do {
+                val network = networkIterator.next()
+                tasks.add(async(Dispatchers.IO) {
+                    fitness[network] = playGame(network)
+                })
+            } while (networkIterator.hasNext())
+
+            tasks.awaitAll()
+        }
+    }
+
+    /**
+     * Train networks in single thread - slower, but less exhausting
+     *
+     * @param networks all networks
+     * @param fitness all networks' fitness
+     */
+    private fun trainSequentially(networks: ArrayList<Network>, fitness: HashMap<Network, Int>) {
+        for (network in networks) {
+            val fitnessOfNetwork = playGame(network)
+            fitness[network] = fitnessOfNetwork
+            if (fitnessOfNetwork >= MAX_FITNESS) return
         }
     }
 
