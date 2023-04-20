@@ -18,12 +18,21 @@ Simple head-only no-growing snake game to showcase neural network and genetic al
 
 You need to have Java 17+ with Kotlin installed.
 You also need to have libraries
+
 `org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2`
+
 `org.jetbrains.kotlin:kotlin-reflect:1.8.20`
+
 in your project dependencies.
+
+### Part 1
 
 Run main in MainEater. You can select activity in MainEater -
 Test (showcases already trained network solving eater game) or Train (training network).
+
+### Part 2
+
+Run main in MainXor.
 
 ## Bug reporting
 
