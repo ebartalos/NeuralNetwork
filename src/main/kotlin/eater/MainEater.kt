@@ -5,6 +5,7 @@ import ai.Network
 import ai.algorithms.Genetics
 import ai.neurons.Neuron
 import ai.neurons.ReLuNeuron
+import kotlinx.coroutines.*
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -47,10 +48,26 @@ object MainEater {
             // reset fitness
             fitness.replaceAll { _, _ -> 0 }
 
-            for (network in networks) {
-                val fitnessOfNetwork = playGame(network)
-                fitness[network] = fitnessOfNetwork
-                if (fitnessOfNetwork >= MAX_FITNESS) break
+            if (Constants.TRAIN_IN_PARALLEL) {
+                val networkIterator = networks.iterator()
+
+                runBlocking {
+                    val tasks = mutableListOf<Deferred<Unit>>()
+                    do {
+                        val network = networkIterator.next()
+                        tasks.add(async(Dispatchers.IO) {
+                            fitness[network] = playGame(network)
+                        })
+                    } while (networkIterator.hasNext())
+
+                    tasks.awaitAll()
+                }
+            } else {
+                for (network in networks) {
+                    val fitnessOfNetwork = playGame(network)
+                    fitness[network] = fitnessOfNetwork
+                    if (fitnessOfNetwork >= MAX_FITNESS) break
+                }
             }
 
             sortedFitness = fitness.toList().sortedBy { (_, value) -> value }.toMap()
@@ -62,14 +79,15 @@ object MainEater {
             if (fitness[bestNetwork]!! > bestFitness) {
                 bestFitness = fitness[bestNetwork]!!
                 bestNetwork.saveTrainedNetworkToFile(overwrite = true)
-                playGame(bestNetwork)
             }
 
-            val time = DateTimeFormatter
-                .ofPattern("HH:mm:ss")
-                .withZone(ZoneId.systemDefault())
-                .format(Instant.now())
-            println("$time Gen $generation best gen fitness ${fitness[bestNetwork]!!} ATH fitness $bestFitness")
+            if (generation % 100 == 0) {
+                val time = DateTimeFormatter
+                    .ofPattern("HH:mm:ss")
+                    .withZone(ZoneId.systemDefault())
+                    .format(Instant.now())
+                println("$time Gen $generation best gen fitness ${fitness[bestNetwork]!!} ATH fitness $bestFitness")
+            }
 
             if (bestFitness >= MAX_FITNESS) {
                 println("TRAINING FINISHED! SCORE IS $bestFitness")
@@ -128,12 +146,11 @@ object MainEater {
     }
 
     /**
-     * Load weights from file and test network in GUI.
+     * Load network from file and test it in GUI.
      */
     private fun test() {
         val network = Network()
         network.loadTrainedNetworkFromFile()
-        network.weights()
         Eater().play(network, MAX_FITNESS, useGUI = true)
     }
 }

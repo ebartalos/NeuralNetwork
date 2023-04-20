@@ -11,6 +11,8 @@ class Eater {
     private val sideLength = 15
     private val board = Array(sideLength) { Array(sideLength) { 0 } }
 
+    private val maxSteps = 24
+
     private val emptyMark = 0
     private val wallMark = 1
     private val eaterMark = 2
@@ -20,10 +22,6 @@ class Eater {
     private var eaterLocationY: Int = Random.nextInt(1, sideLength - 1)
     private var appleLocationX: Int = Random.nextInt(1, sideLength - 1)
     private var appleLocationY: Int = Random.nextInt(1, sideLength - 1)
-
-    private val stepsIncrement = 50
-    private var maxSteps = stepsIncrement
-
 
     init {
         // draw walls
@@ -76,7 +74,7 @@ class Eater {
 
             if (isAppleEaten()) {
                 score += 1
-                maxSteps += stepsIncrement
+                steps = 0
                 setRandomApplePosition()
             }
             if (scoreFormula(score, steps) >= maxFitness) {
