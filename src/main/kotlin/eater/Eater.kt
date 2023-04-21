@@ -12,6 +12,7 @@ class Eater {
     private val board = Array(sideLength) { Array(sideLength) { 0 } }
 
     private val maxSteps = 24
+    private val delay = 50L
 
     private val emptyMark = 0
     private val wallMark = 1
@@ -62,7 +63,7 @@ class Eater {
         while (steps < maxSteps) {
             if (useGUI) {
                 gui.update(arrayListOf(eaterLocationX, eaterLocationY, appleLocationX, appleLocationY))
-                Thread.sleep(50)
+                Thread.sleep(delay)
             }
 
             move(evaluateMove(network))
@@ -179,15 +180,14 @@ class Eater {
      */
     private fun move(direction: Direction) {
         board[eaterLocationX][eaterLocationY] = emptyMark
-        if (direction == Direction.LEFT) {
-            eaterLocationX -= 1
-        } else if (direction == Direction.RIGHT) {
-            eaterLocationX += 1
-        } else if (direction == Direction.UP) {
-            eaterLocationY -= 1
-        } else if (direction == Direction.DOWN) {
-            eaterLocationY += 1
+
+        when (direction) {
+            Direction.LEFT -> eaterLocationX -= 1
+            Direction.RIGHT -> eaterLocationX += 1
+            Direction.DOWN -> eaterLocationY += 1
+            Direction.UP -> eaterLocationY -= 1
         }
+
         updateBoard()
     }
 

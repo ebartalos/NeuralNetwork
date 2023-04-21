@@ -89,7 +89,7 @@ class Network {
         }
 
         for (outputError in errors) {
-            // calculate eror gradients
+            // calculate error gradients
             val gradients = mutableListOf<Double>()
             for (reversedLayer in layers.reversed()) {
                 for (connection in reversedLayer.incomingConnections) {

@@ -5,7 +5,7 @@ import ai.Network
 import kotlin.random.Random
 
 /**
- * @param networks ordered list of networks by fitness (starting with best fitness)
+ * @param networks ordered list of networks by fitness (starting with the best fitness)
  */
 class Genetics(private val networks: List<Network>) {
 
@@ -16,7 +16,7 @@ class Genetics(private val networks: List<Network>) {
      * Rest is filled with bred (and optionally mutated) networks.
      *
      * @param mutate determines if kids should be mutated
-     * @param mutationChance percentual chance to mutation for each weight
+     * @param mutationChance percentage chance to mutation for each weight
      */
     fun breed(mutate: Boolean, mutationChance: Int = 0) {
         // let's assume network is ordered by fitness with best brains in low indexes
@@ -63,7 +63,7 @@ class Genetics(private val networks: List<Network>) {
      * @param network neural network
      * @param from lower index of mutation range
      * @param to higher index of mutation range
-     * @param chance percentual chance to mutate
+     * @param chance percentage chance to mutate
      */
     private fun mutate(network: Network, from: Double, to: Double, chance: Int) {
         for (layer in network.layers) {

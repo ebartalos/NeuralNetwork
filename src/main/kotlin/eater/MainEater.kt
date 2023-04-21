@@ -35,7 +35,7 @@ object MainEater {
     }
 
     /**
-     * Train networks until max fitness (or max generatio limit) is reached.
+     * Train networks until max fitness (or max generation limit) is reached.
      */
     private fun train() {
         val networks = arrayListOf<Network>()
