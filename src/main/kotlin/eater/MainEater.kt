@@ -94,7 +94,7 @@ object MainEater {
             val tasks = mutableListOf<Deferred<Unit>>()
             do {
                 val network = networkIterator.next()
-                tasks.add(async(Dispatchers.IO) {
+                tasks.add(async(Dispatchers.Default) {
                     fitness[network] = playGame(network)
                 })
             } while (networkIterator.hasNext())
