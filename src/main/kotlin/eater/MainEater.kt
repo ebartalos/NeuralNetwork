@@ -5,7 +5,10 @@ import ai.Network
 import ai.algorithms.Genetics
 import ai.neurons.Neuron
 import ai.neurons.ReLuNeuron
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.runBlocking
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -21,7 +24,7 @@ object MainEater {
         TRAIN, TEST
     }
 
-    private val activity: Activity = Activity.TEST
+    private val activity: Activity = Activity.TRAIN
 
     // artificial high number
     private const val MAX_FITNESS = 10000000
@@ -88,18 +91,12 @@ object MainEater {
      * @param fitness all networks' fitness
      */
     private fun trainInParallel(networks: ArrayList<Network>, fitness: HashMap<Network, Int>) {
-        val networkIterator = networks.iterator()
-
         runBlocking {
-            val tasks = mutableListOf<Deferred<Unit>>()
-            do {
-                val network = networkIterator.next()
-                tasks.add(async(Dispatchers.Default) {
-                    fitness[network] = playGame(network)
-                })
-            } while (networkIterator.hasNext())
-
-            tasks.awaitAll()
+            networks.map {
+                async(Dispatchers.Default) {
+                    fitness[it] = playGame(it)
+                }
+            }.awaitAll()
         }
     }
 
