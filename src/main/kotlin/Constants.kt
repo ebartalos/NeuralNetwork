@@ -3,9 +3,8 @@
  */
 object Constants {
     const val MAX_NEURAL_NETWORKS = 1000
-    const val MAX_GENERATIONS = 5000000
-
-    const val TRAIN_IN_PARALLEL = true
+    const val MAX_GENERATIONS = 1000
+    const val NUMBER_OF_THREADS_FOR_TRAINING = 10
 
     const val MUTATION_CHANCE = 10
     const val MUTATION_RANGE_FROM = 0.95

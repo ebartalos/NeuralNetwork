@@ -12,6 +12,7 @@ import kotlinx.coroutines.runBlocking
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.Semaphore
 
 
 object MainEater {
@@ -24,7 +25,7 @@ object MainEater {
         TRAIN, TEST
     }
 
-    private val activity: Activity = Activity.TRAIN
+    private val activity: Activity = Activity.TEST
 
     // artificial high number
     private const val MAX_FITNESS = 10000000
@@ -53,10 +54,7 @@ object MainEater {
             // reset fitness
             fitness.replaceAll { _, _ -> 0 }
 
-            when (Constants.TRAIN_IN_PARALLEL) {
-                true -> trainInParallel(networks, fitness)
-                false -> trainSequentially(networks, fitness)
-            }
+            trainInParallel(networks, fitness)
 
             sortedFitness = fitness.toList().sortedBy { (_, value) -> value }.toMap()
             val bestNetwork = sortedFitness.keys.last()
@@ -85,32 +83,22 @@ object MainEater {
     }
 
     /**
-     * Train networks in parallel using coroutines - faster, but exhausting
+     * Train networks in parallel using coroutines
      *
      * @param networks all networks
      * @param fitness all networks' fitness
      */
     private fun trainInParallel(networks: ArrayList<Network>, fitness: HashMap<Network, Int>) {
+        val semaphore = Semaphore(Constants.NUMBER_OF_THREADS_FOR_TRAINING)
+
         runBlocking {
             networks.map {
+                semaphore.acquire()
                 async(Dispatchers.Default) {
                     fitness[it] = playGame(it)
+                    semaphore.release()
                 }
             }.awaitAll()
-        }
-    }
-
-    /**
-     * Train networks in single thread - slower, but less exhausting
-     *
-     * @param networks all networks
-     * @param fitness all networks' fitness
-     */
-    private fun trainSequentially(networks: ArrayList<Network>, fitness: HashMap<Network, Int>) {
-        for (network in networks) {
-            val fitnessOfNetwork = playGame(network)
-            fitness[network] = fitnessOfNetwork
-            if (fitnessOfNetwork >= MAX_FITNESS) return
         }
     }
 
