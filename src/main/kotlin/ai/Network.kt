@@ -120,14 +120,19 @@ class Network {
 
     /**
      * Return value of output neurons after softmax is applied
+     *
+     * @param chunked number of neurons to softmax together - default is the whole output layer
      */
-    fun softmaxOutput(): ArrayList<Double> {
+    fun softmaxOutput(chunked: Int = layers.last().neurons.size): ArrayList<Double> {
         val values = ArrayList<Double>()
-        val output = output()
+        val output = output().chunked(chunked)
 
-        for (input in output) {
-            values.add(softmax(input, output.toDoubleArray()))
+        for (chunkedOutput in output) {
+            for (neuronValue in chunkedOutput) {
+                values.add(softmax(neuronValue, chunkedOutput.toDoubleArray()))
+            }
         }
+
         return values
     }
 

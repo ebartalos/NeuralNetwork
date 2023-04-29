@@ -92,10 +92,10 @@ object MainEater {
         val semaphore = Semaphore(Constants.NUMBER_OF_THREADS_FOR_TRAINING)
 
         runBlocking {
-            networks.map {
+            networks.map { network ->
                 semaphore.acquire()
                 async(Dispatchers.Default) {
-                    fitness[it] = playGame(it)
+                    fitness[network] = playGame(network)
                     semaphore.release()
                 }
             }.awaitAll()
