@@ -1,5 +1,6 @@
 package eater.gui
 
+import eater.Eater
 import java.awt.*
 import javax.swing.ImageIcon
 import javax.swing.JPanel
@@ -11,13 +12,13 @@ class Board(val sideLength: Int) : JPanel() {
     private val boardWidth = sideLength * dotSize
     private val boardHeight = sideLength * dotSize
 
-    private var eaterX: Int = 0
-    private var eaterY: Int = 0
+    private var eatersPositions = arrayListOf<Pair<Int, Int>>()
+
     private var appleX: Int = 0
     private var appleY: Int = 0
 
-    private var apple: Image? = null
-    private var eater: Image? = null
+    private var appleIcon: Image? = null
+    private var eaterIcon: Image? = null
 
     init {
         background = Color.black
@@ -28,10 +29,10 @@ class Board(val sideLength: Int) : JPanel() {
     }
 
     private fun loadImages() {
-        eater = ImageIcon("src/main/resources/head.png")
+        eaterIcon = ImageIcon("src/main/resources/head.png")
             .image
             .getScaledInstance(dotSize, dotSize, Image.SCALE_SMOOTH)
-        apple = ImageIcon("src/main/resources/apple.png")
+        appleIcon = ImageIcon("src/main/resources/apple.png")
             .image
             .getScaledInstance(dotSize, dotSize, Image.SCALE_SMOOTH)
     }
@@ -39,18 +40,24 @@ class Board(val sideLength: Int) : JPanel() {
     public override fun paintComponent(g: Graphics) {
         super.paintComponent(g)
 
-        g.drawImage(apple, appleX, appleY, this)
-        g.drawImage(eater, eaterX, eaterY, this)
+        for (eater in eatersPositions) {
+            g.drawImage(eaterIcon, eater.first, eater.second, this)
+        }
+
+        g.drawImage(appleIcon, appleX, appleY, this)
 
         Toolkit.getDefaultToolkit().sync()
     }
 
-    fun update(positions: ArrayList<Int>) {
-        eaterX = positions[0] * dotSize
-        eaterY = positions[1] * dotSize
+    fun update(eaters: ArrayList<Eater>, applesPositions: ArrayList<Int>) {
+        eatersPositions = arrayListOf()
 
-        appleX = positions[2] * dotSize
-        appleY = positions[3] * dotSize
+        for (eater in eaters) {
+            eatersPositions.add(Pair(eater.eaterLocationX * dotSize, eater.eaterLocationY * dotSize))
+        }
+
+        appleX = applesPositions[0] * dotSize
+        appleY = applesPositions[1] * dotSize
 
         repaint()
     }

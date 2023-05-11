@@ -148,7 +148,7 @@ object MainEater {
      * @return fitness
      */
     private fun playGame(network: Network): Int {
-        return Eater().play(network, MAX_FITNESS)
+        return Eater(network).play(network, MAX_FITNESS)
     }
 
     /**
@@ -157,6 +157,8 @@ object MainEater {
     private fun test() {
         val network = Network()
         network.loadTrainedNetworkFromFile()
-        Eater().play(network, MAX_FITNESS, useGUI = true)
+
+        val game = Game()
+        game.play(arrayListOf(Eater(network), Eater(network)), MAX_FITNESS, useGUI = true)
     }
 }

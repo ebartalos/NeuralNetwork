@@ -5,22 +5,23 @@ import eater.gui.GUI
 import kotlin.math.abs
 import kotlin.random.Random
 
-class Eater {
+class Eater(private val network: Network) {
 
     // board size (square) - 15x15
     private val sideLength = 15
     private val board = Array(sideLength) { Array(sideLength) { 0 } }
 
-    private val maxSteps = 24
-    private val delay = 50L
+     var steps = 0
+     val maxSteps = 24
+    val delay = 50L
 
     private val emptyMark = 0
     private val wallMark = 1
     private val eaterMark = 2
     private val appleMark = 3
 
-    private var eaterLocationX: Int = Random.nextInt(1, sideLength - 1)
-    private var eaterLocationY: Int = Random.nextInt(1, sideLength - 1)
+     var eaterLocationX: Int = Random.nextInt(1, sideLength - 1)
+     var eaterLocationY: Int = Random.nextInt(1, sideLength - 1)
     private var appleLocationX: Int = Random.nextInt(1, sideLength - 1)
     private var appleLocationY: Int = Random.nextInt(1, sideLength - 1)
 
@@ -62,7 +63,7 @@ class Eater {
 
         while (steps < maxSteps) {
             if (useGUI) {
-                gui.update(arrayListOf(eaterLocationX, eaterLocationY, appleLocationX, appleLocationY))
+//                gui.update(arrayListOf(eaterLocationX, eaterLocationY, appleLocationX, appleLocationY))
                 Thread.sleep(delay)
             }
 
@@ -191,13 +192,17 @@ class Eater {
         updateBoard()
     }
 
+    fun move(){
+        move(evaluateMove(network))
+    }
+
     /**
      * Detect wall collision.
      *
      * @return true if eater crashed
      *         false if not
      */
-    private fun isEaterDead(): Boolean {
+     fun isEaterDead(): Boolean {
         return (eaterLocationX < 1)
                 || (eaterLocationY < 1)
                 || (eaterLocationX >= sideLength - 1)

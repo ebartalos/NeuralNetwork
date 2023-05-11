@@ -1,5 +1,6 @@
 package eater.gui
 
+import eater.Eater
 import javax.swing.JFrame
 
 class GUI(sideLength: Int) : JFrame() {
@@ -19,8 +20,8 @@ class GUI(sideLength: Int) : JFrame() {
         defaultCloseOperation = EXIT_ON_CLOSE
     }
 
-    fun update(positions: ArrayList<Int>) {
-        board.update(positions)
+    fun update(eaters: ArrayList<Eater>, applePositions: ArrayList<Int>) {
+        board.update(eaters, applePositions)
     }
 
     fun quit() {
