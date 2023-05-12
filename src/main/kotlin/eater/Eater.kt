@@ -8,7 +8,7 @@ class Eater(private val network: Network) {
     var steps = 0
     val maxSteps = 24
 
-    var isDead = false
+    var isAlive = true
 
     var positionX: Int = 0
     var positionY: Int = 0
@@ -125,10 +125,25 @@ class Eater(private val network: Network) {
      * @return true if eater crashed
      *         false if not
      */
-    fun isCrashed(sideLength: Int): Boolean {
+    fun crashedToWall(sideLength: Int): Boolean {
         return (positionX < 1)
                 || (positionY < 1)
                 || (positionX >= sideLength - 1)
                 || (positionY >= sideLength - 1)
+    }
+
+    fun crashedToEater(otherEaters: ArrayList<Eater>): Boolean {
+        for (otherEater in otherEaters) {
+            if (otherEater == this) continue
+
+            if ((this.positionX == otherEater.positionX) && this.positionY == otherEater.positionY) {
+                return true
+            }
+        }
+        return false
+    }
+
+    fun isExhausted(): Boolean {
+        return steps > maxSteps
     }
 }

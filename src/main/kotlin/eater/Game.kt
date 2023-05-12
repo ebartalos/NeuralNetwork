@@ -5,6 +5,7 @@ import kotlin.math.abs
 import kotlin.random.Random
 
 class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
+
     private val board = Array(sideLength) { Array(sideLength) { 0 } }
     private val delay: Long
         get() = 50L / howManyEatersAreAlive()
@@ -40,9 +41,9 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
 
         var score = 0
 
-        while (allDead().not()) {
+        while (areAllEatersDead().not()) {
             for (eater in eaters) {
-                if (eater.steps < eater.maxSteps) {
+                if (eater.isAlive) {
                     if (useGUI) {
                         gui.update(
                             eaters,
@@ -54,8 +55,8 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
                     eater.think(distanceToApple(eater), distanceToWalls(eater))
                     eater.steps += 1
 
-                    if (eater.isCrashed(sideLength)) {
-                        eater.isDead = true
+                    if (eater.crashedToEater(eaters) || eater.crashedToWall(sideLength) || eater.isExhausted()) {
+                        killEater(eater)
                         break
                     }
 
@@ -64,11 +65,10 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
                         eater.steps = 0
                         setRandomApplePosition()
                     }
+
 //                if (scoreFormula(score, eater.steps) >= maxFitness) {
 //                    break
 //                }
-                } else {
-                    eater.isDead = true
                 }
 // todo proper fitness
 //            return scoreFormula(score, eater.steps)
@@ -79,9 +79,9 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
         return 0
     }
 
-    private fun allDead(): Boolean {
+    private fun areAllEatersDead(): Boolean {
         for (eater in eaters) {
-            if (eater.isDead.not()) return false
+            if (eater.isAlive) return false
         }
         return true
     }
@@ -169,8 +169,14 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
     private fun howManyEatersAreAlive(): Int {
         var count = 0
         for (eater in eaters) {
-            if (eater.isDead.not()) count += 1
+            if (eater.isAlive) count += 1
         }
         return count
+    }
+
+    private fun killEater(eater: Eater) {
+        eater.isAlive = false
+        board[eater.positionX][eater.positionY] = emptyMark
+        eaters.remove(eater)
     }
 }
