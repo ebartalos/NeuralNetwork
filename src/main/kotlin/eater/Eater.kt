@@ -5,16 +5,13 @@ import kotlin.random.Random
 
 class Eater(private val network: Network) {
 
-    // board size (square) - 15x15
-    private val sideLength = 15
-
     var steps = 0
     val maxSteps = 24
 
     var isDead = false
 
-    var positionX: Int = Random.nextInt(1, sideLength - 1)
-    var positionY: Int = Random.nextInt(1, sideLength - 1)
+    var positionX: Int = 0
+    var positionY: Int = 0
 
     /**
      * Play 1 game, until eater crashes or runs out of steps.
@@ -64,6 +61,10 @@ class Eater(private val network: Network) {
 //        return scoreFormula(score, steps)
 //    }
 
+    fun setPosition(sideLength: Int) {
+        positionX = Random.nextInt(1, sideLength - 1)
+        positionY = Random.nextInt(1, sideLength - 1)
+    }
 
     /**
      * Networks calculates next move.
@@ -106,7 +107,6 @@ class Eater(private val network: Network) {
      * Move eater on the board.
      */
     private fun move(direction: Direction) {
-
         when (direction) {
             Direction.LEFT -> positionX -= 1
             Direction.RIGHT -> positionX += 1
@@ -115,7 +115,7 @@ class Eater(private val network: Network) {
         }
     }
 
-    fun move(distanceToApple: ArrayList<Int>, distanceToWalls: ArrayList<Int>) {
+    fun think(distanceToApple: ArrayList<Int>, distanceToWalls: ArrayList<Int>) {
         move(evaluateMove(distanceToApple, distanceToWalls))
     }
 
@@ -125,7 +125,7 @@ class Eater(private val network: Network) {
      * @return true if eater crashed
      *         false if not
      */
-    fun isCrashed(): Boolean {
+    fun isCrashed(sideLength: Int): Boolean {
         return (positionX < 1)
                 || (positionY < 1)
                 || (positionX >= sideLength - 1)

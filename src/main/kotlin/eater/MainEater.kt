@@ -158,7 +158,13 @@ object MainEater {
         val network = Network()
         network.loadTrainedNetworkFromFile()
 
-        val game = Game()
-        game.play(arrayListOf(Eater(network), Eater(network), Eater(network)), MAX_FITNESS, useGUI = true)
+        val eaters = arrayListOf(
+            Eater(network),
+            Eater(network),
+            Eater(network)
+        )
+
+        val game = Game(eaters, 15)
+        game.play(MAX_FITNESS, useGUI = true)
     }
 }

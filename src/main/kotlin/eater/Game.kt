@@ -4,13 +4,10 @@ import eater.gui.GUI
 import kotlin.math.abs
 import kotlin.random.Random
 
-class Game {
-    private val sideLength = 15
+class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
     private val board = Array(sideLength) { Array(sideLength) { 0 } }
     private val delay: Long
         get() = 50L / howManyEatersAreAlive()
-
-    private var eaters = arrayListOf<Eater>()
 
     private var appleLocationX: Int = Random.nextInt(1, sideLength - 1)
     private var appleLocationY: Int = Random.nextInt(1, sideLength - 1)
@@ -32,19 +29,14 @@ class Game {
         updateBoard()
     }
 
-    fun play(eaters: ArrayList<Eater>, maxFitness: Int, useGUI: Boolean = false): Int {
-        this.eaters = eaters
-
-        for (eater in eaters) {
-            eater.positionX = Random.nextInt(1, sideLength - 1)
-            eater.positionY = Random.nextInt(1, sideLength - 1)
-        }
-
+    fun play(maxFitness: Int, useGUI: Boolean = false): Int {
         lateinit var gui: GUI
         if (useGUI) {
             gui = GUI(sideLength)
             gui.isVisible = true
         }
+
+        eaters.forEach { eater -> eater.setPosition(sideLength) }
 
         var score = 0
 
@@ -59,10 +51,10 @@ class Game {
                         Thread.sleep(delay)
                     }
 
-                    eater.move(distanceToApple(eater), distanceToWalls(eater))
+                    eater.think(distanceToApple(eater), distanceToWalls(eater))
                     eater.steps += 1
 
-                    if (eater.isCrashed()) {
+                    if (eater.isCrashed(sideLength)) {
                         eater.isDead = true
                         break
                     }
