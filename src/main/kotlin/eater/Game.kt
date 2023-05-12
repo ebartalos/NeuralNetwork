@@ -26,6 +26,7 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
             board[index][0] = wallMark
             board[index][sideLength - 1] = wallMark
         }
+        eaters.forEach { eater -> eater.setPosition(sideLength) }
 
         updateBoard()
     }
@@ -37,53 +38,49 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
             gui.isVisible = true
         }
 
-        eaters.forEach { eater -> eater.setPosition(sideLength) }
-
         var score = 0
+        val eatersFitness = mutableMapOf<Eater, Int>()
 
         while (areAllEatersDead().not()) {
             for (eater in eaters) {
-                if (eater.isAlive) {
-                    if (useGUI) {
-                        gui.update(
-                            eaters,
-                            arrayListOf(appleLocationX, appleLocationY)
-                        )
-                        Thread.sleep(delay)
-                    }
-
-                    eater.think(distanceToApple(eater), distanceToWalls(eater))
-                    eater.steps += 1
-
-                    if (eater.crashedToEater(eaters) || eater.crashedToWall(sideLength) || eater.isExhausted()) {
-                        killEater(eater)
-                        break
-                    }
-
-                    if (isAppleEaten(eater)) {
-                        score += 1
-                        eater.steps = 0
-                        setRandomApplePosition()
-                    }
-
-//                if (scoreFormula(score, eater.steps) >= maxFitness) {
-//                    break
-//                }
+                if (useGUI) {
+                    gui.update(
+                        eaters,
+                        arrayListOf(appleLocationX, appleLocationY)
+                    )
+                    Thread.sleep(delay)
                 }
-// todo proper fitness
-//            return scoreFormula(score, eater.steps)
+
+                eater.think(distanceToApple(eater), distanceToWalls(eater))
+                eater.steps += 1
+
+                if (eater.crashedToEater(eaters) || eater.crashedToWall(sideLength) || eater.isExhausted()) {
+                    eatersFitness[eater] = scoreFormula(score, eater.steps)
+                    score = 0
+                    killEater(eater)
+                    break
+                }
+
+                if (isAppleEaten(eater)) {
+                    score += 1
+                    eater.steps = 0
+                    setRandomApplePosition()
+                }
+
+                if (scoreFormula(score, eater.steps) >= maxFitness) {
+                    eatersFitness[eater] = scoreFormula(score, eater.steps)
+                    return scoreFormula(score, eater.steps)
+                }
             }
         }
-
         if (useGUI) gui.quit()
-        return 0
+
+        val bestEater = eatersFitness.maxByOrNull { it.value }
+        return bestEater!!.value
     }
 
     private fun areAllEatersDead(): Boolean {
-        for (eater in eaters) {
-            if (eater.isAlive) return false
-        }
-        return true
+        return eaters.size <= 0
     }
 
     /**
