@@ -53,7 +53,7 @@ class Board(val sideLength: Int) : JPanel() {
         eatersPositions = arrayListOf()
 
         for (eater in eaters) {
-            eatersPositions.add(Pair(eater.eaterLocationX * dotSize, eater.eaterLocationY * dotSize))
+            eatersPositions.add(Pair(eater.positionX * dotSize, eater.positionY * dotSize))
         }
 
         appleX = applesPositions[0] * dotSize
