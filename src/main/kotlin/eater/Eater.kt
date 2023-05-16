@@ -61,28 +61,26 @@ class Eater(private val network: Network) {
 //        return scoreFormula(score, steps)
 //    }
 
-    fun setPosition(sideLength: Int) {
+    fun setRandomPosition(sideLength: Int) {
         positionX = Random.nextInt(1, sideLength - 1)
         positionY = Random.nextInt(1, sideLength - 1)
     }
 
     /**
-     * Networks calculates next move.
-     *
-     * @param network neural network
-     *
+     * Calculate next move.
+     **
      * @return direction to move
      */
-    private fun evaluateMove(distanceToApple: ArrayList<Int>, distanceToWalls: ArrayList<Int>): Direction {
+    private fun evaluateMove(distanceToApple: ArrayList<Int>, distanceToDeath: ArrayList<Int>): Direction {
         val inputs = arrayListOf(
             distanceToApple[0].toDouble(),
             distanceToApple[1].toDouble(),
             distanceToApple[2].toDouble(),
             distanceToApple[3].toDouble(),
-            distanceToWalls[0].toDouble(),
-            distanceToWalls[1].toDouble(),
-            distanceToWalls[2].toDouble(),
-            distanceToWalls[3].toDouble(),
+            distanceToDeath[0].toDouble(),
+            distanceToDeath[1].toDouble(),
+            distanceToDeath[2].toDouble(),
+            distanceToDeath[3].toDouble(),
         )
 
         network.setInputs(inputs)
@@ -103,20 +101,13 @@ class Eater(private val network: Network) {
         LEFT, RIGHT, UP, DOWN
     }
 
-    /**
-     * Move eater on the board.
-     */
-    private fun move(direction: Direction) {
-        when (direction) {
+    fun move(distanceToApple: ArrayList<Int>, distanceToDeath: ArrayList<Int>) {
+        when (evaluateMove(distanceToApple, distanceToDeath)) {
             Direction.LEFT -> positionX -= 1
             Direction.RIGHT -> positionX += 1
             Direction.DOWN -> positionY += 1
             Direction.UP -> positionY -= 1
         }
-    }
-
-    fun think(distanceToApple: ArrayList<Int>, distanceToWalls: ArrayList<Int>) {
-        move(evaluateMove(distanceToApple, distanceToWalls))
     }
 
     /**

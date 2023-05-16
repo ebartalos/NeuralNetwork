@@ -2,6 +2,7 @@ package eater
 
 import eater.gui.GUI
 import kotlin.math.abs
+import kotlin.math.min
 import kotlin.random.Random
 
 class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
@@ -26,7 +27,8 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
             board[index][0] = wallMark
             board[index][sideLength - 1] = wallMark
         }
-        eaters.forEach { eater -> eater.setPosition(sideLength) }
+
+        eaters.forEach { eater -> eater.setRandomPosition(sideLength) }
 
         updateBoard()
     }
@@ -41,7 +43,7 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
         var score = 0
         val eatersFitness = mutableMapOf<Eater, Int>()
 
-        while (areAllEatersDead().not()) {
+        while (eaters.size > 0) {
             for (eater in eaters) {
                 if (useGUI) {
                     gui.update(
@@ -51,7 +53,7 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
                     Thread.sleep(delay)
                 }
 
-                eater.think(distanceToApple(eater), distanceToWalls(eater))
+                eater.move(distanceToApple(eater), distanceToDeath(eater, eaters))
                 eater.steps += 1
 
                 if (eater.crashedToEater(eaters) || eater.crashedToWall(sideLength) || eater.isExhausted()) {
@@ -77,10 +79,6 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
 
         val bestEater = eatersFitness.maxByOrNull { it.value }
         return bestEater!!.value
-    }
-
-    private fun areAllEatersDead(): Boolean {
-        return eaters.size <= 0
     }
 
     /**
@@ -150,16 +148,48 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
     }
 
     /**
-     * Calculate distance to walls.
+     * Calculate distance to walls or nearest eater - collision with either kills
+     *
+     * @param eater current eater
+     * @param eaters all eaters
      *
      * @return array of distances - 4 directions
      */
-    private fun distanceToWalls(eater: Eater): ArrayList<Int> {
+    private fun distanceToDeath(eater: Eater, eaters: ArrayList<Eater>): ArrayList<Int> {
         val distance = arrayListOf<Int>()
+
+        // left wall
         distance.add(abs(eater.positionX))
+
+        // right wall
         distance.add(abs((sideLength - 1) - eater.positionX))
+
+        // top wall
         distance.add(abs(eater.positionY))
+
+        // bottom wall
         distance.add(abs((sideLength - 1) - eater.positionY))
+
+        for (otherEater in eaters) {
+            if (eater == otherEater) continue
+
+            if (eater.positionX == otherEater.positionX) {
+                if (eater.positionY > otherEater.positionY) {
+                    distance[2] = min(distance[2], abs(eater.positionY - otherEater.positionY))
+                } else {
+                    distance[3] = min(distance[3], abs(eater.positionY - otherEater.positionY))
+                }
+            }
+
+            if (eater.positionY == otherEater.positionY) {
+                if (eater.positionX > otherEater.positionX) {
+                    distance[0] = min(distance[0], abs(eater.positionX - otherEater.positionX))
+                } else {
+                    distance[1] = min(distance[1], abs(eater.positionX - otherEater.positionX))
+                }
+            }
+        }
+
         return distance
     }
 
