@@ -95,7 +95,7 @@ class Eater {
     }
 
     /**
-     * Networks calculates next move.
+     * Evaluate eater's next move.
      *
      * @param network neural network
      *
