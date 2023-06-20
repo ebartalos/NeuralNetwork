@@ -18,6 +18,7 @@ class Board(val sideLength: Int) : JPanel() {
 
     private var apple: Image? = null
     private var eater: Image? = null
+    private var wall: Image? = null
 
     init {
         background = Color.black
@@ -34,6 +35,9 @@ class Board(val sideLength: Int) : JPanel() {
         apple = ImageIcon("src/main/resources/apple.png")
             .image
             .getScaledInstance(dotSize, dotSize, Image.SCALE_SMOOTH)
+        wall = ImageIcon("src/main/resources/wall.png")
+            .image
+            .getScaledInstance(dotSize, dotSize, Image.SCALE_SMOOTH)
     }
 
     public override fun paintComponent(g: Graphics) {
@@ -41,6 +45,14 @@ class Board(val sideLength: Int) : JPanel() {
 
         g.drawImage(apple, appleX, appleY, this)
         g.drawImage(eater, eaterX, eaterY, this)
+
+        for (x in 0..boardWidth step dotSize) {
+            for (y in 0..boardHeight step dotSize) {
+                if ((x == 0) || (y == 0) || (x == boardHeight - dotSize) || (y == boardWidth - dotSize)) {
+                    g.drawImage(wall, x, y, this)
+                }
+            }
+        }
 
         Toolkit.getDefaultToolkit().sync()
     }
