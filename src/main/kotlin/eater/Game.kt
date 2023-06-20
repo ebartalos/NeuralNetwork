@@ -7,7 +7,7 @@ import kotlin.random.Random
 
 class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
 
-    private val board = Array(sideLength) { Array(sideLength) { 0 } }
+    private val boardState = Array(sideLength) { Array(sideLength) { 0 } }
     private val delay: Long
         get() = 50L / howManyEatersAreAlive()
 
@@ -22,10 +22,10 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
     init {
         // draw walls
         for (index in 0 until sideLength) {
-            board[0][index] = wallMark
-            board[sideLength - 1][index] = wallMark
-            board[index][0] = wallMark
-            board[index][sideLength - 1] = wallMark
+            boardState[0][index] = wallMark
+            boardState[sideLength - 1][index] = wallMark
+            boardState[index][0] = wallMark
+            boardState[index][sideLength - 1] = wallMark
         }
 
         eaters.forEach { eater -> eater.setRandomPosition(sideLength) }
@@ -36,7 +36,7 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
     fun play(maxFitness: Int, useGUI: Boolean = false): Int {
         lateinit var gui: GUI
         if (useGUI) {
-            gui = GUI(sideLength)
+            gui = GUI(boardState)
             gui.isVisible = true
         }
 
@@ -45,11 +45,9 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
 
         while (eaters.size > 0) {
             for (eater in eaters) {
+                updateBoard()
                 if (useGUI) {
-                    gui.update(
-                        eaters,
-                        arrayListOf(appleLocationX, appleLocationY)
-                    )
+                    gui.update(boardState)
                     Thread.sleep(delay)
                 }
 
@@ -96,7 +94,7 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
      * Set random position for apple - O - that is inside of board.
      */
     private fun setRandomApplePosition() {
-        board[appleLocationX][appleLocationY] = emptyMark
+        boardState[appleLocationX][appleLocationY] = emptyMark
         appleLocationX = Random.nextInt(1, sideLength - 1)
         appleLocationY = Random.nextInt(1, sideLength - 1)
 
@@ -107,10 +105,17 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
      * Update position of eater and apple on the board.
      */
     private fun updateBoard() {
-        for (eater in eaters) {
-            board[eater.positionX][eater.positionY] = eaterMark
+        // todo replace with wall checks
+        for (x in 1 until sideLength - 1) {
+            for (y in 1 until sideLength - 1) {
+                boardState[x][y] = 0
+            }
         }
-        board[appleLocationX][appleLocationY] = appleMark
+
+        for (eater in eaters) {
+            boardState[eater.positionX][eater.positionY] = eaterMark
+        }
+        boardState[appleLocationX][appleLocationY] = appleMark
     }
 
     /**
@@ -203,7 +208,7 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
 
     private fun killEater(eater: Eater) {
         eater.isAlive = false
-        board[eater.positionX][eater.positionY] = emptyMark
+        boardState[eater.positionX][eater.positionY] = emptyMark
         eaters.remove(eater)
     }
 }

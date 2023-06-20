@@ -1,21 +1,16 @@
 package eater.gui
 
-import eater.Eater
 import java.awt.*
 import javax.swing.ImageIcon
 import javax.swing.JPanel
 
 
-class Board(val sideLength: Int) : JPanel() {
+class Board(private var boardState: Array<Array<Int>>) : JPanel() {
     private val dotSize = 25
+    private val sideLength = boardState.size
 
     private val boardWidth = sideLength * dotSize
     private val boardHeight = sideLength * dotSize
-
-    private var eatersPositions = arrayListOf<Pair<Int, Int>>()
-
-    private var appleX: Int = 0
-    private var appleY: Int = 0
 
     private var appleIcon: Image? = null
     private var eaterIcon: Image? = null
@@ -26,6 +21,7 @@ class Board(val sideLength: Int) : JPanel() {
         isFocusable = true
 
         preferredSize = Dimension(boardWidth, boardHeight)
+
         loadImages()
     }
 
@@ -44,16 +40,16 @@ class Board(val sideLength: Int) : JPanel() {
     public override fun paintComponent(g: Graphics) {
         super.paintComponent(g)
 
-        for (eater in eatersPositions) {
-            g.drawImage(eaterIcon, eater.first, eater.second, this)
-        }
+        val iconsMap = HashMap<Int, Image?>()
+        iconsMap[0] = null
+        iconsMap[1] = wallIcon
+        iconsMap[2] = eaterIcon
+        iconsMap[3] = appleIcon
 
-        g.drawImage(appleIcon, appleX, appleY, this)
-
-        for (x in 0..boardWidth step dotSize) {
-            for (y in 0..boardHeight step dotSize) {
-                if ((x == 0) || (y == 0) || (x == boardHeight - dotSize) || (y == boardWidth - dotSize)) {
-                    g.drawImage(wallIcon, x, y, this)
+        for (x in 0 until sideLength) {
+            for (y in 0 until sideLength) {
+                iconsMap[boardState[x][y]]?.let {
+                    g.drawImage(it, x * dotSize, y * dotSize, this)
                 }
             }
         }
@@ -61,16 +57,8 @@ class Board(val sideLength: Int) : JPanel() {
         Toolkit.getDefaultToolkit().sync()
     }
 
-    fun update(eaters: ArrayList<Eater>, applesPositions: ArrayList<Int>) {
-        eatersPositions = arrayListOf()
-
-        for (eater in eaters) {
-            eatersPositions.add(Pair(eater.positionX * dotSize, eater.positionY * dotSize))
-        }
-
-        appleX = applesPositions[0] * dotSize
-        appleY = applesPositions[1] * dotSize
-
+    fun update(boardState: Array<Array<Int>>) {
+        this.boardState = boardState
         repaint()
     }
 }
