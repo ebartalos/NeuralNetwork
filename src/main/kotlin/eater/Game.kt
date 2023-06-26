@@ -20,13 +20,7 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
     private val appleMark = 3
 
     init {
-        // draw walls
-        for (index in 0 until sideLength) {
-            boardState[0][index] = wallMark
-            boardState[sideLength - 1][index] = wallMark
-            boardState[index][0] = wallMark
-            boardState[index][sideLength - 1] = wallMark
-        }
+        drawWalls()
 
         eaters.forEach { eater -> eater.setRandomPosition(sideLength) }
 
@@ -79,6 +73,16 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
         return bestEater!!.value
     }
 
+    private fun drawWalls() {
+        for (index in 0 until sideLength) {
+            boardState[0][index] = wallMark
+            boardState[sideLength - 1][index] = wallMark
+            boardState[index][0] = wallMark
+            boardState[index][sideLength - 1] = wallMark
+        }
+        boardState[sideLength / 2][sideLength / 2] = wallMark
+    }
+
     /**
      * Detect apple collision.
      *
@@ -105,12 +109,17 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
      * Update position of eater and apple on the board.
      */
     private fun updateBoard() {
-        // todo replace with wall checks
+        drawWalls()
+
         for (x in 1 until sideLength - 1) {
             for (y in 1 until sideLength - 1) {
-                boardState[x][y] = 0
+                if (boardState[x][y] != wallMark) {
+                    boardState[x][y] = 0
+                }
             }
         }
+
+        boardState[sideLength / 2][sideLength / 2] = wallMark
 
         for (eater in eaters) {
             boardState[eater.positionX][eater.positionY] = eaterMark
@@ -163,6 +172,8 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
     private fun distanceToDeath(eater: Eater, eaters: ArrayList<Eater>): ArrayList<Int> {
         val distance = arrayListOf<Int>()
 
+        distanceToWalls(eater)
+
         // left wall
         distance.add(abs(eater.positionX))
 
@@ -196,6 +207,46 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
         }
 
         return distance
+    }
+
+    private fun distanceToWalls(eater: Eater){
+        val distances = arrayListOf<Int>()
+
+        var leftWallDistance = sideLength
+        for (x in boardState[eater.positionX]){
+            val currentDistance = abs(x - eater.positionX)
+            if (currentDistance < leftWallDistance ){
+                leftWallDistance = currentDistance
+            }
+        }
+        distances.add(leftWallDistance)
+
+        var rightWallDistance = sideLength
+        for (x in boardState[eater.positionX].reversed()){
+            val currentDistance = abs(x - eater.positionX)
+            if (currentDistance < rightWallDistance ){
+                rightWallDistance = currentDistance
+            }
+        }
+        distances.add(rightWallDistance)
+
+        var topWallDistance = sideLength
+        for (y in boardState[eater.positionY]){
+            val currentDistance = abs(y - eater.positionY)
+            if (currentDistance < topWallDistance ){
+                topWallDistance = currentDistance
+            }
+        }
+        distances.add(topWallDistance)
+
+        var bottomWallDistance = sideLength
+        for (y in boardState[eater.positionY].reversed()){
+            val currentDistance = abs(y - eater.positionY)
+            if (currentDistance < bottomWallDistance ){
+                bottomWallDistance = currentDistance
+            }
+        }
+        distances.add(bottomWallDistance)
     }
 
     private fun howManyEatersAreAlive(): Int {
