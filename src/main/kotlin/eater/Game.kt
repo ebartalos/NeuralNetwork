@@ -48,7 +48,7 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
                 eater.move(distanceToApple(eater), distanceToDeath(eater, eaters))
                 eater.steps += 1
 
-                if (eater.crashedToEater(eaters) || eater.crashedToWall(sideLength) || eater.isExhausted()) {
+                if (eater.crashedToEater(eaters) || eater.crashedToWall(boardState, wallMark) || eater.isExhausted()) {
                     eatersFitness[eater] = scoreFormula(score, eater.steps)
                     score = 0
                     killEater(eater)
@@ -170,21 +170,21 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
      * @return array of distances - 4 directions
      */
     private fun distanceToDeath(eater: Eater, eaters: ArrayList<Eater>): ArrayList<Int> {
-        val distance = arrayListOf<Int>()
+        val distance = distanceToWalls(eater)
 
-        distanceToWalls(eater)
-
+        // todo remove
+        val distanceCorrect = arrayListOf<Int>()
         // left wall
-        distance.add(abs(eater.positionX))
+        distanceCorrect.add(abs(eater.positionX))
 
         // right wall
-        distance.add(abs((sideLength - 1) - eater.positionX))
+        distanceCorrect.add(abs((sideLength - 1) - eater.positionX))
 
         // top wall
-        distance.add(abs(eater.positionY))
+        distanceCorrect.add(abs(eater.positionY))
 
         // bottom wall
-        distance.add(abs((sideLength - 1) - eater.positionY))
+        distanceCorrect.add(abs((sideLength - 1) - eater.positionY))
 
         for (otherEater in eaters) {
             if (eater == otherEater) continue
@@ -209,44 +209,44 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
         return distance
     }
 
-    private fun distanceToWalls(eater: Eater){
+    private fun distanceToWalls(eater: Eater): ArrayList<Int> {
         val distances = arrayListOf<Int>()
 
         var leftWallDistance = sideLength
-        for (x in boardState[eater.positionX]){
-            val currentDistance = abs(x - eater.positionX)
-            if (currentDistance < leftWallDistance ){
-                leftWallDistance = currentDistance
+        for (x in 0 until eater.positionX) {
+            if (boardState[x][eater.positionY] == wallMark) {
+                leftWallDistance = abs(x - eater.positionX)
             }
         }
         distances.add(leftWallDistance)
 
         var rightWallDistance = sideLength
-        for (x in boardState[eater.positionX].reversed()){
-            val currentDistance = abs(x - eater.positionX)
-            if (currentDistance < rightWallDistance ){
-                rightWallDistance = currentDistance
+        for (x in eater.positionX until sideLength) {
+            if (boardState[x][eater.positionY] == wallMark) {
+                rightWallDistance = abs(x - eater.positionX)
+                break
             }
         }
         distances.add(rightWallDistance)
 
         var topWallDistance = sideLength
-        for (y in boardState[eater.positionY]){
-            val currentDistance = abs(y - eater.positionY)
-            if (currentDistance < topWallDistance ){
-                topWallDistance = currentDistance
+        for (y in 0 until eater.positionY) {
+            if (boardState[eater.positionX][y] == wallMark) {
+                topWallDistance = abs(y - eater.positionY)
             }
         }
         distances.add(topWallDistance)
 
         var bottomWallDistance = sideLength
-        for (y in boardState[eater.positionY].reversed()){
-            val currentDistance = abs(y - eater.positionY)
-            if (currentDistance < bottomWallDistance ){
-                bottomWallDistance = currentDistance
+        for (y in eater.positionY until sideLength) {
+            if (boardState[eater.positionX][y] == wallMark) {
+                bottomWallDistance = abs(y - eater.positionY)
+                break
             }
         }
         distances.add(bottomWallDistance)
+
+        return distances
     }
 
     private fun howManyEatersAreAlive(): Int {

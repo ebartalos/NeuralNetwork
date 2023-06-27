@@ -116,11 +116,8 @@ class Eater(private val network: Network) {
      * @return true if eater crashed
      *         false if not
      */
-    fun crashedToWall(sideLength: Int): Boolean {
-        return (positionX < 1)
-                || (positionY < 1)
-                || (positionX >= sideLength - 1)
-                || (positionY >= sideLength - 1)
+    fun crashedToWall(boardState: Array<Array<Int>>, wallMark: Int): Boolean {
+        return boardState[positionX][positionY] == wallMark
     }
 
     /**
