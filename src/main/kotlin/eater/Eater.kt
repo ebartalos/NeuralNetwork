@@ -13,54 +13,6 @@ class Eater(private val network: Network) {
     var positionX: Int = 0
     var positionY: Int = 0
 
-    /**
-     * Play 1 game, until eater crashes or runs out of steps.
-     *
-     * @param network neural network playing the game
-     * @param maxFitness limit when should game end (prevents infinite game)
-     * @param useGUI should be shown in GUI
-     *
-     * @return fitness reached
-     */
-    fun play(network: Network, maxFitness: Int, useGUI: Boolean = false): Int {
-        return 1
-    }
-//        lateinit var gui: GUI
-//        if (useGUI) {
-//            gui = GUI(sideLength)
-//            gui.isVisible = true
-//        }
-//
-//        var score = 0
-//        var steps = 0
-//
-//        while (steps < maxSteps) {
-//            if (useGUI) {
-////                gui.update(arrayListOf(eaterLocationX, eaterLocationY, appleLocationX, appleLocationY))
-//                Thread.sleep(delay)
-//            }
-//
-//            move(evaluateMove(network))
-//            steps += 1
-//
-//            if (isEaterDead()) {
-//                break
-//            }
-//
-//            if (isAppleEaten()) {
-//                score += 1
-//                steps = 0
-//                setRandomApplePosition()
-//            }
-//            if (scoreFormula(score, steps) >= maxFitness) {
-//                break
-//            }
-//        }
-//
-//        if (useGUI) gui.quit()
-//        return scoreFormula(score, steps)
-//    }
-
     fun setRandomPosition(sideLength: Int) {
         positionX = Random.nextInt(1, sideLength - 1)
         positionY = Random.nextInt(1, sideLength - 1)

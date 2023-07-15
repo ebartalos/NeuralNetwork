@@ -37,7 +37,7 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
         var score = 0
         val eatersFitness = mutableMapOf<Eater, Int>()
 
-        while (eaters.size > 0) {
+        while (eaters.isNotEmpty()) {
             for (eater in eaters) {
                 updateBoard()
                 if (useGUI) {

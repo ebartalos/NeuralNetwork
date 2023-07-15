@@ -1,6 +1,7 @@
 package eater
 
 import Constants
+import Constants.MAX_FITNESS
 import ai.Network
 import ai.algorithms.Genetics
 import ai.neurons.Neuron
@@ -25,10 +26,8 @@ object MainEater {
         TRAIN, TEST
     }
 
-    private val activity: Activity = Activity.TEST
+    private val activity: Activity = Activity.TRAIN
 
-    // artificial high number
-    private const val MAX_FITNESS = 10000000
 
     @JvmStatic
     fun main(args: Array<String>) {
@@ -60,7 +59,7 @@ object MainEater {
             val bestNetwork = sortedFitness.keys.last()
 
             val genetics = Genetics(sortedFitness.keys.reversed())
-            genetics.breed(mutate = true, mutationChance = Constants.MUTATION_CHANCE)
+            genetics.breed(mutate = true, mutationChance = Constants.MUTATION_PERCENT_CHANCE)
 
             if (fitness[bestNetwork]!! > bestFitness) {
                 bestFitness = fitness[bestNetwork]!!
@@ -135,6 +134,7 @@ object MainEater {
 
         network.addInputLayer(8)
         network.addHiddenLayer(ReLuNeuron::class, 10, true)
+        network.addHiddenLayer(ReLuNeuron::class, 10, true)
         network.addOutputLayer(Neuron::class, 4)
         network.createConnections()
 
@@ -142,13 +142,15 @@ object MainEater {
     }
 
     /**
-     * Play one game
-     * @param network neural network
+     * Play 1 game, until eater crashes or runs out of steps.
      *
-     * @return fitness
+     * @param network neural network playing the game
+     *
+     * @return fitness reached
      */
     private fun playGame(network: Network): Int {
-        return Eater(network).play(network, MAX_FITNESS)
+        val game = Game(arrayListOf(Eater(network)), 15)
+        return game.play(MAX_FITNESS, useGUI = false)
     }
 
     /**
@@ -160,8 +162,8 @@ object MainEater {
 
         val eaters = arrayListOf(
             Eater(network),
-            Eater(network),
-            Eater(network)
+//            Eater(network),
+//            Eater(network)
         )
 
         val game = Game(eaters, 15)
