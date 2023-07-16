@@ -1,6 +1,7 @@
 package eater
 
 import eater.gui.GUI
+import java.util.*
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.random.Random
@@ -19,12 +20,28 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
     private val eaterMark = 2
     private val appleMark = 3
 
+    private var criticalPositions = Stack<Pair<Int, Int>>()
+
     init {
+        fillCriticalPositions()
+
         drawWalls()
 
         eaters.forEach { eater -> eater.setRandomPosition(sideLength) }
 
         updateBoard()
+    }
+
+    /**
+     * Positions that are hard to reach.
+     */
+    private fun fillCriticalPositions() {
+        criticalPositions.add(Pair(7, 4))
+        criticalPositions.add(Pair(7, 12))
+        criticalPositions.add(Pair(7, 3))
+        criticalPositions.add(Pair(12, 7))
+        criticalPositions.add(Pair(3, 7))
+        criticalPositions.add(Pair(13, 7))
     }
 
     fun play(maxFitness: Int, useGUI: Boolean = false): Int {
@@ -99,8 +116,15 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
      */
     private fun setRandomApplePosition() {
         boardState[appleLocationX][appleLocationY] = emptyMark
-        appleLocationX = Random.nextInt(1, sideLength - 1)
-        appleLocationY = Random.nextInt(1, sideLength - 1)
+
+        if (criticalPositions.isNotEmpty()) {
+            val position = criticalPositions.pop()
+            appleLocationX = position.first
+            appleLocationY = position.second
+        } else {
+            appleLocationX = Random.nextInt(1, sideLength - 1)
+            appleLocationY = Random.nextInt(1, sideLength - 1)
+        }
 
         updateBoard()
     }

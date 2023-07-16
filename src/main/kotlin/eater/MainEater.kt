@@ -72,9 +72,9 @@ object MainEater {
                     .withZone(ZoneId.systemDefault())
                     .format(Instant.now())
                 println(
-                    "$time Gen ${generation.spaceBetweenEveryThreeDigitsFormatter()} best gen fitness ${
-                        fitness[bestNetwork]!!.spaceBetweenEveryThreeDigitsFormatter()
-                    } ATH fitness ${bestFitness.spaceBetweenEveryThreeDigitsFormatter()}"
+                    "$time Gen ${generation.commaBetweenEveryThreeDigitsFormatter()} best gen fitness ${
+                        fitness[bestNetwork]!!.commaBetweenEveryThreeDigitsFormatter()
+                    } ATH fitness ${bestFitness.commaBetweenEveryThreeDigitsFormatter()}"
                 )
             }
 
@@ -85,10 +85,10 @@ object MainEater {
         }
     }
 
-    private fun Int.spaceBetweenEveryThreeDigitsFormatter(): String {
+    private fun Int.commaBetweenEveryThreeDigitsFormatter(): String {
         val s = StringBuilder(this.toString().reversed())
         s.forEachIndexed { index, _ ->
-            if (index % 4 == 0) s.insert(index, " ")
+            if (index % 4 == 0) s.insert(index, ",")
         }
         return s.reversed().toString()
     }
