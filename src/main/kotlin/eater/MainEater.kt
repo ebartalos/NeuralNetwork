@@ -27,7 +27,7 @@ object MainEater {
     }
 
     private val activity: Activity = Activity.TRAIN
-
+    private const val playgroundSize = 15
 
     @JvmStatic
     fun main(args: Array<String>) {
@@ -71,7 +71,11 @@ object MainEater {
                     .ofPattern("HH:mm:ss")
                     .withZone(ZoneId.systemDefault())
                     .format(Instant.now())
-                println("$time Gen $generation best gen fitness ${fitness[bestNetwork]!!} ATH fitness $bestFitness")
+                println(
+                    "$time Gen ${generation.spaceBetweenEveryThreeDigitsFormatter()} best gen fitness ${
+                        fitness[bestNetwork]!!.spaceBetweenEveryThreeDigitsFormatter()
+                    } ATH fitness ${bestFitness.spaceBetweenEveryThreeDigitsFormatter()}"
+                )
             }
 
             if (bestFitness >= MAX_FITNESS) {
@@ -80,6 +84,15 @@ object MainEater {
             }
         }
     }
+
+    private fun Int.spaceBetweenEveryThreeDigitsFormatter(): String {
+        val s = StringBuilder(this.toString().reversed())
+        s.forEachIndexed { index, _ ->
+            if (index % 4 == 0) s.insert(index, " ")
+        }
+        return s.reversed().toString()
+    }
+
 
     /**
      * Train networks in parallel using coroutines
@@ -133,8 +146,8 @@ object MainEater {
         val network = Network()
 
         network.addInputLayer(8)
-        network.addHiddenLayer(ReLuNeuron::class, 10, true)
-        network.addHiddenLayer(ReLuNeuron::class, 10, true)
+        network.addHiddenLayer(ReLuNeuron::class, 12, true)
+//        network.addHiddenLayer(ReLuNeuron::class, 10, true)
         network.addOutputLayer(Neuron::class, 4)
         network.createConnections()
 
@@ -149,7 +162,7 @@ object MainEater {
      * @return fitness reached
      */
     private fun playGame(network: Network): Int {
-        val game = Game(arrayListOf(Eater(network)), 15)
+        val game = Game(arrayListOf(Eater(network)), playgroundSize)
         return game.play(MAX_FITNESS, useGUI = false)
     }
 
@@ -166,7 +179,7 @@ object MainEater {
 //            Eater(network)
         )
 
-        val game = Game(eaters, 15)
+        val game = Game(eaters, playgroundSize)
         game.play(MAX_FITNESS, useGUI = true)
     }
 }

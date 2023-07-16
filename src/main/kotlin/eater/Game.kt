@@ -172,20 +172,6 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
     private fun distanceToDeath(eater: Eater, eaters: ArrayList<Eater>): ArrayList<Int> {
         val distance = distanceToWalls(eater)
 
-        // todo remove
-        val distanceCorrect = arrayListOf<Int>()
-        // left wall
-        distanceCorrect.add(abs(eater.positionX))
-
-        // right wall
-        distanceCorrect.add(abs((sideLength - 1) - eater.positionX))
-
-        // top wall
-        distanceCorrect.add(abs(eater.positionY))
-
-        // bottom wall
-        distanceCorrect.add(abs((sideLength - 1) - eater.positionY))
-
         for (otherEater in eaters) {
             if (eater == otherEater) continue
 
