@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
+import java.io.File
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -49,7 +50,13 @@ object MainEater {
         var sortedFitness: Map<Network, Int>
         var bestFitness = 0
 
-        for (generation in 0..Constants.MAX_GENERATIONS) {
+        val currentGeneration = if (Constants.LOAD_NETWORK_FILE_ON_START) {
+            loadGeneration()
+        } else {
+            0
+        }
+
+        for (generation in currentGeneration..Constants.MAX_GENERATIONS) {
             // reset fitness
             fitness.replaceAll { _, _ -> 0 }
 
@@ -63,7 +70,7 @@ object MainEater {
 
             if (fitness[bestNetwork]!! > bestFitness) {
                 bestFitness = fitness[bestNetwork]!!
-                bestNetwork.saveTrainedNetworkToFile(overwrite = true)
+                bestNetwork.saveTrainedNetworkToFile(generation = generation)
             }
 
             if (generation % 100 == 0) {
@@ -85,14 +92,19 @@ object MainEater {
         }
     }
 
+    private fun loadGeneration(file: File = File(Constants.BEST_NETWORK_FILE)): Int {
+        return file.readLines()[0].split(":")[1].toInt()
+    }
+
     private fun Int.commaBetweenEveryThreeDigitsFormatter(): String {
         val s = StringBuilder(this.toString().reversed())
         s.forEachIndexed { index, _ ->
-            if (index % 4 == 0) s.insert(index, ",")
+            if ((index % 4 == 0)) {
+                s.insert(index, ",")
+            }
         }
-        return s.reversed().toString()
+        return s.reversed().toString().dropLast(1)
     }
-
 
     /**
      * Train networks in parallel using coroutines
@@ -146,8 +158,8 @@ object MainEater {
         val network = Network()
 
         network.addInputLayer(8)
-        network.addHiddenLayer(ReLuNeuron::class, 12, true)
-//        network.addHiddenLayer(ReLuNeuron::class, 10, true)
+        network.addHiddenLayer(ReLuNeuron::class, 10, true)
+        network.addHiddenLayer(ReLuNeuron::class, 4, true)
         network.addOutputLayer(Neuron::class, 4)
         network.createConnections()
 

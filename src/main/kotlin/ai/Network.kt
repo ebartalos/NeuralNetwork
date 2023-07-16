@@ -239,11 +239,10 @@ class Network {
      * Save network details (layers, number/types of neurons, weights' values) to the file.
      *
      * @param file target file for saving
-     * @param overwrite true if target file should be overwritten
-     *                  false if not
+     * @param generation current generation of training
      */
-    fun saveTrainedNetworkToFile(file: File = File(Constants.BEST_NETWORK_FILE), overwrite: Boolean) {
-        if (overwrite) file.writeText("")
+    fun saveTrainedNetworkToFile(file: File = File(Constants.BEST_NETWORK_FILE), generation: Int = 0) {
+        file.writeText("Generation:$generation\n")
 
         // add network information - type of neurons and count
         for (layer in layers) {
@@ -268,6 +267,9 @@ class Network {
         val networkStructure = mutableListOf<String>()
 
         for (line in file.readLines()) {
+            if (line.contains("Generation")) {
+                continue
+            }
             if (line.contains("Weights")) {
                 break
             } else if (line.contains("Layer").not()) {
@@ -292,10 +294,10 @@ class Network {
                 val biasNeuron = networkStructure[1].contains("Bias")
                 addInputLayer(neuronAmount, biasNeuron = biasNeuron)
             } else if (index == networkStructure.size - 1) { // output layer
-                addOutputLayer(neuronClasses[neuronType]!!, neuronAmount)
+                addOutputLayer(neuronClasses.getValue(neuronType), neuronAmount)
             } else if (networkStructure[index].contains("Bias").not()) { // hidden layers
                 val biasNeuron = networkStructure[index + 1].contains("Bias")
-                addHiddenLayer(neuronClasses[neuronType]!!, neuronAmount, biasNeuron = biasNeuron)
+                addHiddenLayer(neuronClasses.getValue(neuronType), neuronAmount, biasNeuron = biasNeuron)
             }
         }
 
@@ -303,7 +305,7 @@ class Network {
 
         file.readLines().forEach {
             // load weights
-            if (!(it.contains("class") || it.contains("Layer") or it.contains("Weights"))) {
+            if (!(it.contains("class") || it.contains("Layer") or it.contains("Weights") or it.contains("Generation"))) {
                 weights.add(it.toDouble())
             }
         }
