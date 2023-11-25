@@ -1,4 +1,4 @@
-package eater.gui
+package battleship.gui
 
 import java.awt.*
 import javax.swing.ImageIcon
@@ -12,9 +12,8 @@ class Board(private var boardState: Array<Array<Int>>) : JPanel() {
     private val boardWidth = sideLength * dotSize
     private val boardHeight = sideLength * dotSize
 
-    private var appleIcon: Image? = null
-    private var eaterIcon: Image? = null
-    private var wallIcon: Image? = null
+    private var shipIcon: Image? = null
+    private var noHitIcon: Image? = null
 
     init {
         background = Color.black
@@ -26,13 +25,11 @@ class Board(private var boardState: Array<Array<Int>>) : JPanel() {
     }
 
     private fun loadImages() {
-        eaterIcon = ImageIcon("src/main/resources/head.png")
+        shipIcon = ImageIcon("src/main/resources/head.png")
             .image
             .getScaledInstance(dotSize, dotSize, Image.SCALE_SMOOTH)
-        appleIcon = ImageIcon("src/main/resources/apple.png")
-            .image
-            .getScaledInstance(dotSize, dotSize, Image.SCALE_SMOOTH)
-        wallIcon = ImageIcon("src/main/resources/wall.png")
+
+        noHitIcon = ImageIcon("src/main/resources/wall.png")
             .image
             .getScaledInstance(dotSize, dotSize, Image.SCALE_SMOOTH)
     }
@@ -42,9 +39,8 @@ class Board(private var boardState: Array<Array<Int>>) : JPanel() {
 
         val iconsMap = HashMap<Int, Image?>()
         iconsMap[0] = null
-        iconsMap[1] = wallIcon
-        iconsMap[2] = eaterIcon
-        iconsMap[3] = appleIcon
+        iconsMap[1] = noHitIcon
+        iconsMap[2] = shipIcon
 
         for (x in 0 until sideLength) {
             for (y in 0 until sideLength) {

@@ -1,4 +1,4 @@
-package eater
+package battleship
 
 import ai.Network
 import kotlin.random.Random
@@ -53,49 +53,5 @@ class Eater(private val network: Network) {
         LEFT, RIGHT, UP, DOWN
     }
 
-    /**
-     * Evaluate next move and move.
-     *
-     * @param distanceToApple distance to the apple (reward)
-     * @param distanceToDeath distance to the death
-     */
-    fun move(distanceToApple: ArrayList<Int>, distanceToDeath: ArrayList<Int>) {
-        when (evaluateMove(distanceToApple, distanceToDeath)) {
-            Direction.LEFT -> positionX -= 1
-            Direction.RIGHT -> positionX += 1
-            Direction.DOWN -> positionY += 1
-            Direction.UP -> positionY -= 1
-        }
-    }
 
-    /**
-     * Detect wall collision.
-     *
-     * @return true if eater crashed
-     *         false if not
-     */
-    fun crashedToWall(boardState: Array<Array<Int>>, wallMark: Int): Boolean {
-        return boardState[positionX][positionY] == wallMark
-    }
-
-    /**
-     * Friendly fire
-     */
-    fun crashedToEater(otherEaters: ArrayList<Eater>): Boolean {
-        for (otherEater in otherEaters) {
-            if (otherEater == this) continue
-
-            if ((this.positionX == otherEater.positionX) && this.positionY == otherEater.positionY) {
-                return true
-            }
-        }
-        return false
-    }
-
-    /**
-     * Out of steps
-     */
-    fun isExhausted(): Boolean {
-        return steps > maxSteps
-    }
 }

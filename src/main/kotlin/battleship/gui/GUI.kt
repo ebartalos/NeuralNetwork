@@ -1,4 +1,4 @@
-package eater.gui
+package battleship.gui
 
 import javax.swing.JFrame
 

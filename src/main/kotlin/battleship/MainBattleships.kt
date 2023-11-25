@@ -1,6 +1,6 @@
 @file:Suppress("SameParameterValue")
 
-package eater
+package battleship
 
 import Constants
 import Constants.MAX_FITNESS
@@ -9,7 +9,6 @@ import ai.algorithms.Genetics
 import ai.neurons.Neuron
 import ai.neurons.ReLuNeuron
 import ai.neurons.SigmoidNeuron
-import ai.neurons.TanhNeuron
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -32,9 +31,9 @@ object MainEater {
         TRAIN, TEST
     }
 
-    private val activity: Activity = Activity.TRAIN
-//            private val activity: Activity = Activity.TEST
-    private const val playgroundSize = 15
+//    private val activity: Activity = Activity.TRAIN
+            private val activity: Activity = Activity.TEST
+    private const val playgroundSize = 12
 
     @JvmStatic
     fun main(args: Array<String>) {
@@ -125,7 +124,7 @@ object MainEater {
             networks.map { network ->
                 semaphore.acquire()
                 async(Dispatchers.Default) {
-                    fitness[network] = playGame(network)
+//                    fitness[network] = playGame(network)
                     semaphore.release()
                 }
             }.awaitAll()
@@ -200,26 +199,15 @@ object MainEater {
     }
 
     /**
-     * Play 1 game, until eater crashes or runs out of steps.
-     *
-     * @param network neural network playing the game
-     *
-     * @return fitness reached
-     */
-    private fun playGame(network: Network): Int {
-        return Game(arrayListOf(Eater(network)), playgroundSize).play(MAX_FITNESS, useGUI = false)
-    }
-
-    /**
      * Load network from file and test it in GUI.
      */
     private fun test() {
         val network = Network()
-        network.loadTrainedNetworkFromFile()
+//        network.loadTrainedNetworkFromFile()
+//
+//        val eaters = arrayListOf(Eater(network))
 
-        val eaters = arrayListOf(Eater(network))
-
-        val game = Game(eaters, playgroundSize)
-        game.play(MAX_FITNESS, useGUI = true)
+        val game = Game(network, playgroundSize)
+        game.play( useGUI = true)
     }
 }
