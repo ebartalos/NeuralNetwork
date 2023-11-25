@@ -6,7 +6,7 @@ import kotlin.random.Random
 class Eater(private val network: Network) {
 
     var steps = 0
-    private val maxSteps = 24
+    private val maxSteps = 30
 
     var isAlive = true
 
@@ -53,6 +53,12 @@ class Eater(private val network: Network) {
         LEFT, RIGHT, UP, DOWN
     }
 
+    /**
+     * Evaluate next move and move.
+     *
+     * @param distanceToApple distance to the apple (reward)
+     * @param distanceToDeath distance to the death
+     */
     fun move(distanceToApple: ArrayList<Int>, distanceToDeath: ArrayList<Int>) {
         when (evaluateMove(distanceToApple, distanceToDeath)) {
             Direction.LEFT -> positionX -= 1

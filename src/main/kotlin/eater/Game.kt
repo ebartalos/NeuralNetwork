@@ -12,15 +12,15 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
     private val delay: Long
         get() = 50L / howManyEatersAreAlive()
 
-    private var appleLocationX: Int = Random.nextInt(1, sideLength - 1)
-    private var appleLocationY: Int = Random.nextInt(1, sideLength - 1)
+    private var appleLocationX: Int = 4
+    private var appleLocationY: Int = 4
 
     private val emptyMark = 0
     private val wallMark = 1
     private val eaterMark = 2
     private val appleMark = 3
 
-    private var criticalPositions = Stack<Pair<Int, Int>>()
+    private val criticalPositions = Stack<Pair<Int, Int>>()
 
     init {
         fillCriticalPositions()
@@ -30,18 +30,6 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
         eaters.forEach { eater -> eater.setRandomPosition(sideLength) }
 
         updateBoard()
-    }
-
-    /**
-     * Positions that are hard to reach.
-     */
-    private fun fillCriticalPositions() {
-        criticalPositions.add(Pair(7, 4))
-        criticalPositions.add(Pair(7, 12))
-        criticalPositions.add(Pair(7, 3))
-        criticalPositions.add(Pair(12, 7))
-        criticalPositions.add(Pair(3, 7))
-        criticalPositions.add(Pair(13, 7))
     }
 
     fun play(maxFitness: Int, useGUI: Boolean = false): Int {
@@ -66,21 +54,21 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
                 eater.steps += 1
 
                 if (eater.crashedToEater(eaters) || eater.crashedToWall(boardState, wallMark) || eater.isExhausted()) {
-                    eatersFitness[eater] = scoreFormula(score, eater.steps)
+                    eatersFitness[eater] = score
                     score = 0
                     killEater(eater)
                     break
                 }
 
                 if (isAppleEaten(eater)) {
-                    score += 1
-                    eater.steps = 0
+                    score += 1000
+                    score += eater.steps
                     setRandomApplePosition()
                 }
 
-                if (scoreFormula(score, eater.steps) >= maxFitness) {
-                    eatersFitness[eater] = scoreFormula(score, eater.steps)
-                    return scoreFormula(score, eater.steps)
+                if (score >= maxFitness) {
+                    eatersFitness[eater] = score
+                    return score
                 }
             }
         }
@@ -101,6 +89,27 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
     }
 
     /**
+     * Positions that are hard to reach.
+     */
+    private fun fillCriticalPositions() {
+        criticalPositions.add(Pair(7, 6))
+        criticalPositions.add(Pair(10, 10))
+        criticalPositions.add(Pair(4, 12))
+        criticalPositions.add(Pair(8, 7))
+        criticalPositions.add(Pair(7, 4))
+        criticalPositions.add(Pair(7, 11))
+        criticalPositions.add(Pair(7, 3))
+        criticalPositions.add(Pair(12, 7))
+        criticalPositions.add(Pair(3, 7))
+        criticalPositions.add(Pair(13, 7))
+
+        criticalPositions.add(Pair(13, 13))
+        criticalPositions.add(Pair(13, 1))
+        criticalPositions.add(Pair(1, 13))
+        criticalPositions.add(Pair(1, 1))
+    }
+
+    /**
      * Detect apple collision.
      *
      * @return true if apple is eaten
@@ -109,7 +118,6 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
     private fun isAppleEaten(eater: Eater): Boolean {
         return ((eater.positionX == appleLocationX) && (eater.positionY == appleLocationY))
     }
-
 
     /**
      * Set random position for apple - O - that is inside of board.
@@ -142,8 +150,6 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
                 }
             }
         }
-
-        boardState[sideLength / 2][sideLength / 2] = wallMark
 
         for (eater in eaters) {
             boardState[eater.positionX][eater.positionY] = eaterMark

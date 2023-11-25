@@ -1,3 +1,5 @@
+@file:Suppress("SameParameterValue")
+
 package eater
 
 import Constants
@@ -6,6 +8,8 @@ import ai.Network
 import ai.algorithms.Genetics
 import ai.neurons.Neuron
 import ai.neurons.ReLuNeuron
+import ai.neurons.SigmoidNeuron
+import ai.neurons.TanhNeuron
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -15,6 +19,7 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.Semaphore
+import kotlin.reflect.KClass
 
 
 object MainEater {
@@ -28,6 +33,7 @@ object MainEater {
     }
 
     private val activity: Activity = Activity.TRAIN
+//            private val activity: Activity = Activity.TEST
     private const val playgroundSize = 15
 
     @JvmStatic
@@ -68,12 +74,12 @@ object MainEater {
             val genetics = Genetics(sortedFitness.keys.reversed())
             genetics.breed(mutate = true, mutationChance = Constants.MUTATION_PERCENT_CHANCE)
 
-            if (fitness[bestNetwork]!! > bestFitness) {
+            if (fitness[bestNetwork]!! >= bestFitness) {
                 bestFitness = fitness[bestNetwork]!!
                 bestNetwork.saveTrainedNetworkToFile(generation = generation)
             }
 
-            if (generation % 100 == 0) {
+            if (generation % 10 == 0) {
                 val time = DateTimeFormatter
                     .ofPattern("HH:mm:ss")
                     .withZone(ZoneId.systemDefault())
@@ -141,7 +147,15 @@ object MainEater {
                 network = Network()
                 network.loadTrainedNetworkFromFile()
             } else {
-                network = createNetwork()
+                network = createNetwork(
+                    8,
+                    arrayListOf(
+                        Triple(SigmoidNeuron::class, 10, true),
+                        Triple(SigmoidNeuron::class, 10, true),
+                        Triple(SigmoidNeuron::class, 10, true),
+                        ),
+                    Pair(Neuron::class, 4)
+                )
             }
 
             networks.add(network)
@@ -159,8 +173,27 @@ object MainEater {
 
         network.addInputLayer(8)
         network.addHiddenLayer(ReLuNeuron::class, 10, true)
-        network.addHiddenLayer(ReLuNeuron::class, 4, true)
+        network.addHiddenLayer(ReLuNeuron::class, 10, true)
+        network.addHiddenLayer(ReLuNeuron::class, 10, true)
         network.addOutputLayer(Neuron::class, 4)
+        network.createConnections()
+
+        return network
+    }
+
+    private fun <T : Any, U : Any> createNetwork(
+        inputLayerNeurons: Int,
+        hiddenLayers: ArrayList<Triple<KClass<T>, Int, Boolean>>,
+        outputLayer: Pair<KClass<U>, Int>
+    ): Network {
+        val network = Network()
+
+        network.addInputLayer(inputLayerNeurons)
+        hiddenLayers.forEach {
+            network.addHiddenLayer(it.first, it.second, it.third)
+        }
+        network.addOutputLayer(outputLayer.first, outputLayer.second)
+
         network.createConnections()
 
         return network
@@ -174,8 +207,7 @@ object MainEater {
      * @return fitness reached
      */
     private fun playGame(network: Network): Int {
-        val game = Game(arrayListOf(Eater(network)), playgroundSize)
-        return game.play(MAX_FITNESS, useGUI = false)
+        return Game(arrayListOf(Eater(network)), playgroundSize).play(MAX_FITNESS, useGUI = false)
     }
 
     /**
@@ -185,11 +217,7 @@ object MainEater {
         val network = Network()
         network.loadTrainedNetworkFromFile()
 
-        val eaters = arrayListOf(
-            Eater(network),
-//            Eater(network),
-//            Eater(network)
-        )
+        val eaters = arrayListOf(Eater(network))
 
         val game = Game(eaters, playgroundSize)
         game.play(MAX_FITNESS, useGUI = true)
