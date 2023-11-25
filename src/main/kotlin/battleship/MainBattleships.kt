@@ -8,7 +8,6 @@ import ai.Network
 import ai.algorithms.Genetics
 import ai.neurons.Neuron
 import ai.neurons.ReLuNeuron
-import ai.neurons.SigmoidNeuron
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -31,15 +30,44 @@ object MainEater {
         TRAIN, TEST
     }
 
-//    private val activity: Activity = Activity.TRAIN
-            private val activity: Activity = Activity.TEST
-    private const val playgroundSize = 12
+    //    private val activity: Activity = Activity.TRAIN
+    private val activity: Activity = Activity.TEST
+    private const val sideLength = 12
 
     @JvmStatic
     fun main(args: Array<String>) {
         when (activity) {
             Activity.TRAIN -> train()
             Activity.TEST -> test()
+        }
+    }
+
+    /**
+     * Set neurons, weights and connections in neural networks.
+     *
+     * @param networks list of shell empty networks
+     * @param fitness assign default fitness value to all networks
+     *
+     */
+    private fun setNetworks(networks: ArrayList<Network>, fitness: HashMap<Network, Int>) {
+        for (networkId in 1..Constants.MAX_NEURAL_NETWORKS) {
+            lateinit var network: Network
+
+            if (Constants.LOAD_NETWORK_FILE_ON_START) {
+                network = Network()
+                network.loadTrainedNetworkFromFile()
+            } else {
+                network = createNetwork(
+                    144,
+                    arrayListOf(
+                        Triple(ReLuNeuron::class, 10, true),
+                    ),
+                    Pair(Neuron::class, 144)
+                )
+            }
+
+            networks.add(network)
+            fitness[network] = 0
         }
     }
 
@@ -78,7 +106,7 @@ object MainEater {
                 bestNetwork.saveTrainedNetworkToFile(generation = generation)
             }
 
-            if (generation % 10 == 0) {
+            if (generation % 1 == 0) {
                 val time = DateTimeFormatter
                     .ofPattern("HH:mm:ss")
                     .withZone(ZoneId.systemDefault())
@@ -124,41 +152,11 @@ object MainEater {
             networks.map { network ->
                 semaphore.acquire()
                 async(Dispatchers.Default) {
-//                    fitness[network] = playGame(network)
+                    val game = Game(network, sideLength)
+                    fitness[network] = game.play()
                     semaphore.release()
                 }
             }.awaitAll()
-        }
-    }
-
-    /**
-     * Set neurons, weights and connections in neural networks.
-     *
-     * @param networks list of shell empty networks
-     * @param fitness assign default fitness value to all networks
-     *
-     */
-    private fun setNetworks(networks: ArrayList<Network>, fitness: HashMap<Network, Int>) {
-        for (networkId in 1..Constants.MAX_NEURAL_NETWORKS) {
-            lateinit var network: Network
-
-            if (Constants.LOAD_NETWORK_FILE_ON_START) {
-                network = Network()
-                network.loadTrainedNetworkFromFile()
-            } else {
-                network = createNetwork(
-                    8,
-                    arrayListOf(
-                        Triple(SigmoidNeuron::class, 10, true),
-                        Triple(SigmoidNeuron::class, 10, true),
-                        Triple(SigmoidNeuron::class, 10, true),
-                        ),
-                    Pair(Neuron::class, 4)
-                )
-            }
-
-            networks.add(network)
-            fitness[network] = 0
         }
     }
 
@@ -203,11 +201,9 @@ object MainEater {
      */
     private fun test() {
         val network = Network()
-//        network.loadTrainedNetworkFromFile()
-//
-//        val eaters = arrayListOf(Eater(network))
+        network.loadTrainedNetworkFromFile()
 
-        val game = Game(network, playgroundSize)
-        game.play( useGUI = true)
+        val game = Game(network, sideLength)
+        game.play(useGUI = true)
     }
 }
