@@ -9,7 +9,6 @@ import ai.algorithms.Genetics
 import ai.neurons.Neuron
 import ai.neurons.ReLuNeuron
 import ai.neurons.SigmoidNeuron
-import ai.neurons.TanhNeuron
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -32,8 +31,8 @@ object MainEater {
         TRAIN, TEST
     }
 
-    private val activity: Activity = Activity.TRAIN
-//            private val activity: Activity = Activity.TEST
+    //    private val activity: Activity = Activity.TRAIN
+    private val activity: Activity = Activity.TEST
     private const val playgroundSize = 15
 
     @JvmStatic
@@ -153,7 +152,7 @@ object MainEater {
                         Triple(SigmoidNeuron::class, 10, true),
                         Triple(SigmoidNeuron::class, 10, true),
                         Triple(SigmoidNeuron::class, 10, true),
-                        ),
+                    ),
                     Pair(Neuron::class, 4)
                 )
             }

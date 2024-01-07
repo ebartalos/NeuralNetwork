@@ -16,4 +16,6 @@ object Constants {
 
     const val BEST_NETWORK_FILE = "best.txt"
     const val LOAD_NETWORK_FILE_ON_START = false
+
+    const val GUI_DOT_SIZE = 25
 }
