@@ -55,12 +55,14 @@ class Network {
      * @param biasNeuron if true, bias neuron will be added
      *                   if false, bias neuron will not be added
      */
-    fun <T : Any> addHiddenLayer(neuronType: KClass<T>, numberOfNeurons: Int, biasNeuron: Boolean = true) {
+    fun <T : Any> addHiddenLayer(neuronType: KClass<T>, numberOfNeurons: Int, biasNeuron: Boolean = true, dropout:Double=0.0) {
         val layer = Layer()
         for (index in 1..numberOfNeurons) {
             layer.addNeuron(neuronType.createInstance() as Neuron)
         }
+
         if (biasNeuron) layer.addNeuron(BiasNeuron())
+        if (dropout != 0.0) layer.dropout(dropout)
 
         layers.add(layer)
     }

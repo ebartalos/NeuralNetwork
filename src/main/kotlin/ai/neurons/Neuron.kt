@@ -2,6 +2,7 @@ package ai.neurons
 
 open class Neuron {
 
+    var isDropped = false
     var value = 1.0
 
     open fun activation(vector: Double): Double {
@@ -9,7 +10,11 @@ open class Neuron {
     }
 
     fun calculate(vector: Double) {
-        value = activation(vector)
+        value = if (isDropped) {
+            0.0
+        } else {
+            activation(vector)
+        }
     }
 
     open fun derivative(): Double {

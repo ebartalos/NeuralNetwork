@@ -1,6 +1,8 @@
 package ai
 
+import ai.neurons.BiasNeuron
 import ai.neurons.Neuron
+import kotlin.random.Random
 
 /**
  * Representation of layer in feed forward neural networks
@@ -10,6 +12,7 @@ class Layer {
     var neurons: ArrayList<Neuron> = ArrayList()
     var outgoingConnections = ArrayList<Connection>()
     var incomingConnections = ArrayList<Connection>()
+    private var dropoutRate = 0.0
 
     /**
      * Add neuron to layer.
@@ -24,6 +27,11 @@ class Layer {
      * Calculate value of each neuron in the layer.
      */
     fun evaluate() {
+        setAllNeuronsActive()
+        if (dropoutRate >= 0.0) {
+            setDropout()
+        }
+
         if (incomingConnections.isNotEmpty()) {
             for (neuron in neurons) {
                 var sum = 0.0
@@ -56,5 +64,23 @@ class Layer {
      */
     fun weights(): MutableList<Double> {
         return outgoingConnections.stream().map { it.weight }.toList()
+    }
+
+    fun dropout(dropoutRate: Double) {
+        this.dropoutRate = dropoutRate
+    }
+
+    private fun setDropout() {
+        for (neuron in neurons) {
+            if ((neuron is BiasNeuron).not() && (Random.nextDouble() < dropoutRate)) {
+                neuron.isDropped = true
+            }
+        }
+    }
+
+    private fun setAllNeuronsActive() {
+        neurons.forEach { neuron ->
+            neuron.isDropped = false
+        }
     }
 }

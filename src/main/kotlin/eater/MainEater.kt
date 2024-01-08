@@ -8,7 +8,6 @@ import ai.Network
 import ai.algorithms.Genetics
 import ai.neurons.Neuron
 import ai.neurons.ReLuNeuron
-import ai.neurons.SigmoidNeuron
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -31,8 +30,8 @@ object MainEater {
         TRAIN, TEST
     }
 
-    //    private val activity: Activity = Activity.TRAIN
-    private val activity: Activity = Activity.TEST
+        private val activity: Activity = Activity.TRAIN
+//    private val activity: Activity = Activity.TEST
     private const val playgroundSize = 15
 
     @JvmStatic
@@ -146,15 +145,7 @@ object MainEater {
                 network = Network()
                 network.loadTrainedNetworkFromFile()
             } else {
-                network = createNetwork(
-                    8,
-                    arrayListOf(
-                        Triple(SigmoidNeuron::class, 10, true),
-                        Triple(SigmoidNeuron::class, 10, true),
-                        Triple(SigmoidNeuron::class, 10, true),
-                    ),
-                    Pair(Neuron::class, 4)
-                )
+                network = createNetwork()
             }
 
             networks.add(network)
@@ -171,9 +162,8 @@ object MainEater {
         val network = Network()
 
         network.addInputLayer(8)
-        network.addHiddenLayer(ReLuNeuron::class, 10, true)
-        network.addHiddenLayer(ReLuNeuron::class, 10, true)
-        network.addHiddenLayer(ReLuNeuron::class, 10, true)
+        network.addHiddenLayer(ReLuNeuron::class, 100, true, dropout = 0.2)
+        network.addHiddenLayer(ReLuNeuron::class, 100, true, dropout = 0.2)
         network.addOutputLayer(Neuron::class, 4)
         network.createConnections()
 
