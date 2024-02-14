@@ -18,14 +18,15 @@ You also need to have libraries
 - Genetic algorithms - breeding and mutation
 - Training function automatically saves best network to the file and will resume back when program is run again
 - Simple GUI eater game with already trained neural network
+- Backpropagation demonstrated in XOR
 
-#### How to run master
+
+#### How to run eater
 Run main in MainEater. You can select activity in MainEater -
 Test (showcases already trained network solving eater game) or Train (training network).
 
-### Branch `xor`
+### How to run xor
 
-- Backpropagation demonstrated in XOR
 - Run main in MainXor.
 
 ## Bug reporting
