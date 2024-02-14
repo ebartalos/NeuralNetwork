@@ -1,7 +1,7 @@
 package ai
 
-import eater.Constants
 import ai.neurons.*
+import eater.Constants
 import java.io.File
 import java.util.*
 import kotlin.math.exp
@@ -55,7 +55,12 @@ class Network {
      * @param biasNeuron if true, bias neuron will be added
      *                   if false, bias neuron will not be added
      */
-    fun <T : Any> addHiddenLayer(neuronType: KClass<T>, numberOfNeurons: Int, biasNeuron: Boolean = true, dropout:Double=0.0) {
+    fun <T : Any> addHiddenLayer(
+        neuronType: KClass<T>,
+        numberOfNeurons: Int,
+        biasNeuron: Boolean = true,
+        dropout: Double = 0.0
+    ) {
         val layer = Layer()
         for (index in 1..numberOfNeurons) {
             layer.addNeuron(neuronType.createInstance() as Neuron)

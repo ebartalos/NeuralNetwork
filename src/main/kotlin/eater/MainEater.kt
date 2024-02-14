@@ -2,11 +2,11 @@
 
 package eater
 
-import eater.Constants.MAX_FITNESS
 import ai.Network
 import ai.algorithms.Genetics
 import ai.neurons.Neuron
 import ai.neurons.ReLuNeuron
+import eater.Constants.MAX_FITNESS
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -204,7 +204,6 @@ object MainEater {
         val network = Network()
         network.loadTrainedNetworkFromFile()
 
-        val game = Game((Eater(network)), playgroundSize)
-        game.play(MAX_FITNESS, useGUI = true)
+        Game((Eater(network)), playgroundSize).play(MAX_FITNESS, useGUI = true)
     }
 }

@@ -29,7 +29,7 @@ class Layer {
     fun evaluate() {
         setAllNeuronsActive()
         if (dropoutRate >= 0.0) {
-            setDropout()
+            activateDropout()
         }
 
         if (incomingConnections.isNotEmpty()) {
@@ -66,11 +66,14 @@ class Layer {
         return outgoingConnections.stream().map { it.weight }.toList()
     }
 
+    /**
+     * Set dropout rate.
+     */
     fun dropout(dropoutRate: Double) {
         this.dropoutRate = dropoutRate
     }
 
-    private fun setDropout() {
+    private fun activateDropout() {
         for (neuron in neurons) {
             if ((neuron is BiasNeuron).not() && (Random.nextDouble() < dropoutRate)) {
                 neuron.isDropped = true
