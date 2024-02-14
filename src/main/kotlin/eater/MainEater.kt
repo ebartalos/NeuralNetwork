@@ -1,6 +1,9 @@
+@file:Suppress("SameParameterValue")
+
 package eater
 
 import Constants
+import Constants.MAX_FITNESS
 import ai.Network
 import ai.algorithms.Genetics
 import ai.neurons.Neuron
@@ -9,10 +12,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
+import java.io.File
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.Semaphore
+import kotlin.reflect.KClass
 
 
 object MainEater {
@@ -25,10 +30,9 @@ object MainEater {
         TRAIN, TEST
     }
 
-    private val activity: Activity = Activity.TEST
-
-    // artificial high number
-    private const val MAX_FITNESS = 10000000
+        private val activity: Activity = Activity.TRAIN
+//    private val activity: Activity = Activity.TEST
+    private const val playgroundSize = 15
 
     @JvmStatic
     fun main(args: Array<String>) {
@@ -50,7 +54,13 @@ object MainEater {
         var sortedFitness: Map<Network, Int>
         var bestFitness = 0
 
-        for (generation in 0..Constants.MAX_GENERATIONS) {
+        val currentGeneration = if (Constants.LOAD_NETWORK_FILE_ON_START) {
+            loadGeneration()
+        } else {
+            0
+        }
+
+        for (generation in currentGeneration..Constants.MAX_GENERATIONS) {
             // reset fitness
             fitness.replaceAll { _, _ -> 0 }
 
@@ -60,19 +70,23 @@ object MainEater {
             val bestNetwork = sortedFitness.keys.last()
 
             val genetics = Genetics(sortedFitness.keys.reversed())
-            genetics.breed(mutate = true, mutationChance = Constants.MUTATION_CHANCE)
+            genetics.breed(mutate = true, mutationChance = Constants.MUTATION_PERCENT_CHANCE)
 
-            if (fitness[bestNetwork]!! > bestFitness) {
+            if (fitness[bestNetwork]!! >= bestFitness) {
                 bestFitness = fitness[bestNetwork]!!
-                bestNetwork.saveTrainedNetworkToFile(overwrite = true)
+                bestNetwork.saveTrainedNetworkToFile(generation = generation)
             }
 
-            if (generation % 100 == 0) {
+            if (generation % 10 == 0) {
                 val time = DateTimeFormatter
                     .ofPattern("HH:mm:ss")
                     .withZone(ZoneId.systemDefault())
                     .format(Instant.now())
-                println("$time Gen $generation best gen fitness ${fitness[bestNetwork]!!} ATH fitness $bestFitness")
+                println(
+                    "$time Gen ${generation.commaBetweenEveryThreeDigitsFormatter()} best gen fitness ${
+                        fitness[bestNetwork]!!.commaBetweenEveryThreeDigitsFormatter()
+                    } ATH fitness ${bestFitness.commaBetweenEveryThreeDigitsFormatter()}"
+                )
             }
 
             if (bestFitness >= MAX_FITNESS) {
@@ -80,6 +94,20 @@ object MainEater {
                 return
             }
         }
+    }
+
+    private fun loadGeneration(file: File = File(Constants.BEST_NETWORK_FILE)): Int {
+        return file.readLines()[0].split(":")[1].toInt()
+    }
+
+    private fun Int.commaBetweenEveryThreeDigitsFormatter(): String {
+        val s = StringBuilder(this.toString().reversed())
+        s.forEachIndexed { index, _ ->
+            if ((index % 4 == 0)) {
+                s.insert(index, ",")
+            }
+        }
+        return s.reversed().toString().dropLast(1)
     }
 
     /**
@@ -134,21 +162,41 @@ object MainEater {
         val network = Network()
 
         network.addInputLayer(8)
-        network.addHiddenLayer(ReLuNeuron::class, 10, true)
+        network.addHiddenLayer(ReLuNeuron::class, 100, true, dropout = 0.2)
+        network.addHiddenLayer(ReLuNeuron::class, 100, true, dropout = 0.2)
         network.addOutputLayer(Neuron::class, 4)
         network.createConnections()
 
         return network
     }
 
+    private fun <T : Any, U : Any> createNetwork(
+        inputLayerNeurons: Int,
+        hiddenLayers: ArrayList<Triple<KClass<T>, Int, Boolean>>,
+        outputLayer: Pair<KClass<U>, Int>
+    ): Network {
+        val network = Network()
+
+        network.addInputLayer(inputLayerNeurons)
+        hiddenLayers.forEach {
+            network.addHiddenLayer(it.first, it.second, it.third)
+        }
+        network.addOutputLayer(outputLayer.first, outputLayer.second)
+
+        network.createConnections()
+
+        return network
+    }
+
     /**
-     * Play one game
-     * @param network neural network
+     * Play 1 game, until eater crashes or runs out of steps.
      *
-     * @return fitness
+     * @param network neural network playing the game
+     *
+     * @return fitness reached
      */
     private fun playGame(network: Network): Int {
-        return Eater().play(network, MAX_FITNESS)
+        return Game(arrayListOf(Eater(network)), playgroundSize).play(MAX_FITNESS, useGUI = false)
     }
 
     /**
@@ -157,6 +205,10 @@ object MainEater {
     private fun test() {
         val network = Network()
         network.loadTrainedNetworkFromFile()
-        Eater().play(network, MAX_FITNESS, useGUI = true)
+
+        val eaters = arrayListOf(Eater(network))
+
+        val game = Game(eaters, playgroundSize)
+        game.play(MAX_FITNESS, useGUI = true)
     }
 }

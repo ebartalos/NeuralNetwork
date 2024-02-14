@@ -1,55 +1,55 @@
 package eater.gui
 
+import Constants.GUI_DOT_SIZE
 import java.awt.*
 import javax.swing.ImageIcon
 import javax.swing.JPanel
 
 
-class Board(val sideLength: Int) : JPanel() {
-    private val dotSize = 25
+class Board(private var boardState: Array<Array<Int>>) : JPanel() {
+    private val sideLength = boardState.size
 
-    private val boardWidth = sideLength * dotSize
-    private val boardHeight = sideLength * dotSize
+    private val boardWidth = sideLength * GUI_DOT_SIZE
+    private val boardHeight = sideLength * GUI_DOT_SIZE
 
-    private var eaterX: Int = 0
-    private var eaterY: Int = 0
-    private var appleX: Int = 0
-    private var appleY: Int = 0
-
-    private var apple: Image? = null
-    private var eater: Image? = null
-    private var wall: Image? = null
+    private var appleIcon: Image? = null
+    private var eaterIcon: Image? = null
+    private var wallIcon: Image? = null
 
     init {
         background = Color.black
         isFocusable = true
 
         preferredSize = Dimension(boardWidth, boardHeight)
+
         loadImages()
     }
 
     private fun loadImages() {
-        eater = ImageIcon("src/main/resources/head.png")
+        eaterIcon = ImageIcon("src/main/resources/head.png")
             .image
-            .getScaledInstance(dotSize, dotSize, Image.SCALE_SMOOTH)
-        apple = ImageIcon("src/main/resources/apple.png")
+            .getScaledInstance(GUI_DOT_SIZE, GUI_DOT_SIZE, Image.SCALE_SMOOTH)
+        appleIcon = ImageIcon("src/main/resources/apple.png")
             .image
-            .getScaledInstance(dotSize, dotSize, Image.SCALE_SMOOTH)
-        wall = ImageIcon("src/main/resources/wall.png")
+            .getScaledInstance(GUI_DOT_SIZE, GUI_DOT_SIZE, Image.SCALE_SMOOTH)
+        wallIcon = ImageIcon("src/main/resources/wall.png")
             .image
-            .getScaledInstance(dotSize, dotSize, Image.SCALE_SMOOTH)
+            .getScaledInstance(GUI_DOT_SIZE, GUI_DOT_SIZE, Image.SCALE_SMOOTH)
     }
 
     public override fun paintComponent(g: Graphics) {
         super.paintComponent(g)
 
-        g.drawImage(apple, appleX, appleY, this)
-        g.drawImage(eater, eaterX, eaterY, this)
+        val iconsMap = HashMap<Int, Image?>()
+        iconsMap[0] = null
+        iconsMap[1] = wallIcon
+        iconsMap[2] = eaterIcon
+        iconsMap[3] = appleIcon
 
-        for (x in 0..boardWidth step dotSize) {
-            for (y in 0..boardHeight step dotSize) {
-                if ((x == 0) || (y == 0) || (x == boardHeight - dotSize) || (y == boardWidth - dotSize)) {
-                    g.drawImage(wall, x, y, this)
+        for (x in 0 until sideLength) {
+            for (y in 0 until sideLength) {
+                iconsMap[boardState[x][y]]?.let {
+                    g.drawImage(it, x * GUI_DOT_SIZE, y * GUI_DOT_SIZE, this)
                 }
             }
         }
@@ -57,13 +57,8 @@ class Board(val sideLength: Int) : JPanel() {
         Toolkit.getDefaultToolkit().sync()
     }
 
-    fun update(positions: ArrayList<Int>) {
-        eaterX = positions[0] * dotSize
-        eaterY = positions[1] * dotSize
-
-        appleX = positions[2] * dotSize
-        appleY = positions[3] * dotSize
-
+    fun update(boardState: Array<Array<Int>>) {
+        this.boardState = boardState
         repaint()
     }
 }

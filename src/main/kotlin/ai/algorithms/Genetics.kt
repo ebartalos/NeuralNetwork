@@ -11,7 +11,7 @@ class Genetics(private val networks: List<Network>) {
 
     /**
      * Take two best networks and breed them.
-     * Top 1% of the networks is passed down.
+     * Top 2 networks are passed down.
      * Bottom 20% of the networks are created randomly to avoid reaching local maximums.
      * Rest is filled with bred (and optionally mutated) networks.
      *
@@ -35,7 +35,7 @@ class Genetics(private val networks: List<Network>) {
             }
         }
 
-        val passDown = (networks.size * 0.01).toInt()
+        val passDown = 2
         val lastFifth = (networks.size * 0.8).toInt()
 
         for (network in networks.subList(passDown, lastFifth)) {

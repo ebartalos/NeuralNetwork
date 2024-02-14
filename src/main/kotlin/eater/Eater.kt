@@ -1,119 +1,38 @@
 package eater
 
 import ai.Network
-import eater.gui.GUI
-import kotlin.math.abs
 import kotlin.random.Random
 
-class Eater {
+class Eater(private val network: Network) {
 
-    // board size (square) - 15x15
-    private val sideLength = 15
-    private val board = Array(sideLength) { Array(sideLength) { 0 } }
+    var steps = 0
+    private val maxSteps = 30
 
-    private val maxSteps = 24
-    private val delay = 50L
+    var isAlive = true
 
-    private val emptyMark = 0
-    private val wallMark = 1
-    private val eaterMark = 2
-    private val appleMark = 3
+    var positionX: Int = 0
+    var positionY: Int = 0
 
-    private var eaterLocationX: Int = Random.nextInt(1, sideLength - 1)
-    private var eaterLocationY: Int = Random.nextInt(1, sideLength - 1)
-    private var appleLocationX: Int = Random.nextInt(1, sideLength - 1)
-    private var appleLocationY: Int = Random.nextInt(1, sideLength - 1)
-
-    init {
-        // draw walls
-        for (index in 0 until sideLength) {
-            board[0][index] = wallMark
-            board[sideLength - 1][index] = wallMark
-            board[index][0] = wallMark
-            board[index][sideLength - 1] = wallMark
-        }
-
-        // set eater and apple position
-        while ((eaterLocationX == appleLocationX) && (eaterLocationY == appleLocationY)) {
-            appleLocationX = Random.nextInt(1, sideLength - 1)
-        }
-
-        updateBoard()
+    fun setRandomPosition(sideLength: Int) {
+        positionX = Random.nextInt(1, sideLength - 1)
+        positionY = Random.nextInt(1, sideLength - 1)
     }
 
     /**
-     * Play 1 game, until eater crashes or runs out of steps.
-     *
-     * @param network neural network playing the game
-     * @param maxFitness limit when should game end (prevents infinite game)
-     * @param useGUI should be shown in GUI
-     *
-     * @return fitness reached
-     */
-    fun play(network: Network, maxFitness: Int, useGUI: Boolean = false): Int {
-        lateinit var gui: GUI
-        if (useGUI) {
-            gui = GUI(sideLength)
-            gui.isVisible = true
-        }
-
-        var score = 0
-        var steps = 0
-
-        while (steps < maxSteps) {
-            if (useGUI) {
-                gui.update(arrayListOf(eaterLocationX, eaterLocationY, appleLocationX, appleLocationY))
-                Thread.sleep(delay)
-            }
-
-            move(evaluateMove(network))
-            steps += 1
-
-            if (isEaterDead()) {
-                break
-            }
-
-            if (isAppleEaten()) {
-                score += 1
-                steps = 0
-                setRandomApplePosition()
-            }
-            if (scoreFormula(score, steps) >= maxFitness) {
-                break
-            }
-        }
-
-        if (useGUI) gui.quit()
-        return scoreFormula(score, steps)
-    }
-
-    /**
-     * Formula for calculating score (fitness).
-     */
-    private fun scoreFormula(score: Int, steps: Int): Int {
-        return (score * 1000) + steps
-    }
-
-    /**
-     * Evaluate eater's next move.
-     *
-     * @param network neural network
-     *
+     * Calculate next move.
+     **
      * @return direction to move
      */
-    private fun evaluateMove(network: Network): Direction {
-        val distanceToApple = distanceToApple()
-        val distanceToWalls = distanceToWalls()
-
+    private fun evaluateMove(distanceToApple: ArrayList<Int>, distanceToDeath: ArrayList<Int>): Direction {
         val inputs = arrayListOf(
             distanceToApple[0].toDouble(),
             distanceToApple[1].toDouble(),
             distanceToApple[2].toDouble(),
             distanceToApple[3].toDouble(),
-            distanceToWalls[0].toDouble(),
-            distanceToWalls[1].toDouble(),
-            distanceToWalls[2].toDouble(),
-            distanceToWalls[3].toDouble(),
+            distanceToDeath[0].toDouble(),
+            distanceToDeath[1].toDouble(),
+            distanceToDeath[2].toDouble(),
+            distanceToDeath[3].toDouble(),
         )
 
         network.setInputs(inputs)
@@ -130,65 +49,23 @@ class Eater {
         return sortedResult.last().first
     }
 
-    /**
-     * Calculate distance to the apple.
-     *
-     * @return array of distances - 4 directions
-     */
-    private fun distanceToApple(): ArrayList<Int> {
-        val distance = arrayListOf<Int>()
-        val distanceX = eaterLocationX - appleLocationX
-        if (distanceX < 0) {
-            distance.add(0)
-            distance.add(abs(distanceX))
-        } else {
-            distance.add(abs(distanceX))
-            distance.add(0)
-        }
-
-        val distanceY = eaterLocationY - appleLocationY
-        if (distanceY < 0) {
-            distance.add(0)
-            distance.add(abs(distanceY))
-        } else {
-            distance.add(abs(distanceY))
-            distance.add(0)
-        }
-        return distance
-    }
-
-    /**
-     * Calculate distance to walls.
-     *
-     * @return array of distances - 4 directions
-     */
-    private fun distanceToWalls(): ArrayList<Int> {
-        val distance = arrayListOf<Int>()
-        distance.add(abs(eaterLocationX))
-        distance.add(abs((sideLength - 1) - eaterLocationX))
-        distance.add(abs(eaterLocationY))
-        distance.add(abs((sideLength - 1) - eaterLocationY))
-        return distance
-    }
-
     private enum class Direction {
         LEFT, RIGHT, UP, DOWN
     }
 
     /**
-     * Move eater on the board.
+     * Evaluate next move and move.
+     *
+     * @param distanceToApple distance to the apple (reward)
+     * @param distanceToDeath distance to the death
      */
-    private fun move(direction: Direction) {
-        board[eaterLocationX][eaterLocationY] = emptyMark
-
-        when (direction) {
-            Direction.LEFT -> eaterLocationX -= 1
-            Direction.RIGHT -> eaterLocationX += 1
-            Direction.DOWN -> eaterLocationY += 1
-            Direction.UP -> eaterLocationY -= 1
+    fun move(distanceToApple: ArrayList<Int>, distanceToDeath: ArrayList<Int>) {
+        when (evaluateMove(distanceToApple, distanceToDeath)) {
+            Direction.LEFT -> positionX -= 1
+            Direction.RIGHT -> positionX += 1
+            Direction.DOWN -> positionY += 1
+            Direction.UP -> positionY -= 1
         }
-
-        updateBoard()
     }
 
     /**
@@ -197,40 +74,28 @@ class Eater {
      * @return true if eater crashed
      *         false if not
      */
-    private fun isEaterDead(): Boolean {
-        return (eaterLocationX < 1)
-                || (eaterLocationY < 1)
-                || (eaterLocationX >= sideLength - 1)
-                || (eaterLocationY >= sideLength - 1)
+    fun crashedToWall(boardState: Array<Array<Int>>, wallMark: Int): Boolean {
+        return boardState[positionX][positionY] == wallMark
     }
 
     /**
-     * Detect apple collision.
-     *
-     * @return true if apple is eaten
-     *         false if not
+     * Friendly fire
      */
-    private fun isAppleEaten(): Boolean {
-        return ((eaterLocationX == appleLocationX) && (eaterLocationY == appleLocationY))
-    }
+    fun crashedToEater(otherEaters: ArrayList<Eater>): Boolean {
+        for (otherEater in otherEaters) {
+            if (otherEater == this) continue
 
-    /**
-     * Set random position for apple - O - that is inside of board.
-     */
-    private fun setRandomApplePosition() {
-        board[appleLocationX][appleLocationY] = emptyMark
-        while ((eaterLocationX == appleLocationX) && (eaterLocationY == appleLocationY)) {
-            appleLocationX = Random.nextInt(1, sideLength - 1)
-            appleLocationY = Random.nextInt(1, sideLength - 1)
+            if ((this.positionX == otherEater.positionX) && this.positionY == otherEater.positionY) {
+                return true
+            }
         }
-        updateBoard()
+        return false
     }
 
     /**
-     * Update position of eater and apple on the board.
+     * Out of steps
      */
-    private fun updateBoard() {
-        board[eaterLocationX][eaterLocationY] = eaterMark
-        board[appleLocationX][appleLocationY] = appleMark
+    fun isExhausted(): Boolean {
+        return steps > maxSteps
     }
 }
