@@ -30,8 +30,8 @@ object MainEater {
         TRAIN, TEST
     }
 
-        private val activity: Activity = Activity.TRAIN
-//    private val activity: Activity = Activity.TEST
+//            private val activity: Activity = Activity.TRAIN
+    private val activity: Activity = Activity.TEST
     private const val playgroundSize = 15
 
     @JvmStatic
@@ -162,8 +162,7 @@ object MainEater {
         val network = Network()
 
         network.addInputLayer(8)
-        network.addHiddenLayer(ReLuNeuron::class, 100, true, dropout = 0.2)
-        network.addHiddenLayer(ReLuNeuron::class, 100, true, dropout = 0.2)
+        network.addHiddenLayer(ReLuNeuron::class, 10, true)
         network.addOutputLayer(Neuron::class, 4)
         network.createConnections()
 
@@ -196,7 +195,7 @@ object MainEater {
      * @return fitness reached
      */
     private fun playGame(network: Network): Int {
-        return Game(arrayListOf(Eater(network)), playgroundSize).play(MAX_FITNESS, useGUI = false)
+        return Game(Eater(network), playgroundSize).play(MAX_FITNESS, useGUI = false)
     }
 
     /**
@@ -206,9 +205,7 @@ object MainEater {
         val network = Network()
         network.loadTrainedNetworkFromFile()
 
-        val eaters = arrayListOf(Eater(network))
-
-        val game = Game(eaters, playgroundSize)
+        val game = Game((Eater(network)), playgroundSize)
         game.play(MAX_FITNESS, useGUI = true)
     }
 }

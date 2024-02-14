@@ -5,8 +5,8 @@ import kotlin.random.Random
 
 class Eater(private val network: Network) {
 
-    var steps = 0
-    private val maxSteps = 30
+    private val maxEnergy = 26
+    var energy = maxEnergy
 
     var isAlive = true
 
@@ -79,23 +79,13 @@ class Eater(private val network: Network) {
     }
 
     /**
-     * Friendly fire
-     */
-    fun crashedToEater(otherEaters: ArrayList<Eater>): Boolean {
-        for (otherEater in otherEaters) {
-            if (otherEater == this) continue
-
-            if ((this.positionX == otherEater.positionX) && this.positionY == otherEater.positionY) {
-                return true
-            }
-        }
-        return false
-    }
-
-    /**
      * Out of steps
      */
     fun isExhausted(): Boolean {
-        return steps > maxSteps
+        return energy < 0
+    }
+
+    fun replenishEnergy(){
+        energy = maxEnergy
     }
 }

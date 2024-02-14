@@ -3,14 +3,13 @@ package eater
 import eater.gui.GUI
 import java.util.*
 import kotlin.math.abs
-import kotlin.math.min
 import kotlin.random.Random
 
-class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
+class Game(private val eater: Eater, private val sideLength: Int) {
 
     private val boardState = Array(sideLength) { Array(sideLength) { 0 } }
     private val delay: Long
-        get() = 50L / howManyEatersAreAlive()
+        get() = 50L
 
     private var appleLocationX: Int = 4
     private var appleLocationY: Int = 4
@@ -23,12 +22,8 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
     private val criticalPositions = Stack<Pair<Int, Int>>()
 
     init {
-        fillCriticalPositions()
-
         drawWalls()
-
-        eaters.forEach { eater -> eater.setRandomPosition(sideLength) }
-
+        eater.setRandomPosition(sideLength)
         updateBoard()
     }
 
@@ -42,34 +37,32 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
         var score = 0
         val eatersFitness = mutableMapOf<Eater, Int>()
 
-        while (eaters.isNotEmpty()) {
-            for (eater in eaters) {
-                updateBoard()
-                if (useGUI) {
-                    gui.update(boardState)
-                    Thread.sleep(delay)
-                }
+        while (eater.isAlive) {
+            updateBoard()
+            if (useGUI) {
+                gui.update(boardState)
+                Thread.sleep(delay)
+            }
 
-                eater.move(distanceToApple(eater), distanceToDeath(eater, eaters))
-                eater.steps += 1
+            eater.move(distanceToApple(eater), distanceToWalls(eater))
+            eater.energy -= 1
 
-                if (eater.crashedToEater(eaters) || eater.crashedToWall(boardState, wallMark) || eater.isExhausted()) {
-                    eatersFitness[eater] = score
-                    score = 0
-                    killEater(eater)
-                    break
-                }
+            if (eater.crashedToWall(boardState, wallMark) || eater.isExhausted()) {
+                eatersFitness[eater] = score
+                killEater(eater)
+                break
+            }
 
-                if (isAppleEaten(eater)) {
-                    score += 1000
-                    score += eater.steps
-                    setRandomApplePosition()
-                }
+            if (isAppleEaten(eater)) {
+                score += 1000
+                score += eater.energy
+                eater.replenishEnergy()
+                setRandomApplePosition()
+            }
 
-                if (score >= maxFitness) {
-                    eatersFitness[eater] = score
-                    return score
-                }
+            if (score >= maxFitness) {
+                eatersFitness[eater] = score
+                return score
             }
         }
         if (useGUI) gui.quit()
@@ -85,28 +78,6 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
             boardState[index][0] = wallMark
             boardState[index][sideLength - 1] = wallMark
         }
-        boardState[sideLength / 2][sideLength / 2] = wallMark
-    }
-
-    /**
-     * Positions that are hard to reach.
-     */
-    private fun fillCriticalPositions() {
-        criticalPositions.add(Pair(7, 6))
-        criticalPositions.add(Pair(10, 10))
-        criticalPositions.add(Pair(4, 12))
-        criticalPositions.add(Pair(8, 7))
-        criticalPositions.add(Pair(7, 4))
-        criticalPositions.add(Pair(7, 11))
-        criticalPositions.add(Pair(7, 3))
-        criticalPositions.add(Pair(12, 7))
-        criticalPositions.add(Pair(3, 7))
-        criticalPositions.add(Pair(13, 7))
-
-        criticalPositions.add(Pair(13, 13))
-        criticalPositions.add(Pair(13, 1))
-        criticalPositions.add(Pair(1, 13))
-        criticalPositions.add(Pair(1, 1))
     }
 
     /**
@@ -151,17 +122,9 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
             }
         }
 
-        for (eater in eaters) {
-            boardState[eater.positionX][eater.positionY] = eaterMark
-        }
-        boardState[appleLocationX][appleLocationY] = appleMark
-    }
+        boardState[eater.positionX][eater.positionY] = eaterMark
 
-    /**
-     * Formula for calculating score (fitness).
-     */
-    private fun scoreFormula(score: Int, steps: Int): Int {
-        return (score * 1000) + steps
+        boardState[appleLocationX][appleLocationY] = appleMark
     }
 
     /**
@@ -188,40 +151,6 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
             distance.add(abs(distanceY))
             distance.add(0)
         }
-        return distance
-    }
-
-    /**
-     * Calculate distance to walls or nearest eater - collision with either kills
-     *
-     * @param eater current eater
-     * @param eaters all eaters
-     *
-     * @return array of distances - 4 directions
-     */
-    private fun distanceToDeath(eater: Eater, eaters: ArrayList<Eater>): ArrayList<Int> {
-        val distance = distanceToWalls(eater)
-
-        for (otherEater in eaters) {
-            if (eater == otherEater) continue
-
-            if (eater.positionX == otherEater.positionX) {
-                if (eater.positionY > otherEater.positionY) {
-                    distance[2] = min(distance[2], abs(eater.positionY - otherEater.positionY))
-                } else {
-                    distance[3] = min(distance[3], abs(eater.positionY - otherEater.positionY))
-                }
-            }
-
-            if (eater.positionY == otherEater.positionY) {
-                if (eater.positionX > otherEater.positionX) {
-                    distance[0] = min(distance[0], abs(eater.positionX - otherEater.positionX))
-                } else {
-                    distance[1] = min(distance[1], abs(eater.positionX - otherEater.positionX))
-                }
-            }
-        }
-
         return distance
     }
 
@@ -265,17 +194,8 @@ class Game(private val eaters: ArrayList<Eater>, private val sideLength: Int) {
         return distances
     }
 
-    private fun howManyEatersAreAlive(): Int {
-        var count = 0
-        for (eater in eaters) {
-            if (eater.isAlive) count += 1
-        }
-        return count
-    }
-
     private fun killEater(eater: Eater) {
         eater.isAlive = false
         boardState[eater.positionX][eater.positionY] = emptyMark
-        eaters.remove(eater)
     }
 }
