@@ -80,12 +80,17 @@ class Eater(private val network: Network) {
 
     /**
      * Out of steps
+     *
+     * @return true if eater is dead, false if it can continue
      */
     fun isExhausted(): Boolean {
         return energy < 0
     }
 
-    fun replenishEnergy(){
+    /**
+     * Replenishes energy for eater
+     */
+    fun replenishEnergy() {
         energy = maxEnergy
     }
 }

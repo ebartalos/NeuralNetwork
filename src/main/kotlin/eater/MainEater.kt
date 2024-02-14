@@ -30,7 +30,7 @@ object MainEater {
         TRAIN, TEST
     }
 
-//            private val activity: Activity = Activity.TRAIN
+    // private val activity: Activity = Activity.TRAIN
     private val activity: Activity = Activity.TEST
     private const val playgroundSize = 15
 
@@ -70,7 +70,7 @@ object MainEater {
             val bestNetwork = sortedFitness.keys.last()
 
             val genetics = Genetics(sortedFitness.keys.reversed())
-            genetics.breed(mutate = true, mutationChance = Constants.MUTATION_PERCENT_CHANCE)
+            genetics.breed(mutate = true)
 
             if (fitness[bestNetwork]!! >= bestFitness) {
                 bestFitness = fitness[bestNetwork]!!

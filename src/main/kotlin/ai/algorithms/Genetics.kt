@@ -1,6 +1,8 @@
 package ai.algorithms
 
-import Constants
+import ai.Constants.MUTATION_PERCENT_CHANCE
+import ai.Constants.MUTATION_RANGE_FROM
+import ai.Constants.MUTATION_RANGE_TO
 import ai.Network
 import kotlin.random.Random
 
@@ -16,9 +18,8 @@ class Genetics(private val networks: List<Network>) {
      * Rest is filled with bred (and optionally mutated) networks.
      *
      * @param mutate determines if kids should be mutated
-     * @param mutationChance percentage chance to mutation for each weight
      */
-    fun breed(mutate: Boolean, mutationChance: Int = 0) {
+    fun breed(mutate: Boolean) {
         // let's assume network is ordered by fitness with best brains in low indexes
         val network1Weights = networks[0].weights()
         val network2Weights = networks[1].weights()
@@ -44,7 +45,7 @@ class Genetics(private val networks: List<Network>) {
 
         if (mutate) {
             for (network in networks.subList(passDown, lastFifth)) {
-                mutate(network, Constants.MUTATION_RANGE_FROM, Constants.MUTATION_RANGE_TO, mutationChance)
+                mutate(network, MUTATION_RANGE_FROM, MUTATION_RANGE_TO, MUTATION_PERCENT_CHANCE)
             }
         }
 
