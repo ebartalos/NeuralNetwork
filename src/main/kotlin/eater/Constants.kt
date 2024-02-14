@@ -1,3 +1,5 @@
+package eater
+
 /**
  * Place for compile time constant.
  */

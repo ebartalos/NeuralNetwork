@@ -1,6 +1,6 @@
 package ai
 
-import Constants
+import eater.Constants
 import ai.neurons.*
 import java.io.File
 import java.util.*

@@ -2,8 +2,7 @@
 
 package eater
 
-import Constants
-import Constants.MAX_FITNESS
+import eater.Constants.MAX_FITNESS
 import ai.Network
 import ai.algorithms.Genetics
 import ai.neurons.Neuron
