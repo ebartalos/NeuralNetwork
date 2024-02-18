@@ -61,9 +61,6 @@ class Genetics(private val networks: List<Network>) {
      * Mutate network.
      *
      * @param network neural network
-     * @param from lower index of mutation range
-     * @param to higher index of mutation range
-     * @param chance percentage chance to mutate
      */
     private fun mutate(network: Network) {
         for (layer in network.layers) {

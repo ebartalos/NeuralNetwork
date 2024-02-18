@@ -9,6 +9,11 @@ open class Neuron {
         return vector
     }
 
+    /**
+     * Calculate neuron's value.
+     *
+     * @param vector of values coming in
+     */
     fun calculate(vector: Double) {
         value = if (isDropped) {
             0.0

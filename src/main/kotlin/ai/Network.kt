@@ -67,7 +67,7 @@ class Network {
         }
 
         if (biasNeuron) layer.addNeuron(BiasNeuron())
-        if (dropout != 0.0) layer.dropout(dropout)
+        layer.dropout(dropout)
 
         layers.add(layer)
     }

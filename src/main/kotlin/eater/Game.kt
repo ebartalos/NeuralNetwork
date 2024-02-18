@@ -27,6 +27,13 @@ class Game(private val eater: Eater, private val sideLength: Int) {
         updateBoard()
     }
 
+    /**
+     * Play one game until eater dies or max fitness (score) is reached.
+     *
+     * @param maxFitness end condition
+     * @param useGUI if true, game is played in GUI
+     *
+     */
     fun play(maxFitness: Int, useGUI: Boolean = false): Int {
         lateinit var gui: GUI
         if (useGUI) {
@@ -127,11 +134,6 @@ class Game(private val eater: Eater, private val sideLength: Int) {
         boardState[appleLocationX][appleLocationY] = appleMark
     }
 
-    /**
-     * Calculate distance to the apple.
-     *
-     * @return array of distances - 4 directions
-     */
     private fun distanceToApple(eater: Eater): ArrayList<Int> {
         val distance = arrayListOf<Int>()
         val distanceX = eater.positionX - appleLocationX
