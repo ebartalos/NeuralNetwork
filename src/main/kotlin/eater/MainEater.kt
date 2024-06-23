@@ -1,5 +1,3 @@
-@file:Suppress("SameParameterValue")
-
 package eater
 
 import ai.Network
@@ -26,11 +24,11 @@ object MainEater {
      * TEST - load weights from file and test network in GUI
      */
     enum class Activity {
-        TRAIN, TEST
+        TRAIN, TEST, PRUNING_TEST
     }
 
-    // private val activity: Activity = Activity.TRAIN
-    private val activity: Activity = Activity.TEST
+    //     private val activity: Activity = Activity.TRAIN
+    private val activity: Activity = Activity.PRUNING_TEST
     private const val playgroundSize = 15
 
     @JvmStatic
@@ -38,6 +36,7 @@ object MainEater {
         when (activity) {
             Activity.TRAIN -> train()
             Activity.TEST -> test()
+            Activity.PRUNING_TEST -> Tests.pruningTest(playgroundSize)
         }
     }
 
@@ -161,6 +160,7 @@ object MainEater {
         val network = Network()
 
         network.addInputLayer(8)
+        network.addHiddenLayer(ReLuNeuron::class, 10, true)
         network.addHiddenLayer(ReLuNeuron::class, 10, true)
         network.addOutputLayer(Neuron::class, 4)
         network.createConnections()

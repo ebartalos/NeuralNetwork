@@ -2,8 +2,10 @@ package ai
 
 import ai.neurons.*
 import eater.Constants
+import eater.Constants.PRUNING_THRESHOLD
 import java.io.File
 import java.util.*
+import kotlin.math.abs
 import kotlin.math.exp
 import kotlin.math.sqrt
 import kotlin.reflect.KClass
@@ -262,6 +264,40 @@ class Network {
         weights().forEach {
             file.appendText("$it\n")
         }
+    }
+
+    /**
+     * Remove connections with weight below threshold value.
+     */
+    fun prune() {
+        val allConnections = mutableSetOf<Connection>()
+        for (layer in layers) {
+            allConnections.addAll(layer.outgoingConnections)
+            allConnections.addAll(layer.incomingConnections)
+        }
+
+        val toRemove = mutableSetOf<Connection>()
+        for (connection in allConnections) {
+            if (abs(connection.weight) < PRUNING_THRESHOLD) {
+                toRemove.add(connection)
+            }
+        }
+
+        for (layer in layers) {
+            layer.outgoingConnections.removeAll(toRemove)
+            layer.incomingConnections.removeAll(toRemove)
+        }
+    }
+
+    /**
+     * Return total number of connections in the network.
+     */
+    fun getConnections(): Int {
+        var connections = 0
+        for (layer in layers) {
+            connections += layer.outgoingConnections.size
+        }
+        return connections
     }
 
     /**
