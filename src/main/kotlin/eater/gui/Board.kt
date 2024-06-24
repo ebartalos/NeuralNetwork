@@ -1,6 +1,6 @@
 package eater.gui
 
-import eater.Constants.GUI_DOT_SIZE
+import eater.EaterConstants.GUI_DOT_SIZE
 import java.awt.*
 import javax.swing.ImageIcon
 import javax.swing.JPanel

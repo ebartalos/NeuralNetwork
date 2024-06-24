@@ -1,8 +1,8 @@
 package ai
 
+import ai.Constants.PRUNING_THRESHOLD
 import ai.neurons.*
-import eater.Constants
-import eater.Constants.PRUNING_THRESHOLD
+import eater.EaterConstants
 import java.io.File
 import java.util.*
 import kotlin.math.abs
@@ -250,7 +250,7 @@ class Network {
      * @param file target file for saving
      * @param generation current generation of training
      */
-    fun saveTrainedNetworkToFile(file: File = File(Constants.BEST_NETWORK_FILE), generation: Int = 0) {
+    fun saveTrainedNetworkToFile(file: File = File(EaterConstants.BEST_NETWORK_FILE), generation: Int = 0) {
         file.writeText("Generation:$generation\n")
 
         // add network information - type of neurons and count
@@ -305,7 +305,7 @@ class Network {
      *
      * @param file file with saved network
      */
-    fun loadTrainedNetworkFromFile(file: File = File(Constants.BEST_NETWORK_FILE)) {
+    fun loadTrainedNetworkFromFile(file: File = File(EaterConstants.BEST_NETWORK_FILE)) {
         val weights = ArrayList<Double>()
         val networkStructure = mutableListOf<String>()
 

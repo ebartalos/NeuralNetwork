@@ -16,8 +16,8 @@ object Tests {
         val runs = 10
 
         val timeTakenBeforePruning = measureTime {
-            for (i in 0..runs) {
-                Game((Eater(network)), playgroundSize).play(Constants.MAX_FITNESS, useGUI = false)
+            for (i in 1..runs) {
+                Game((Eater(network)), playgroundSize).play(EaterConstants.MAX_FITNESS, useGUI = false)
             }
         }
         println("Time before pruning: ${timeTakenBeforePruning.inWholeSeconds}s")
@@ -26,11 +26,12 @@ object Tests {
 
         println("Number of connections after pruning: ${network.getConnections()}")
         val timeTakenAfterPruning = measureTime {
-            for (i in 0..runs) {
-                Game((Eater(network)), playgroundSize).play(Constants.MAX_FITNESS, useGUI = false)
+            for (i in 1..runs) {
+                Game((Eater(network)), playgroundSize).play(EaterConstants.MAX_FITNESS, useGUI = false)
             }
         }
-        println("Time after pruning: ${timeTakenAfterPruning.inWholeSeconds}s with threshold ${Constants.PRUNING_THRESHOLD}")
+        println("Time after pruning: ${timeTakenAfterPruning.inWholeSeconds}s")
+
         println("Time saved: ${(timeTakenBeforePruning.minus(timeTakenAfterPruning)).inWholeSeconds}s for $runs runs")
     }
 }

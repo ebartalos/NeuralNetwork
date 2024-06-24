@@ -69,9 +69,15 @@ class Genetics(private val networks: List<Network>) {
                     if (connection.weight == 0.0) {
                         connection.weight = Random.nextDouble(-0.01, 0.01)
                     } else if (Random.nextBoolean()) {
-                        connection.weight += (connection.weight * Random.nextDouble(MUTATION_RANGE_FROM, MUTATION_RANGE_TO)) - connection.weight
+                        connection.weight += (connection.weight * Random.nextDouble(
+                            MUTATION_RANGE_FROM,
+                            MUTATION_RANGE_TO
+                        )) - connection.weight
                     } else {
-                        connection.weight -= (connection.weight * Random.nextDouble(MUTATION_RANGE_FROM, MUTATION_RANGE_TO)) - connection.weight
+                        connection.weight -= (connection.weight * Random.nextDouble(
+                            MUTATION_RANGE_FROM,
+                            MUTATION_RANGE_TO
+                        )) - connection.weight
                     }
                 }
             }

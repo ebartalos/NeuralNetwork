@@ -15,8 +15,8 @@ You need to have Java 17+ with Kotlin installed.
 - Simple GUI eater game with already trained neural network
 - Backpropagation demonstrated in XOR
 
-
 ### How to run eater
+
 Run main in MainEater. You can select activity in MainEater -
 Test (showcases already trained network solving eater game) or Train (training network).
 

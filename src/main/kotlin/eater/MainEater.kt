@@ -4,7 +4,7 @@ import ai.Network
 import ai.algorithms.Genetics
 import ai.neurons.Neuron
 import ai.neurons.ReLuNeuron
-import eater.Constants.MAX_FITNESS
+import eater.EaterConstants.MAX_FITNESS
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -22,12 +22,13 @@ object MainEater {
     /**
      * TRAIN - trains network
      * TEST - load weights from file and test network in GUI
+     * PRUNING_TEST - load weights from file and test performance after pruning
      */
     enum class Activity {
         TRAIN, TEST, PRUNING_TEST
     }
 
-    //     private val activity: Activity = Activity.TRAIN
+    //    private val activity: Activity = Activity.TRAIN
     private val activity: Activity = Activity.PRUNING_TEST
     private const val playgroundSize = 15
 
@@ -52,13 +53,13 @@ object MainEater {
         var sortedFitness: Map<Network, Int>
         var bestFitness = 0
 
-        val currentGeneration = if (Constants.LOAD_NETWORK_FILE_ON_START) {
+        val currentGeneration = if (EaterConstants.LOAD_NETWORK_FILE_ON_START) {
             loadGeneration()
         } else {
             0
         }
 
-        for (generation in currentGeneration..Constants.MAX_GENERATIONS) {
+        for (generation in currentGeneration..EaterConstants.MAX_GENERATIONS) {
             // reset fitness
             fitness.replaceAll { _, _ -> 0 }
 
@@ -94,7 +95,7 @@ object MainEater {
         }
     }
 
-    private fun loadGeneration(file: File = File(Constants.BEST_NETWORK_FILE)): Int {
+    private fun loadGeneration(file: File = File(EaterConstants.BEST_NETWORK_FILE)): Int {
         return file.readLines()[0].split(":")[1].toInt()
     }
 
@@ -115,7 +116,7 @@ object MainEater {
      * @param fitness all networks' fitness
      */
     private fun trainInParallel(networks: ArrayList<Network>, fitness: HashMap<Network, Int>) {
-        val semaphore = Semaphore(Constants.NUMBER_OF_THREADS_FOR_TRAINING)
+        val semaphore = Semaphore(EaterConstants.NUMBER_OF_THREADS_FOR_TRAINING)
 
         runBlocking {
             networks.map { network ->
@@ -136,10 +137,10 @@ object MainEater {
      *
      */
     private fun setNetworks(networks: ArrayList<Network>, fitness: HashMap<Network, Int>) {
-        for (networkId in 1..Constants.MAX_NEURAL_NETWORKS) {
+        for (networkId in 1..EaterConstants.MAX_NEURAL_NETWORKS) {
             lateinit var network: Network
 
-            if (Constants.LOAD_NETWORK_FILE_ON_START) {
+            if (EaterConstants.LOAD_NETWORK_FILE_ON_START) {
                 network = Network()
                 network.loadTrainedNetworkFromFile()
             } else {
