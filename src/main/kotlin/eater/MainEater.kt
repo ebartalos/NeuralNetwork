@@ -5,10 +5,7 @@ import ai.algorithms.Genetics
 import ai.neurons.Neuron
 import ai.neurons.ReLuNeuron
 import eater.EaterConstants.MAX_FITNESS
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import java.io.File
 import java.time.Instant
 import java.time.ZoneId
@@ -116,14 +113,10 @@ object MainEater {
      * @param fitness all networks' fitness
      */
     private fun trainInParallel(networks: ArrayList<Network>, fitness: HashMap<Network, Int>) {
-        val semaphore = Semaphore(EaterConstants.NUMBER_OF_THREADS_FOR_TRAINING)
-
         runBlocking {
             networks.map { network ->
-                semaphore.acquire()
                 async(Dispatchers.Default) {
                     fitness[network] = playGame(network)
-                    semaphore.release()
                 }
             }.awaitAll()
         }

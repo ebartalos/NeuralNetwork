@@ -6,7 +6,6 @@ package eater
 object EaterConstants {
     const val MAX_NEURAL_NETWORKS = 10000
     const val MAX_GENERATIONS = 10000000
-    const val NUMBER_OF_THREADS_FOR_TRAINING = 10
 
     const val MAX_FITNESS = 212345678
 
